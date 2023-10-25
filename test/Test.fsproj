@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <IsPackable>false</IsPackable>
+        <GenerateProgramFile>false</GenerateProgramFile>
+        <RootNamespace>glow.meta.test</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="SomeTypes.fs" />
+        <Compile Include="Tests.fs" />
+        <Compile Include="ManyTypes.fs" />
+        <Compile Include="GetDependenciesTest.fs" />
+        <Compile Include="SystemTypeTests.fs" />
+        <Compile Include="FSharpResult.fs" />
+        <Compile Include="FSharpMap.fs" />
+        <Compile Include="Skippable.fs" />
+        <Compile Include="Collections.fs" />
+        <Compile Include="StronglyTypedId.fs" />
+        <Compile Include="Arrays.fs" />
+        <Compile Include="Object.fs" />
+        <Compile Include="RecordWithList.fs" />
+        <Compile Include="FSharpOption.fs" />
+        <Compile Include="RecordWithPrimitiveOption.fs" />
+        <Compile Include="RecordWithOption.fs" />
+        <Compile Include="RecordWithResult.fs" />
+        <Compile Include="NestedGenerics.fs" />
+        <Compile Include="EmptyRecordAndUnit.fs" />
+        <Compile Include="SimpleRecord.fs" />
+        <Compile Include="DateTimes.fs" />
+        <Compile Include="DuWithMultipleFields.fs" />
+        <Compile Include="RenderModule.fs" />
+        <Compile Include="RenderModule2.fs" />
+        <Compile Include="SerializeSomeTypes.fs" />
+        <Compile Include="NodaTime.fs" />
+        <Compile Include="CircularReference.fs" />
+        <Compile Include="Program.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+        <PackageReference Include="FsUnit.xUnit" Version="5.2.0" />
+        <PackageReference Include="Expecto" Version="9.0.4" />
+        <PackageReference Include="xunit" Version="2.4.2" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="coverlet.collector" Version="3.1.0">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\src\TsGen.fsproj" />
+    </ItemGroup>
+
+
+</Project>
