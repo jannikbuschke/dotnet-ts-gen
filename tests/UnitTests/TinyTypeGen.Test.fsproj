@@ -1,0 +1,78 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <IsPackable>false</IsPackable>
+        <RootNamespace>TinyTypeGen.Test</RootNamespace>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FsCheck" Version="3.3.2" />
+        <PackageReference Include="Expecto" Version="9.0.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\TinyTypeGen.Giraffe\TinyTypeGen.Giraffe.fsproj" />
+      <ProjectReference Include="..\..\src\TinyTypeGen\TinyTypeGen.fsproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="SomeTypes.fs" />
+        <Compile Include="Utils.fs" />
+        <Compile Include="ManyTypes.fs" />
+        <Compile Include="FSharpMap.fs" />
+        <Compile Include="IgnoreNamespaces.fs" />
+        <Compile Include="JsonNode.fs" />
+        <Compile Include="Collections.fs" />
+        <Compile Include="Dictionary.fs" />
+        <Compile Include="HashSet.fs" />
+        <Compile Include="Arrays.fs" />
+        <Compile Include="Object.fs" />
+        <Compile Include="StaticClass.fs" />
+        <Compile Include="Dependencies.fs" />
+        <Compile Include="AnonymousRecords.fs" />
+        <Compile Include="ModuleNamespace.fs" />
+        <Compile Include="Record.fs" />
+        <Compile Include="NestedGenerics.fs" />
+        <Compile Include="EmptyClass.fs" />
+        <Compile Include="Unit.fs" />
+        <Compile Include="RenderModule.fs" />
+        <Compile Include="RenderModule2.fs" />
+        <Compile Include="RecursiveType.fs" />
+        <Compile Include="Uri.fs" />
+        <Compile Include="FsFunc.fs" />
+        <Compile Include="Unions\Utils.fs" />
+        <Compile Include="Unions\SingleCaseSingleField.fs" />
+        <Compile Include="Unions\SingleCaseMultiField.fs" />
+        <Compile Include="Unions\MultipleCases.fs" />
+        <Compile Include="Unions\MultipleCasesMultipleFIelds.fs" />
+        <Compile Include="Unions\FSharpResult.fs" />
+        <Compile Include="Unions\FSharpOption.fs" />
+        <Compile Include="Unions\Skippable.fs" />
+        <Compile Include="Unions\SingleCaseMultipleFields.fs" />
+        <Compile Include="Unions\RecordWithOption.fs" />
+        <Compile Include="Unions\RecordWithResult.fs" />
+        <Compile Include="Unions\GenericDu.fs" />
+        <Compile Include="Unions\GenericDuWithUnwrapRecordCase.fs" />
+        <Compile Include="Generics\PaginatedResult.fs" />
+        <Compile Include="Generics\PropertyWithGenericArray.fs" />
+        <Compile Include="DateTime\DateOnly.fs" />
+        <Compile Include="DateTime\TimeOnly.fs" />
+        <Compile Include="DateTime\DateTimes.fs" />
+        <Compile Include="Scenario1\EStatus.fs" />
+        <Compile Include="Scenario1\AbstractWorkflow.fs" />
+        <Compile Include="Scenario1\Ids.fs" />
+        <Compile Include="Scenario1\Types.fs" />
+        <Compile Include="Scenario1\EventsAndTypes.fs" />
+        <Compile Include="Scenario1\AbsentQueries.fs" />
+        <Compile Include="Scenario1\UsingPaginatedQuery.fs" />
+        <Compile Include="Scenario1\PersonStatus.fs" />
+        <Compile Include="Scenario1\Library.fs" />
+        <Compile Include="Scenario1\Config.fs" />
+        <Compile Include="PropertyCasing.fs" />
+        <Compile Include="ValueTuple.fs" />
+        <Compile Include="Program.fs" />
+    </ItemGroup>
+
+</Project>

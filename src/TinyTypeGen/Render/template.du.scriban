@@ -1,0 +1,55 @@
+
+{{if du.cases.size > 1}}
+
+export const {{name}} = {
+  {{- for c in case_signatures }}
+     {{ c.name }}:"{{c.name}}",
+  {{- end}}
+
+  {{- for c in case_signatures }}
+     new{{ c.name }}:{{generic_arguments}}(
+      {{- if c.fields.length > 0 -}}
+      v:{{c.signature}}["Fields"]
+        {{-else-}}
+        {{-end-}}
+       )=>({Case:"{{c.name}}"
+        {{- if c.fields.length>0 -}}
+        ,Fields:v
+        {{-else-}}
+        {{-end-}}
+        }) satisfies {{name}}{{generic_arguments}},
+    {{- end}}
+}
+
+{{ if generic_argument_names.length > 0 }}
+{{else}}
+export const exhaustive{{name}}Match = <TMatchResult,{{generic_argument_names}}>(
+    v:{{- for c in case_signatures }}{Case:"{{ c.name }}"{{if c.fields.length>0}},Fields:{{c.signature}}["Fields"]{{-end-}} }{{if !for.last; '|'; end}} {{- end}},
+    params:{
+        {{- for c in case_signatures }}
+        {{ c.name }}:(
+        {{- if c.fields.length > 0 -}}
+        v:{{c.signature}}["Fields"]
+        {{-else-}}
+        {{-end-}}
+       )=>TMatchResult,
+    {{- end}}
+}):TMatchResult=>
+ match(v)
+{{- for c in case_signatures }}
+    .with({Case:"{{c.name}}", 
+    {{- if c.fields.length > 0 -}}
+        },(x)=>params.{{c.name}}(x{{- if c.fields.length>0}}.Fields{{-end-}}))
+    {{-else-}}
+        },()=>params.{{c.name}}())
+    {{-end}}
+{{-end-}}
+ .exhaustive()
+{{end}}
+
+export type Partial{{signature}}=
+    {{- for c in case_signatures }}
+       |{Case:"{{c.name}}",Fields:{{c.signature}}|null}
+    {{- end}}
+
+{{- end -}}

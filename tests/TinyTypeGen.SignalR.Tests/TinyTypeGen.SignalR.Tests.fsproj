@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <IsPackable>false</IsPackable>
+        <GenerateProgramFile>false</GenerateProgramFile>
+<!--        <GenerateDocumentationFile>true</GenerateDocumentationFile>-->
+        <WarningLevel>0</WarningLevel>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Library.fs"/>
+        <Compile Include="Program.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\TinyTypeGen.AspNetCore\TinyTypeGen.AspNetCore.fsproj" />
+    </ItemGroup>
+
+</Project>

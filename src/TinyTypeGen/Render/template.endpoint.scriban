@@ -1,0 +1,1 @@
+{{endpoint.method}}:  ["{{endpoint.route}}", {{input}},{{output}}],

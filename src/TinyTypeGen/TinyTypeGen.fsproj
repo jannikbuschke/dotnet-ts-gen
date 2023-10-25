@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <Authors>Jannik Buschke</Authors>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PackageId>TinyTypeGen</PackageId>
+        <RootNamespace>TinyTypeGen</RootNamespace>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\"/>
+        <Compile Include="Logger.fs" />
+        <Compile Include="Scriban.fs" />
+        <Compile Include="Types.fs" />
+        <Compile Include="Utils.fs" />
+        <Compile Include="TypeCache.fs" />
+        <Compile Include="TopologicalSort.fs" />
+        <Compile Include="PredefinedTypes.fs" />
+        <Compile Include="Config.fs" />
+        <Compile Include="Signature.fs" />
+        <Compile Include="Render\properties.fs" />
+        <Compile Include="Render\static-properties.fs" />
+        <Compile Include="Render\unions.fs" />
+        <Compile Include="Render\Option.fs" />
+<!--        <Compile Include="Render\unions3.fs" />-->
+<!--        <Compile Include="Render\unions4.fs" />-->
+        <Compile Include="Render\record-or-class.fs" />
+        <Compile Include="Render\predefined-type.fs" />
+        <Compile Include="Render\RenderType.fs" />
+        <Compile Include="Render\module.fs" />
+        <EmbeddedResource Include="Render\template.api.scriban" />
+        <EmbeddedResource Include="Render\template.api-tanstack-query.scriban" />
+        <EmbeddedResource Include="Render\template.du.scriban" />
+        <EmbeddedResource Include="Render\template.endpoint.scriban" />
+        <EmbeddedResource Include="Render\template.endpoint-fn.scriban" />
+        <EmbeddedResource Include="Render\template.module.scriban" />
+        <Content Include="Render\template.api" />
+        <Compile Include="Collect.fs" />
+        <Compile Include="Artifact.fs" />
+        <Compile Include="ResourceHe.fs" />
+        <Compile Include="RenderApiWithScriban.fs" />
+        <Compile Include="Run.fs" />
+        <Compile Include="Generator.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+<!--        <PackageReference Update="FSharp.Core" Version="8.0.200" />-->
+        <PackageReference Update="FSharp.Core" Version="[8.0.100,)" />
+        <PackageReference Include="FSharp.SystemTextJson" Version="1.4.36" />
+        <PackageReference Include="Scriban" Version="*" />
+    </ItemGroup>
+
+</Project>

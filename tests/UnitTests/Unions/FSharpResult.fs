@@ -1,0 +1,76 @@
+module Test.Unions.FSharpResult
+
+open Expecto
+open Test
+
+let tests =
+  testList
+    "Unions.FSharpResult"
+    [
+      testCase
+        "Render FSharpResult"
+        (fun () ->
+          typedefof<Result<string, string>>
+          |> definition
+          |> Expect.stringStart
+            """
+export type FSharpResult_Case_Ok<T,TError> = { Case: "Ok", Fields: T }
+export type FSharpResult_Case_Error<T,TError> = { Case: "Error", Fields: TError }
+export type FSharpResult<T,TError> = FSharpResult_Case_Ok<T,TError> | FSharpResult_Case_Error<T,TError>
+export type FSharpResult_Case = "Ok" | "Error"
+export const FSharpResult_AllCases = [
+ "Ok",
+ "Error"
+] satisfies FSharpResult_Case[]
+export function isFSharpResult_Case(value: any): value is FSharpResult_Case {
+ return FSharpResult_AllCases.includes(value)
+}
+// GENERIC RECORD DU: T
+export type FSharpResult_Case_Ok_T<T,TError> = { Case: "Ok", Fields: T }
+export type FSharpResult_Case_Error_T<T,TError> = { Case: "Error", Fields: TError }
+export type FSharpResult_T<T,TError> = FSharpResult_Case_Ok_T<T,TError> | FSharpResult_Case_Error_T<T,TError>
+export type FSharpResult_T_Case = "Ok" | "Error"
+export const FSharpResult_T_AllCases = [
+ "Ok",
+ "Error"
+] satisfies FSharpResult_T_Case[]
+export function isFSharpResult_T_Case(value: any): value is FSharpResult_T_Case {
+ return FSharpResult_T_AllCases.includes(value)
+}
+// GENERIC RECORD DU: TError
+export type FSharpResult_Case_Ok_TError<T,TError> = { Case: "Ok", Fields: T }
+export type FSharpResult_Case_Error_TError<T,TError> = { Case: "Error", Fields: TError }
+export type FSharpResult_TError<T,TError> = FSharpResult_Case_Ok_TError<T,TError> | FSharpResult_Case_Error_TError<T,TError>
+export type FSharpResult_TError_Case = "Ok" | "Error"
+export const FSharpResult_TError_AllCases = [
+ "Ok",
+ "Error"
+] satisfies FSharpResult_TError_Case[]
+export function isFSharpResult_TError_Case(value: any): value is FSharpResult_TError_Case {
+ return FSharpResult_TError_AllCases.includes(value)
+}
+// GENERIC RECORD DU: T,TError
+export type FSharpResult_Case_Ok_TTError<T,TError> = { Case: "Ok", Fields: T }
+export type FSharpResult_Case_Error_TTError<T,TError> = { Case: "Error", Fields: TError }
+export type FSharpResult_TTError<T,TError> = FSharpResult_Case_Ok_TTError<T,TError> | FSharpResult_Case_Error_TTError<T,TError>
+export type FSharpResult_TTError_Case = "Ok" | "Error"
+export const FSharpResult_TTError_AllCases = [
+ "Ok",
+ "Error"
+] satisfies FSharpResult_TTError_Case[]
+export function isFSharpResult_TTError_Case(value: any): value is FSharpResult_TTError_Case {
+ return FSharpResult_TTError_AllCases.includes(value)
+}
+"""
+        )
+      testCase
+        "Render FSharpResult #2 - definition"
+        (fun () ->
+          typedefof<Result<{| Name: string |} list, {| Forbidden: string |}>>
+          |> definition
+          |> Expect.stringStart
+            """
+export type FSharpResult_Case_Ok<T,TError> = { Case: "Ok", Fields: T }
+"""
+        )
+    ]

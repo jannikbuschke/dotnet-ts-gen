@@ -1,0 +1,6 @@
+/* eslint-disable */
+
+import { match, P }from "ts-pattern"
+import type { Nullable, MakeNullable } from "@/utils/ts"
+
+{{content}}

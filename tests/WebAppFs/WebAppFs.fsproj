@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <RootNamespace>WebAppFs</RootNamespace>
+    <OutputType>Exe</OutputType>
+      <UseTopLevelProgram>false</UseTopLevelProgram>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FsToolkit.ErrorHandling" Version="5.1.0" />
+    <Compile Include="Controller.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\TinyTypeGen.Giraffe\TinyTypeGen.Giraffe.fsproj" />
+    <ProjectReference Include="..\..\src\TinyTypeGen.SignalR\TinyTypeGen.SignalR.fsproj" />
+  </ItemGroup>
+
+</Project>
