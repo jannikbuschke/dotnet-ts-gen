@@ -2,7 +2,6 @@
 
 open System
 open System.Collections.Generic
-open Glow.TsGen.Domain
 
 type CyclicDependencyException(args) =
   inherit Exception(args)

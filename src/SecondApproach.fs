@@ -7,7 +7,6 @@ open Glow.Ts
 open Microsoft.FSharp.Reflection
 open TypeCache
 
-
 type PredefinedValues =
   { InlineDefaultValue: string option
     Name: string option
@@ -163,16 +162,10 @@ let getModuleName (t: System.Type) =
     failwith "null namespace currently not supported"
 
 let getName (t: System.Type) =
-  // if t.IsArray then
-  //   let split = t.Name.Replace("[]", "Array").Split("`")
-  //   t.Name.Replace("[]", "Array").Split("`").[0]
-  // else
-  let split = t.Name.Split("`")
   let name = t.Name.Split("`").[0]
 
   if t.IsArray then
     name.Replace("[]", "") + "Array"
-  // name + "Array"
   else
     name
 
@@ -181,9 +174,6 @@ let getSignature (t: System.Type) =
   let name = getName t
   // TODO: add generic arguments
   modulName, name
-
-//
-// Microsoft_FSharp_Core.FSharpResult<Microsoft_FSharp_Core.FSharpResult<Microsoft_FSharp_Collections.FSharpList>,Microsoft_FSharp_Core.FSharpResult>
 
 // <T>
 let rec getGenericParameters (callingModule: string) (t: System.Type) =
@@ -289,7 +279,6 @@ let getDefaultValue (callingModule: string) (propertyType: System.Type) =
   let moduleName = getModuleName propertyType
   let name = getName propertyType
   let isGeneric = propertyType.IsGenericType
-  let kind = getKind propertyType
 
   let prefix =
     if moduleName = callingModule then
@@ -343,7 +332,6 @@ let renderSingleFieldUnionCaseDefaultValue
   (fieldInfo: System.Reflection.PropertyInfo)
   =
   let defaultValue = getDefaultValue callingModule fieldInfo.PropertyType
-  let propertyTypeName = fieldInfo.PropertyType.Name
 
   if fieldInfo.PropertyType.IsGenericParameter then
     $"""({{ Case: "{case.Name}", Fields: {defaultValue} }})"""
@@ -352,46 +340,6 @@ let renderSingleFieldUnionCaseDefaultValue
 
 let renderPropertyNameAndValue (camelize: bool) (callingModule: string) (fieldInfo: System.Reflection.PropertyInfo) =
   let propertyType = fieldInfo.PropertyType
-  // let moduleName = getModuleName fieldInfo.PropertyType
-  // let name = getName propertyType
-  // let isGeneric = propertyType.IsGenericType
-  // let kind = getKind fieldInfo.PropertyType
-  // let prefix = if moduleName = callingModule then "" else moduleName + "."
-  //
-  // let postfix =
-  //   if isGeneric then
-  //     (getGenericParameterValues callingModule propertyType)
-  //   else
-  //     ""
-  //
-  // let prefedinedValue =
-  //   match
-  //     defaultTypes.TryGetValue(
-  //       if propertyType.IsGenericType && not propertyType.IsGenericTypeDefinition then
-  //         propertyType.GetGenericTypeDefinition()
-  //       else
-  //         propertyType
-  //     )
-  //   with
-  //   | true, value -> value.InlineDefaultValue
-  //   | _ -> None
-  //
-  // let value =
-  //   prefedinedValue
-  //   |> Option.defaultValue (
-  //     match kind with
-  //     | TypeKind.Record -> $"""{prefix}default{name}{postfix}"""
-  //     | TypeKind.List -> "[]"
-  //     | TypeKind.Array -> "[]"
-  //     | TypeKind.Map ->
-  //       if propertyType.GenericTypeArguments.[0] = typeof<string> then
-  //         "({})"
-  //       else
-  //         "[]"
-  //     | TypeKind.Union -> $"""{prefix}default{name}{postfix}"""
-  //     | _ -> $"""{prefix}default{name}{postfix}"""
-  //   )
-
   let value = getDefaultValue callingModule propertyType
 
   if camelize then
@@ -444,10 +392,6 @@ let genericArgumentListAsParametersCall (t: System.Type) =
      |> String.concat ",")
   + ")"
 
-// let getSingleFieldCaseName (name: string) (singleField: System.Reflection.PropertyInfo) (case: UnionCaseInfo) =
-//   let name = $"{name}_Case_{case.Name}"
-//   name
-
 let getFieldCaseName (name: string) (case: UnionCaseInfo) =
   let name = $"{name}_Case_{case.Name}"
   name
@@ -487,9 +431,6 @@ let getAnonymousFunctionSignatureForDefaultValue (t: System.Type) =
 
 let getNamedFunctionSignatureForDefaultValue (t: System.Type) =
   let name = getName t
-  // let genericArguments = genericArgumentList t
-  // let parameters = genericArgumentListAsParameters t
-  // genericArguments + parameters
   let genericArguments = genericArgumentList t
   let signature = name + genericArguments
   signature
@@ -525,7 +466,7 @@ let renderDu (t: System.Type) =
 
         let prop = getPropertySignature callingModule singleField.PropertyType
         $"""export type {singleFieldCaseSignature} = {prop}"""
-      | fields -> failwith "todo"
+      | _ -> failwith "todo"
     // export var defaultMyRecordId: MyRecordId = System.defaultGuid
     | cases ->
       let renderCase (case: UnionCaseInfo) =
@@ -534,11 +475,6 @@ let renderDu (t: System.Type) =
 
         match caseFields with
         | [] ->
-          let fieldNames =
-            caseFields
-            |> List.map (fun v -> v.Name)
-            |> String.concat ", "
-
           $"""export type {name}_Case_{case.Name} = {{ Case: "{case.Name}" }}"""
         | [ singleField ] ->
           let singleFieldCaseSignature = getSingleFieldCaseSignature name singleField case
@@ -560,7 +496,6 @@ let renderDu (t: System.Type) =
       |> List.map renderCase
       |> String.concat System.Environment.NewLine
 
-  // let parameters = genericArgumentListAsParameters t
   let anonymousFunctionSignature = getAnonymousFunctionSignatureForDefaultValue t
 
   let renderedCaseDefaultNamesAndValues =
@@ -575,11 +510,9 @@ let renderDu (t: System.Type) =
         let singleFieldCaseSignature = getFieldCaseName name singleCase
         let unwrappedValue = getDefaultValue callingModule singleField.PropertyType
 
-        let singleFieldUnionCaseDefaultValue =
-          renderSingleFieldUnionCaseDefaultValue callingModule singleCase singleField
         // unrwap
         $"""export var default{singleFieldCaseSignature} = {unwrappedValue}"""
-      | fields -> failwith "todo"
+      | _ -> failwith "todo"
     | cases ->
       let renderCase (case: UnionCaseInfo) =
         let caseFields = case.GetFields() |> Seq.toList
@@ -625,36 +558,18 @@ let renderDu (t: System.Type) =
       let case = cases.Head
       let singleFieldCaseSignature = getFieldCaseName name case
       $"""default{singleFieldCaseSignature}"""
-  // match cases with
-  // | [] -> failwith "todo"
-  // | [ case ] ->
-  //     let singleFieldCaseSignature = getFieldCaseName name case
-  //     $"""default{singleFieldCaseSignature}"""
-  // | cases ->
-  //   let case = cases |> List.head
-  //   let caseFields = case.GetFields() |> Seq.toList
-  //   match caseFields with
-  //   | [] -> failwith "todo"
-  //   | [ singleField ] ->
-  //     let singleFieldCaseSignature = getFieldCaseName name case
-  //     $"""default{singleFieldCaseSignature}"""
-  //   | fields ->
-  //     let singleFieldCaseSignature = getFieldCaseName name case
-  //     $"""default{singleFieldCaseSignature}"""
 
   let renderCaseSignature (case: UnionCaseInfo) =
     let caseFields = case.GetFields() |> Seq.toList
 
     match caseFields with
     | [] -> $"""{name}_Case_{case.Name}"""
-    // failwith "todo"
     | [ singleField ] ->
       let singleFieldCaseSignature = getSingleFieldCaseSignature name singleField case
       singleFieldCaseSignature
     | fields ->
       let singleFieldCaseSignature = getMultiFieldCaseSignature name fields case
       singleFieldCaseSignature
-  //$"""export type {name}_Case_{case.Name}<T> = {{ Case: "{case.Name}", Fields: T }} // (multiple fields)"""
   let caseSignatures =
     cases
     |> List.map renderCaseSignature
@@ -662,8 +577,6 @@ let renderDu (t: System.Type) =
 
   let callParameters = genericArgumentListAsParametersCall t
 
-  let genericArguments = genericArgumentList t
-  let signature = name + genericArguments
   let signature = getNamedFunctionSignatureForDefaultValue t
   let defaultCase = firstCaseName
 
@@ -680,7 +593,7 @@ export var {name}_AllCases = [ {allCaseNames} ] as const
 {renderedCaseDefaultNamesAndValues}
 {renderedDefaultCase}
 """
-//
+
 type RenderStrategy =
   | RenderDefinitionAndValue
   | RenderDefinition
@@ -736,18 +649,9 @@ let renderRecord (t: System.Type) (strategy: RenderStrategy) =
 let renderPredefinedTypeFromDefaultValue (t: System.Type) (predefined: PredefinedValues) =
   let name = getName t
   let genericArguments = genericArgumentList t
-  let callingModule = getModuleName t
-  let parameterCall = genericArgumentListAsParametersCall t
 
   if t.IsGenericType then
     let anonymousFunctionSignature = getAnonymousFunctionSignatureForDefaultValue t
-    //
-    // let singleFieldCaseSignature = getSingleFieldCaseName name singleField case
-    //
-    // let singleFieldUnionCaseDefaultValue =
-    //   renderSingleFieldUnionCaseDefaultValue callingModule case singleField
-    //
-    // $"""export var default{singleFieldCaseSignature} = {anonymousFunctionSignature} => {singleFieldUnionCaseDefaultValue}"""
 
     $"""
 export type {name}{genericArguments} = {(predefined.Definition
@@ -808,7 +712,6 @@ export var defaultFSharpList: <T>(t:T) => FSharpList<T> = <T>(t:T) => []
 export var default{name}: <T>(t:T) => {name}<T> = <T>(t:T) => []
 """
 
-    // renderType (typedefof<System.Collections.Generic.List<_>>.MakeGenericType (t.GetElementType()))
     | TypeKind.Map ->
       //if key type is string, use normal object
 
@@ -831,16 +734,12 @@ export var default{name}: <T>(t:T) => {name}<T> = <T>(t:T) => []
   export var {name}_AllValues = [{values |> String.concat ", "}] as const
   export var default{name}: {name} = {values |> List.head}
       """
-    | x ->
+    | _ ->
       if t.IsGenericParameter then
         ""
       else
         // probably a class, try to use same strategy as record
         renderRecord t strategy
-
-// export type EntityState = "Detached" | "Unchanged" | "Deleted" | "Modified" | "Added"
-// export var EntityState_AllValues = ["Detached", "Unchanged", "Deleted", "Modified", "Added"] as const
-// export var defaultEntityState: EntityState = "Detached"
 
 let rec getGenericDefinitionAndArgumentsAsDependencies (t: System.Type) =
   if t.IsGenericTypeDefinition then
@@ -933,13 +832,9 @@ let rec collectDependenciesTransitively (depth: int) (t: System.Type) =
 
     ()
 
-
 let collectModules (types: System.Type list) =
   (typedefof<obj> :: typedefof<System.Byte> :: types)
   |> List.iter (collectDependenciesTransitively (0))
-  // let deps =
-  //     types
-  //     |> List.collect getDependencies
 
   allTypes
   |> Seq.toList
@@ -958,7 +853,7 @@ let collectModules (types: System.Type list) =
       |> List.map (fun v -> v.FullName)
       |> String.concat System.Environment.NewLine
 
-    let sorted, cyclics =
+    let sorted, _ =
       Glow.GenericTopologicalSort.topologicalSort (getFilteredDeps v) (items |> List.distinct)
 
     let sorted2 = sorted |> List.distinct
@@ -1104,13 +999,3 @@ Object.assign(default{name}, ({renderType v RenderStrategy.RenderValue}))
 
   builder.ToString().Replace("\r\n", "\n")
 
-
-// let renderTypes (types: System.Type list) =
-//   let allTypes = types |> List.collect getDependencies
-//
-//   let x =
-//     allTypes
-//     |> List.groupBy getModuleName
-//     |> List.map (fun (v, items) -> { Name = v; Types = items })
-//
-//   ""

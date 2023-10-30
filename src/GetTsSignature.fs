@@ -19,7 +19,7 @@ let rec getTsSignature (t: Type) : TsSignature =
   else
     let args0 = t.GetGenericArguments()
 
-    let args = args0 |> Seq.toList |> List.mapi (fun i v -> v.Name)
+    let args = args0 |> Seq.toList |> List.map (fun v -> v.Name)
 
     let getNameUntilFirstGenericArgument (t: Type) =
       if args.Length > 0 then
@@ -325,10 +325,10 @@ module DefaultTypeDefinitionsAndValues =
 let rec toTsType (depth: int) (t: Type) : Result<TsType, Dependency> =
   let alreadyVisited0, inProcess0 = visitingType.TryGetValue(t)
   // lt isKnown = renderWee t
-  let x = DefaultTypeDefinitionsAndValues.tryGetExistingTypeDefinition t
+  // let x = DefaultTypeDefinitionsAndValues.tryGetExistingTypeDefinition t
   let id = getModuleNameAndId t
 
-  let alreadyVisited, inProcess = visiting.TryGetValue(id)
+  // let alreadyVisited, inProcess = visiting.TryGetValue(id)
 
   if id.Id = TsTypeId "System.Array" then
     let elType = t.GetElementType()
