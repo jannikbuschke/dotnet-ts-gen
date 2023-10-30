@@ -3,7 +3,7 @@
 open System
 open System.Diagnostics
 open System.Reflection
-open Glow.SecondApproach
+open TsCodeGen.Gen
 
 let renderTypes2 path (modules: TsModule list) =
 
@@ -26,7 +26,7 @@ let renderTypes2 path (modules: TsModule list) =
 
     distinctModules
     |> List.iter (fun v ->
-        let fs = Glow.SecondApproach.renderModule v
+        let fs = TsCodeGen.Gen.renderModule v
         let sanitizedName = v.Name
 
         let fileName = v.Name

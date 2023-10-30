@@ -1,9 +1,9 @@
-﻿module Glow.SecondApproach
+﻿module TsCodeGen.Gen
 
 open System.Reflection
 open System.Text
 open System.Text.Json.Serialization
-open Glow.Ts
+open TsCodeGen
 open Microsoft.FSharp.Reflection
 open TypeCache
 
@@ -782,7 +782,7 @@ let collectModules (types: System.Type list) =
           v)
 
     let sorted, _ =
-      Glow.GenericTopologicalSort.topologicalSort (getFilteredDeps moduleName) (items |> List.distinct)
+      TsCodeGen.TopologicalSort.topologicalSort (getFilteredDeps moduleName) (items |> List.distinct)
 
     let sorted2 = sorted |> List.distinct
     { Name = moduleName; Types = sorted2 })
@@ -817,7 +817,7 @@ let renderModule (m: TsModule) =
   builder.AppendLine() |> ignore
 
   let sorted, cyclics =
-    Glow.GenericTopologicalSort.topologicalSort
+    TsCodeGen.TopologicalSort.topologicalSort
       (fun v ->
         let deps = getDependencies v
 

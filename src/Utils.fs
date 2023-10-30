@@ -1,4 +1,4 @@
-﻿namespace Glow.Ts
+﻿namespace TsCodeGen
 
 open System
 open System.Text.Json.Serialization
