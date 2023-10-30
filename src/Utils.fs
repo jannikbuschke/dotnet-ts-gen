@@ -46,7 +46,6 @@ module DefaultSerialize =
 
         options.Converters.Add(JsonStringEnumConverter())
 
-
         options.Converters.Add(JsonFSharpConverter(JsonDefaultUnionEncoding))
         options
 
