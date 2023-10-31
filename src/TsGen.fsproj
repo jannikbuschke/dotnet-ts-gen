@@ -6,22 +6,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Utils.fs" />
-        <Compile Include="TypeCache.fs" />
-        <Compile Include="TopologicalSort.fs" />
-        <Compile Include="PredefinedTypes.fs" />
-        <Compile Include="Gen.fs" />
-        <Compile Include="Collect.fs" />
-        <Compile Include="Run.fs" />
+        <Compile Include="Utils.fs"/>
+        <Compile Include="TypeCache.fs"/>
+        <Compile Include="TopologicalSort.fs"/>
+        <Compile Include="PredefinedTypes.fs"/>
+        <Compile Include="Gen.fs"/>
+        <Compile Include="Collect.fs"/>
+        <Compile Include="Run.fs"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Update="FSharp.Core" Version="6.0.3" />
-<!--        <PackageReference Include="Dapper" Version="1.50.5" />-->
-<!--        <PackageReference Include="FsToolkit.ErrorHandling" Version="2.13.0" />-->
-<!--        <PackageReference Include="FsToolkit.ErrorHandling.TaskResult" Version="2.13.0" />-->
-        <PackageReference Include="FSharp.SystemTextJson" Version="1.2.42" />
-
+        <PackageReference Update="FSharp.Core" Version="6.0.3"/>
+        <PackageReference Include="FSharp.SystemTextJson" Version="1.2.42"/>
     </ItemGroup>
 
 </Project>

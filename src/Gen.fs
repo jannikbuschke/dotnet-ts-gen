@@ -10,7 +10,7 @@ type RenderStrategy =
   | RenderDefinitionAndValue
   | RenderDefinition
   | RenderValue
-    
+
 let getModuleName (t: System.Type) =
   if t.Namespace <> null then
     t.Namespace.Replace(".", "_")
@@ -97,7 +97,7 @@ let rec getPropertySignature (callingModule: string) (t: System.Type) =
       else
         modulName + "." + name
 
-let init (defaultTypes:PredefinedTypes.PreDefinedTypes)=
+let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
 
   let renderPropertyNameAndDefinition (callingModule: string) (fieldInfo: System.Reflection.PropertyInfo) =
     let signature = getPropertySignature callingModule fieldInfo.PropertyType
@@ -395,8 +395,6 @@ export var {name}_AllCases = [ {allCaseNames} ] as const
 {renderedDefaultCase}
 """
 
-
-
   let renderRecord (t: System.Type) (strategy: RenderStrategy) =
     if t.IsGenericType && not t.IsGenericTypeDefinition then
       failwith "A definition and value for a generic type that is not a generic type definition cannot be rendered"
@@ -452,13 +450,13 @@ export var {name}_AllCases = [ {allCaseNames} ] as const
       let anonymousFunctionSignature = getAnonymousFunctionSignatureForDefaultValue t
 
       $"""export type {name}{genericArguments} = {(predefined.Definition
-                                           |> Option.defaultValue "unknown // renderPredefinedTypeFromDefaultValue (generic)")}
+                                                   |> Option.defaultValue "unknown // renderPredefinedTypeFromDefaultValue (generic)")}
 export var default{name}: {anonymousFunctionSignature} => {name}{genericArguments} = {anonymousFunctionSignature} => {predefined.InlineDefaultValue |> Option.defaultValue "unknown"}
   """
     else
       $"""export type {name} = {(predefined.Definition |> Option.defaultValue "any")}
 export var default{name}: {name} = {predefined.InlineDefaultValue
-                                      |> Option.defaultValue "unknown // renderPredefinedTypeFromDefaultValue (not generic)"}
+                                    |> Option.defaultValue "unknown // renderPredefinedTypeFromDefaultValue (not generic)"}
 """
 
   let renderStubValue (t: System.Type) =
@@ -535,8 +533,5 @@ export var default{name}: {name} = {values |> List.head}
           // probably a class, try to use same strategy as record
           renderRecord t strategy
 
-  {|
-  renderType=  renderType
-  renderStubValue=renderStubValue
-
-    |}
+  {| renderType = renderType
+     renderStubValue = renderStubValue |}
