@@ -56,12 +56,12 @@ module DefaultSerialize =
         System.Text.Json.JsonSerializer.Deserialize<'a>(value, options)
 
     let options = getOptions ()
+//
+// let x =
+//     NodaTime.Serialization.SystemTextJson.Extensions.ConfigureForNodaTime(
+//         options,
+//         NodaTime.DateTimeZoneProviders.Tzdb
+//     )
 
-    let x =
-        NodaTime.Serialization.SystemTextJson.Extensions.ConfigureForNodaTime(
-            options,
-            NodaTime.DateTimeZoneProviders.Tzdb
-        )
-
-    let serialize (value: obj) = serialize0 x value
-    let rec deserialize<'a> (value: string) = deserialize0<'a> x value
+// let serialize (value: obj) = serialize0 x value
+// let rec deserialize<'a> (value: string) = deserialize0<'a> x value

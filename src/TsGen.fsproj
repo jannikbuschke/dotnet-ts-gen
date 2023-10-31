@@ -9,8 +9,10 @@
         <Compile Include="Utils.fs" />
         <Compile Include="TypeCache.fs" />
         <Compile Include="TopologicalSort.fs" />
+        <Compile Include="PredefinedTypes.fs" />
         <Compile Include="Gen.fs" />
-        <Compile Include="RenderTypes.fs" />
+        <Compile Include="Collect.fs" />
+        <Compile Include="Run.fs" />
     </ItemGroup>
 
     <ItemGroup>
@@ -19,8 +21,7 @@
 <!--        <PackageReference Include="FsToolkit.ErrorHandling" Version="2.13.0" />-->
 <!--        <PackageReference Include="FsToolkit.ErrorHandling.TaskResult" Version="2.13.0" />-->
         <PackageReference Include="FSharp.SystemTextJson" Version="1.2.42" />
-        <PackageReference Include="NodaTime" Version="3.1.9" />
-        <PackageReference Include="NodaTime.Serialization.SystemTextJson" Version="1.1.2" />
+
     </ItemGroup>
 
 </Project>
