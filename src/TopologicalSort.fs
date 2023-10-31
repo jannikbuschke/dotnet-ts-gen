@@ -1,4 +1,4 @@
-﻿module TsCodeGen.TopologicalSort
+﻿module TsGen.TopologicalSort
 
 open System
 open System.Collections.Generic

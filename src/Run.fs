@@ -1,15 +1,15 @@
-﻿module TsCodeGen.Run
+﻿module TsGen.Run
 
 open System
-open TsCodeGen
-open TsCodeGen.Gen
 open System.Text
-open TsCodeGen.Collect
+open TsGen.Gen
 
-let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
+let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (endpoints: ApiEndpoint list) =
 
-  let collect = TsCodeGen.Collect.init defaultTypes
+  let collect = Collect.init defaultTypes
   let render = Gen.init defaultTypes
+
+  let modules = collect.collectModules types
 
   let renderModule (m: TsModule) =
 
@@ -30,7 +30,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
     builder.AppendLine() |> ignore
 
     let sorted, cyclics =
-      TsCodeGen.TopologicalSort.topologicalSort
+      TopologicalSort.topologicalSort
         (fun v ->
           let deps = collect.getDependencies v
 
@@ -98,8 +98,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
 
     builder.ToString().Replace("\r\n", "\n")
 
-  let renderTypes2 path (modules: TsModule list) =
-
+  let renderModules path (modules: TsModule list) =
 
     if not (System.IO.Directory.Exists(path)) then
       System.IO.Directory.CreateDirectory path |> ignore
@@ -138,48 +137,18 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
 
     ()
 
-
-  let renderTypes path (types: System.Type list) =
+  let renderTypes path =
     printfn "Generate TS types..."
 
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
 
-    let allTypes =
-      types
-      @ [ typedefof<System.Collections.Generic.List<_>>
-          typedefof<System.Guid>
-          typedefof<System.Boolean>
-          typedefof<System.Int16>
-          typedefof<System.Int32>
-          typedefof<System.Int64>
-          typedefof<System.Int128>
-          typedefof<System.Byte>
-          typedefof<System.Char>
-          typedefof<System.String>
-          typedefof<System.UInt16>
-          typedefof<System.UInt32>
-          typedefof<System.UInt64>
-          typedefof<System.Decimal>
-          typedefof<System.DateTime>
-          typedefof<System.DateTimeOffset>
-          typedefof<System.TimeSpan>
-          typedefof<System.TimeSpan>
-          typedefof<System.Object> ]
-        @ (types |> List.collect collect.getDependencies)
-
-    let x =
-      allTypes
-      |> List.distinct
-      |> List.groupBy getModuleName
-      |> List.map (fun (v, items) -> { Name = v; Types = items })
-
-    renderTypes2 path x
+    renderModules path modules
 
     stopWatch.Stop()
     printfn "Generated client types in %d ms" (stopWatch.Elapsed.TotalMilliseconds |> Math.Round |> Convert.ToInt32)
     ()
 
-  let renderApi modules apiEndpoints path =
+  let renderApi path =
     printfn "Generate TS api..."
 
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
@@ -199,15 +168,14 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
     $"""export type Output = {{""" |> appendTo output
     $"""export type Method = {{""" |> appendTo method
 
-    apiEndpoints
+    endpoints
     |> Seq.groupBy (fun v -> v.Method)
     |> Seq.iter (fun (httpVerb, endpoints) ->
       $"""export type {httpVerb.ToString()} = {{""" |> appendTo api
 
       endpoints
       |> Seq.iter (fun endpoint ->
-        let getTypename t =
-          (t |> TsCodeGen.Gen.getPropertySignature "")
+        let getTypename t = (t |> Gen.getPropertySignature "")
 
         let inputTypeName = endpoint.Request |> getTypename
         let outputTypename = endpoint.Response |> getTypename
@@ -240,5 +208,4 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
     printfn "Generated client api in %d ms" (stopWatch.Elapsed.TotalMilliseconds |> Math.Round |> Convert.ToInt32)
 
   {| renderTypes = renderTypes
-     collectModules = collect.collectModules
      renderApi = renderApi |}

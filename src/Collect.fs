@@ -1,27 +1,9 @@
-﻿module TsCodeGen.Collect
+﻿module TsGen.Collect
 
 open System.Reflection
 open System.Text.Json.Serialization.TypeCache
 open Microsoft.FSharp.Reflection
-open System
 
-[<RequireQualifiedAccess>]
-type HttpVerb =
-  | POST
-  | PATCH
-  | GET
-  | DELETE
-  | PUT
-
-type ApiEndpoint =
-  { Request: Type
-    Response: Type
-    Method: HttpVerb
-    Route: string }
-
-type TsModule =
-  { Name: string
-    Types: System.Type list }
 
 let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
 
@@ -88,7 +70,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
   let getFilteredDeps (moduleName: string) (t: System.Type) =
     getDependencies t
     |> List.filter (fun v ->
-      let name = TsCodeGen.Gen.getModuleName v
+      let name = Gen.getModuleName v
       name = moduleName)
 
   let allTypes = System.Collections.Generic.HashSet<System.Type>()
@@ -111,7 +93,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
 
     allTypes
     |> Seq.toList
-    |> List.groupBy TsCodeGen.Gen.getModuleName
+    |> List.groupBy Gen.getModuleName
     |> List.map (fun (moduleName, items) ->
       let items =
         items
@@ -122,7 +104,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
             v)
 
       let sorted, _ =
-        TsCodeGen.TopologicalSort.topologicalSort (getFilteredDeps moduleName) (items |> List.distinct)
+        TopologicalSort.topologicalSort (getFilteredDeps moduleName) (items |> List.distinct)
 
       let sorted2 = sorted |> List.distinct
       { Name = moduleName; Types = sorted2 })
@@ -132,7 +114,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
       n.Types
       |> List.filter (fun t -> (not t.IsGenericType) || (t.IsGenericType && t.IsGenericTypeDefinition))
       |> List.collect getDependencies
-      |> List.map TsCodeGen.Gen.getModuleName
+      |> List.map Gen.getModuleName
 
     (deps |> List.distinct |> List.filter (fun v -> v <> n.Name))
 

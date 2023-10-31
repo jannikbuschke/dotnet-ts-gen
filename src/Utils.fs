@@ -1,4 +1,4 @@
-﻿namespace TsCodeGen
+﻿namespace TsGen
 
 open System
 open System.Text.Json.Serialization

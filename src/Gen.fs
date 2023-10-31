@@ -1,8 +1,8 @@
-﻿module TsCodeGen.Gen
+﻿module TsGen.Gen
 
 open System.Reflection
 open System.Text.Json.Serialization
-open TsCodeGen
+open TsGen
 open Microsoft.FSharp.Reflection
 open TypeCache
 
@@ -442,7 +442,7 @@ export var {name}_AllCases = [ {allCaseNames} ] as const
 {value}
 """
 
-  let renderPredefinedTypeFromDefaultValue (t: System.Type) (predefined: TsCodeGen.PredefinedTypes.PredefinedValues) =
+  let renderPredefinedTypeFromDefaultValue (t: System.Type) (predefined: PredefinedTypes.PredefinedValues) =
     let name = getName t
     let genericArguments = genericArgumentList t
 

@@ -1,4 +1,4 @@
-﻿module TsCodeGen.PredefinedTypes
+﻿module TsGen.PredefinedTypes
 
 open System.Text.Json.Serialization
 
@@ -16,7 +16,7 @@ let emptyPredefinedValues =
     Signature = None
     Dependencies = [] }
 
-type PreDefinedTypes = System.Collections.Generic.Dictionary<System.Type, PredefinedValues>
+type PreDefinedTypes = System.Collections.Generic.IDictionary<System.Type, PredefinedValues>
 
 let defaultTypes =
   [ (typeof<string>,
@@ -132,6 +132,5 @@ let defaultTypes =
          InlineDefaultValue = Some "null"
          Definition = Some "T | null" }) ]
   |> dict
-  |> PreDefinedTypes
 
 // let addPredefinedType (t: System.Type, v: PredefinedValues) = defaultTypes.Add(t, v)

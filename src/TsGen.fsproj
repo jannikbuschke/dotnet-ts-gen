@@ -6,18 +6,20 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Utils.fs"/>
-        <Compile Include="TypeCache.fs"/>
-        <Compile Include="TopologicalSort.fs"/>
-        <Compile Include="PredefinedTypes.fs"/>
-        <Compile Include="Gen.fs"/>
-        <Compile Include="Collect.fs"/>
-        <Compile Include="Run.fs"/>
+        <Compile Include="Types.fs" />
+        <Compile Include="Utils.fs" />
+        <Compile Include="TypeCache.fs" />
+        <Compile Include="TopologicalSort.fs" />
+        <Compile Include="PredefinedTypes.fs" />
+        <Compile Include="Gen.fs" />
+        <Compile Include="Collect.fs" />
+        <Compile Include="Run.fs" />
+        <Compile Include="Config.fs" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Update="FSharp.Core" Version="6.0.3"/>
-        <PackageReference Include="FSharp.SystemTextJson" Version="1.2.42"/>
+        <PackageReference Update="FSharp.Core" Version="6.0.3" />
+        <PackageReference Include="FSharp.SystemTextJson" Version="1.2.42" />
     </ItemGroup>
 
 </Project>
