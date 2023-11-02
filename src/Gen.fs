@@ -15,12 +15,16 @@ let getModuleName (t: System.Type) =
   if t.Namespace <> null then
     t.Namespace.Replace(".", "_")
   else
-    failwith "null namespace currently not supported"
+    "___"
+// failwith "null namespace currently not supported"
 
 let getName (t: System.Type) =
   let name = t.Name.Split("`").[0]
 
-  if t.IsArray then name.Replace("[]", "") + "Array" else name
+  if t.IsArray then
+    name.Replace("[]", "") + "Array"
+  else
+    name
 
 let getSignature (t: System.Type) =
   let modulName = getModuleName t
@@ -76,7 +80,10 @@ let rec getPropertySignature (callingModule: string) (t: System.Type) =
   let kind = getKind t
 
   match kind with
-  | TypeKind.Array -> getPropertySignature callingModule (typedefof<System.Collections.Generic.IEnumerable<_>>.MakeGenericType (t.GetElementType()))
+  | TypeKind.Array ->
+    getPropertySignature
+      callingModule
+      (typedefof<System.Collections.Generic.IEnumerable<_>>.MakeGenericType (t.GetElementType()))
   | _ ->
     let moduleName, name = getSignature t
 
@@ -104,10 +111,18 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
     let name = fieldInfo.Name
     $"""  {Utils.camelize name}: {signature}"""
 
-  let renderSingleFieldUnionCaseDefinition (callingModule: string) (case: UnionCaseInfo) (fieldInfo: System.Reflection.PropertyInfo) =
+  let renderSingleFieldUnionCaseDefinition
+    (callingModule: string)
+    (case: UnionCaseInfo)
+    (fieldInfo: System.Reflection.PropertyInfo)
+    =
     $"""{{ Case: "{case.Name}", Fields: {getPropertySignature callingModule fieldInfo.PropertyType} }}"""
 
-  let renderMultiFieldUnionCaseDefinition (callingModule: string) (case: UnionCaseInfo) (fieldInfo: System.Reflection.PropertyInfo list) =
+  let renderMultiFieldUnionCaseDefinition
+    (callingModule: string)
+    (case: UnionCaseInfo)
+    (fieldInfo: System.Reflection.PropertyInfo list)
+    =
     let fields =
       fieldInfo
       |> List.map (fun v ->
@@ -123,7 +138,11 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
     let name = getName propertyType
     let isGeneric = propertyType.IsGenericType
 
-    let prefix = if moduleName = callingModule then "" else moduleName + "."
+    let prefix =
+      if moduleName = callingModule then
+        ""
+      else
+        moduleName + "."
 
     let kind = getKind propertyType
 
@@ -131,7 +150,8 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
       match
         defaultTypes.TryGetValue
           (
-            if propertyType.IsGenericType && not propertyType.IsGenericTypeDefinition then
+            if propertyType.IsGenericType
+               && not propertyType.IsGenericTypeDefinition then
               propertyType.GetGenericTypeDefinition()
             else
               propertyType
@@ -164,7 +184,11 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
 
     value
 
-  let renderSingleFieldUnionCaseDefaultValue (callingModule: string) (case: UnionCaseInfo) (fieldInfo: System.Reflection.PropertyInfo) =
+  let renderSingleFieldUnionCaseDefaultValue
+    (callingModule: string)
+    (case: UnionCaseInfo)
+    (fieldInfo: System.Reflection.PropertyInfo)
+    =
     let defaultValue = getDefaultValue callingModule fieldInfo.PropertyType
 
     if fieldInfo.PropertyType.IsGenericParameter then
@@ -181,10 +205,15 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
     else
       $"""  {fieldInfo.Name}: {value}"""
 
-  let renderMultiFieldUnionCaseDefaultValue (callingModule: string) (case: UnionCaseInfo) (fieldInfo: System.Reflection.PropertyInfo list) =
+  let renderMultiFieldUnionCaseDefaultValue
+    (callingModule: string)
+    (case: UnionCaseInfo)
+    (fieldInfo: System.Reflection.PropertyInfo list)
+    =
 
     let isGeneric =
-      fieldInfo |> List.exists (fun v -> v.PropertyType.IsGenericParameter)
+      fieldInfo
+      |> List.exists (fun v -> v.PropertyType.IsGenericParameter)
 
     let fields =
       fieldInfo
@@ -200,7 +229,12 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
   let genericArgumentList (t: System.Type) =
     match t.GetGenericArguments() |> Seq.toList with
     | [] -> ""
-    | arguments -> "<" + (arguments |> List.map (fun v -> v.Name) |> String.concat ",") + ">"
+    | arguments ->
+      "<"
+      + (arguments
+         |> List.map (fun v -> v.Name)
+         |> String.concat ",")
+      + ">"
 
   let genericArgumentListAsParameters (t: System.Type) =
     "("
@@ -235,9 +269,15 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
   let getMultiFieldCaseSignature (name: string) (fields: System.Reflection.PropertyInfo list) (case: UnionCaseInfo) =
     let name = getFieldCaseName name case
 
-    let isGeneric = fields |> List.exists (fun v -> v.PropertyType.IsGenericParameter)
+    let isGeneric =
+      fields
+      |> List.exists (fun v -> v.PropertyType.IsGenericParameter)
 
-    let genericParameterPostfix = if isGeneric then failwith "TODO" else ""
+    let genericParameterPostfix =
+      if isGeneric then
+        failwith "TODO"
+      else
+        ""
 
     let name = $"{name}{genericParameterPostfix}"
     name
@@ -261,10 +301,14 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
     let cases = (FSharpType.GetUnionCases t) |> Seq.toList
 
     let caseNameLiteral =
-      cases |> List.map (fun v -> $"\"{v.Name}\"") |> String.concat " | "
+      cases
+      |> List.map (fun v -> $"\"{v.Name}\"")
+      |> String.concat " | "
 
     let allCaseNames =
-      cases |> List.map (fun v -> $"\"{v.Name}\"") |> String.concat ", "
+      cases
+      |> List.map (fun v -> $"\"{v.Name}\"")
+      |> String.concat ", "
 
     let renderedCaseDefinitions =
       match cases with
@@ -304,7 +348,9 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
 
             $"""export type {singleFieldCaseSignature} = {multiFieldUnionCaseDefinition}"""
 
-        cases |> List.map renderCase |> String.concat System.Environment.NewLine
+        cases
+        |> List.map renderCase
+        |> String.concat System.Environment.NewLine
 
     let anonymousFunctionSignature = getAnonymousFunctionSignatureForDefaultValue t
 
@@ -349,7 +395,9 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
             else
               $"""export var default{signature} = {multiFieldUnionCaseDefaultValue}"""
 
-        cases |> List.map renderCase |> String.concat System.Environment.NewLine
+        cases
+        |> List.map renderCase
+        |> String.concat System.Environment.NewLine
 
     let firstCaseName =
       match cases with
@@ -374,7 +422,10 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
         let singleFieldCaseSignature = getMultiFieldCaseSignature name fields case
         singleFieldCaseSignature
 
-    let caseSignatures = cases |> List.map renderCaseSignature |> String.concat " | "
+    let caseSignatures =
+      cases
+      |> List.map renderCaseSignature
+      |> String.concat " | "
 
     let callParameters = genericArgumentListAsParametersCall t
 
@@ -451,7 +502,8 @@ export var {name}_AllCases = [ {allCaseNames} ] as const
 
       $"""export type {name}{genericArguments} = {(predefined.Definition
                                                    |> Option.defaultValue "unknown // renderPredefinedTypeFromDefaultValue (generic)")}
-export var default{name}: {anonymousFunctionSignature} => {name}{genericArguments} = {anonymousFunctionSignature} => {predefined.InlineDefaultValue |> Option.defaultValue "unknown"}
+export var default{name}: {anonymousFunctionSignature} => {name}{genericArguments} = {anonymousFunctionSignature} => {predefined.InlineDefaultValue
+                                                                                                                      |> Option.defaultValue "unknown"}
   """
     else
       $"""export type {name} = {(predefined.Definition |> Option.defaultValue "any")}
@@ -511,7 +563,8 @@ export var default{name}: <T>(t:T) => {name}<T> = <T>(t:T) => []
       | TypeKind.Map ->
         //if key type is string, use normal object
 
-        if not t.IsGenericTypeDefinition && t.GenericTypeArguments.[0] = typeof<string> then
+        if not t.IsGenericTypeDefinition
+           && t.GenericTypeArguments.[0] = typeof<string> then
           """export type FSharpStringMap<TValue> = { [key: string ]: TValue }
 export var defaultFSharpStringMap: <TValue>(t:string,tValue:TValue) => FSharpStringMap<TValue> = <TValue>(t:string,tValue:TValue) => ({})"""
         else
@@ -520,7 +573,10 @@ export var defaultFSharpMap: <TKey, TValue>(tKey:TKey,tValue:TValue) => FSharpMa
       | TypeKind.Enum ->
         let name = getName t
 
-        let values = t.GetEnumNames() |> Array.map (fun v -> $"\"{v}\"") |> Array.toList
+        let values =
+          t.GetEnumNames()
+          |> Array.map (fun v -> $"\"{v}\"")
+          |> Array.toList
 
         $"""export type {name} = {values |> String.concat " | "}
 export var {name}_AllValues = [{values |> String.concat ", "}] as const
