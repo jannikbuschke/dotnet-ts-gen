@@ -1,9 +1,7 @@
 ﻿module TsGen.Config
 
-open System
-
 type Configuration =
-  { Types: Type list
+  { Types: System.Type list
     PredefinedTypes: PredefinedTypes.PreDefinedTypes
     ApiEndPoints: ApiEndpoint list }
 
@@ -43,4 +41,4 @@ let withEndpoints endpoints (generator: Configuration) =
       ApiEndPoints = endpoints }
 
 let build (generator: Configuration) =
-  TsGen.Run.init generator.PredefinedTypes generator.Types generator.ApiEndPoints
+  Run.init generator.PredefinedTypes generator.Types generator.ApiEndPoints

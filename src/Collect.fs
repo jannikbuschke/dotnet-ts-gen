@@ -4,7 +4,6 @@ open System.Reflection
 open System.Text.Json.Serialization.TypeCache
 open Microsoft.FSharp.Reflection
 
-
 let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
 
   let rec getGenericDefinitionAndArgumentsAsDependencies (t: System.Type) =

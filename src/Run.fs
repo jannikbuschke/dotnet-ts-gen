@@ -7,7 +7,7 @@ open TsGen.Gen
 let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (endpoints: ApiEndpoint list) =
 
   let collect = Collect.init defaultTypes
-  let render = Gen.init defaultTypes
+  let render = init defaultTypes
 
   let modules = collect.collectModules types
 
@@ -52,7 +52,6 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
         .AppendLine("//*** ******************* ***")
         .AppendLine("")
       |> ignore
-
 
     sorted
     |> List.distinct
@@ -108,7 +107,6 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
     System.IO.Directory.EnumerateFiles path
     |> Seq.iter (fun file -> System.IO.File.Delete(file))
 
-
     let distinctModules = modules |> List.distinctBy (fun v -> v.Name)
 
     if distinctModules.Length <> modules.Length then
@@ -132,9 +130,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
       let sanitizedName = v.Name
 
       System.IO.File.AppendAllText($"{path}index.ts", sprintf "export { %s }%s" sanitizedName Environment.NewLine)
-
       ())
-
     ()
 
   let renderTypes path =
@@ -148,7 +144,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
     printfn "Generated client types in %d ms" (stopWatch.Elapsed.TotalMilliseconds |> Math.Round |> Convert.ToInt32)
     ()
 
-  let renderApi path =
+  let renderApi() =
     printfn "Generate TS api..."
 
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
@@ -156,7 +152,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
     let appendTo (builder: StringBuilder) (value: string) = builder.AppendLine(value) |> ignore
 
     let api, input, output, method =
-      System.Text.StringBuilder(), System.Text.StringBuilder(), System.Text.StringBuilder(), System.Text.StringBuilder()
+      StringBuilder(), StringBuilder(), StringBuilder(), StringBuilder()
 
     modules
     |> List.iter (fun m ->
@@ -164,9 +160,9 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
       ())
 
     "" |> appendTo api
-    $"""export type Input = {{""" |> appendTo input
-    $"""export type Output = {{""" |> appendTo output
-    $"""export type Method = {{""" |> appendTo method
+    """export type Input = {{""" |> appendTo input
+    """export type Output = {{""" |> appendTo output
+    """export type Method = {{""" |> appendTo method
 
     endpoints
     |> Seq.groupBy (fun v -> v.Method)
@@ -175,7 +171,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
 
       endpoints
       |> Seq.iter (fun endpoint ->
-        let getTypename t = (t |> Gen.getPropertySignature "")
+        let getTypename t = (t |> getPropertySignature "")
 
         let inputTypeName = endpoint.Request |> getTypename
         let outputTypename = endpoint.Response |> getTypename
@@ -186,14 +182,14 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
         $"""  "{endpoint.Route}": "{endpoint.Route}";""" |> appendTo api
         ())
 
-      $"""}}""" |> appendTo api
+      """}}""" |> appendTo api
       "" |> appendTo api
 
       ())
 
-    $"""}}""" |> appendTo output
-    $"""}}""" |> appendTo input
-    $"""}}""" |> appendTo method
+    """}}""" |> appendTo output
+    """}}""" |> appendTo input
+    """}}""" |> appendTo method
 
     api
       .Append(input.ToString())
@@ -203,9 +199,24 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
       .Append(method.ToString())
     |> ignore
 
-    System.IO.File.WriteAllText(path, api.ToString())
+    let result = api.ToString()
     stopWatch.Stop()
     printfn "Generated client api in %d ms" (stopWatch.Elapsed.TotalMilliseconds |> Math.Round |> Convert.ToInt32)
+    result
 
-  {| renderTypes = renderTypes
-     renderApi = renderApi |}
+  let renderApiToFile  path  api=
+    System.IO.File.WriteAllText(path, api)
+    ()
+
+  {|
+     renderTypesToDirectory = renderTypes
+     renderType = fun t -> render.renderType t RenderStrategy.RenderDefinition
+     renderValue = fun t ->
+       render.renderType t RenderStrategy.RenderValue
+     renderTypeAndValue = fun t ->
+       render.renderType t RenderStrategy.RenderDefinitionAndValue
+     renderTypes = fun() ->
+       modules |> List.map(fun m -> m, renderModule m)
+     renderApi = renderApi
+     renderApiToFile= fun path -> renderApiToFile path (renderApi())
+      |}
