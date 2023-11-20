@@ -2,56 +2,57 @@ namespace Test
 
 open System.Text.RegularExpressions
 open Expecto
-open Glow.SecondApproach
-open Glow.TsGen.Domain
-open Glow.TsGen.Gen
 
 module Regex =
-  let replace (pattern: string) (replacement: string) (input: string) =
-    Regex.Replace(input, pattern, replacement)
+    let replace (pattern: string) (replacement: string) (input: string) =
+        Regex.Replace(input, pattern, replacement)
 
 module Expect =
-  let eq actual expected =
-    "Should be equal" |> Expect.equal actual expected
+    let eq actual expected =
+        "Should be equal" |> Expect.equal actual expected
 
-  let private normalizeLineFeeds = Regex.replace @"(\r\n|\r|\n)" "\n"
+    let private normalizeLineFeeds = Regex.replace @"(\r\n|\r|\n)" "\n"
 
-  let private removeSuccessiveLineFeeds = Regex.replace @"[\n]{2,}" "\n"
+    let private removeSuccessiveLineFeeds = Regex.replace @"[\n]{2,}" "\n"
 
-  let private removeSuccessiveWhiteSpace = Regex.replace @"[ ]{2,}" " "
+    let private removeSuccessiveWhiteSpace = Regex.replace @"[ ]{2,}" " "
 
-  let private trim (v: string) = v.Trim()
+    let private trim (v: string) = v.Trim()
 
-  let private clean =
-    normalizeLineFeeds
-    >> removeSuccessiveLineFeeds
-    >> removeSuccessiveWhiteSpace
-    >> trim
+    let private clean =
+        normalizeLineFeeds
+        >> removeSuccessiveLineFeeds
+        >> removeSuccessiveWhiteSpace
+        >> trim
 
-  let similar actual expected =
-    "Should be equal"
-    |> Expect.equal (actual |> clean) (expected |> clean)
+    let similar actual expected =
+        "Should be equal" |> Expect.equal (actual |> clean) (expected |> clean)
 
 [<AutoOpen>]
 module Helpers =
 
-  let renderTypeAndValue t =
-    let types = [ t ]
-    let modules = generateModules types
-    let item = findeTsTypeInModules modules t
+    let configureFor t =
+        TsGen.Config.withDefaults ()
+        |> TsGen.Config.forTypes [ t ]
+        |> TsGen.Config.build
 
-    let rendered = renderTypeAndDefaultValue item
+    let renderModules t =
+        let config =
+            TsGen.Config.withDefaults () |> TsGen.Config.forTypes t |> TsGen.Config.build
 
-    match rendered with
-    | Some rendered -> rendered
-    | None -> ""
+        config.renderTypes ()
 
-  let renderTypeAndValue2 t =
-    let rendered =
-      Glow.SecondApproach.renderType t RenderStrategy.RenderDefinitionAndValue
+    let renderModule t =
+        let config = configureFor t
+        let renderedTypes = config.renderTypes ()
+        renderedTypes |> List.find (fun (m, _) -> m.Name = t.Namespace) |> snd
 
-    rendered
+    let renderTypeDef t =
+        let config = configureFor t
+        config.renderType t
 
-  let renderModule2 m =
-    let rendered = Glow.SecondApproach.renderModule m
-    rendered
+    let renderValue t =
+        let config = configureFor t
+        config.renderValue t
+
+    let renderTypeAndValue t = renderTypeDef t, renderValue t

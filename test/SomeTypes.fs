@@ -9,6 +9,6 @@ namespace MyNamespace2
 open MyNamespace1
 
 type MyType2 =
-  { Id: string
-    Items: MyType1 list
-    Option: Option<Generic<string>> }
+    { Id: string
+      Items: MyType1 list
+      Option: Option<Generic<string>> }

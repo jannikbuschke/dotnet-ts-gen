@@ -11,7 +11,6 @@
         <Compile Include="SomeTypes.fs" />
         <Compile Include="Tests.fs" />
         <Compile Include="ManyTypes.fs" />
-        <Compile Include="GetDependenciesTest.fs" />
         <Compile Include="SystemTypeTests.fs" />
         <Compile Include="FSharpResult.fs" />
         <Compile Include="FSharpMap.fs" />
@@ -26,7 +25,8 @@
         <Compile Include="RecordWithOption.fs" />
         <Compile Include="RecordWithResult.fs" />
         <Compile Include="NestedGenerics.fs" />
-        <Compile Include="EmptyRecordAndUnit.fs" />
+        <Compile Include="EmptyClass.fs" />
+        <Compile Include="Unit.fs" />
         <Compile Include="SimpleRecord.fs" />
         <Compile Include="DateTimes.fs" />
         <Compile Include="DuWithMultipleFields.fs" />
