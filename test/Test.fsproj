@@ -9,18 +9,15 @@
 
     <ItemGroup>
         <Compile Include="SomeTypes.fs" />
-        <Compile Include="Tests.fs" />
+        <Compile Include="Utils.fs" />
         <Compile Include="ManyTypes.fs" />
         <Compile Include="SystemTypeTests.fs" />
-        <Compile Include="FSharpResult.fs" />
         <Compile Include="FSharpMap.fs" />
         <Compile Include="Skippable.fs" />
         <Compile Include="Collections.fs" />
-        <Compile Include="StronglyTypedId.fs" />
         <Compile Include="Arrays.fs" />
         <Compile Include="Object.fs" />
         <Compile Include="RecordWithList.fs" />
-        <Compile Include="FSharpOption.fs" />
         <Compile Include="RecordWithPrimitiveOption.fs" />
         <Compile Include="RecordWithOption.fs" />
         <Compile Include="RecordWithResult.fs" />
@@ -29,13 +26,16 @@
         <Compile Include="Unit.fs" />
         <Compile Include="SimpleRecord.fs" />
         <Compile Include="DateTimes.fs" />
-        <Compile Include="DuWithMultipleFields.fs" />
         <Compile Include="RenderModule.fs" />
         <Compile Include="RenderModule2.fs" />
         <Compile Include="SerializeSomeTypes.fs" />
         <Compile Include="NodaTime.fs" />
         <Compile Include="CircularReference.fs" />
-        <Compile Include="Program.fs" />
+        <Compile Include="Unions\DuWithMultipleFields.fs" />
+        <Compile Include="Unions\FSharpResult.fs" />
+        <Compile Include="Unions\FSharpOption.fs" />
+        <Compile Include="Unions\SingleCaseDu.fs" />
+        <Compile Include="Unions\Program.fs" />
     </ItemGroup>
 
     <ItemGroup>

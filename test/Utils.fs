@@ -29,16 +29,36 @@ module Expect =
         "Should be equal" |> Expect.equal (actual |> clean) (expected |> clean)
 
 [<AutoOpen>]
+module Serialization =
+    open System.Text.Json.Serialization
+
+    // let options = DefaultSerialize.JsonFSharpOptions
+    //
+    // let options2 =
+    //     JsonFSharpOptions
+    //         .Default()
+    //         // Add any .WithXXX() calls here to customize the format
+    //         .ToJsonSerializerOptions()
+    //
+    // let serialize v = JsonSerializer.Serialize(v, options2)
+    //
+    // let deserialize<'t> (v: string) =
+    //     JsonSerializer.Deserialize<'t>(v, options2)
+
+    let serializeWithOptions<'t> (options: JsonFSharpOptions) (v: 't) =
+        JsonSerializer.Serialize<'t>(v, options.ToJsonSerializerOptions())
+
+    let deserializeWithOptions<'t> (options: JsonFSharpOptions) (v: string) =
+        JsonSerializer.Deserialize<'t>(v, options.ToJsonSerializerOptions())
+
+[<AutoOpen>]
 module Helpers =
 
     let configureFor t =
-        TsGen.Config.withDefaults ()
-        |> TsGen.Config.forTypes [ t ]
-        |> TsGen.Config.build
+        Config.withDefaults () |> Config.forTypes [ t ] |> Config.build
 
     let renderModules t =
-        let config =
-            TsGen.Config.withDefaults () |> TsGen.Config.forTypes t |> TsGen.Config.build
+        let config = Config.withDefaults () |> Config.forTypes t |> Config.build
 
         config.renderTypes ()
 

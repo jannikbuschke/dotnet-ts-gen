@@ -50,7 +50,6 @@ let ``Union with multiple fields`` () =
     // let serialized1 =
     //     DefaultSerialize.serialize (DuWithMultipleFields.Case2("FIII", { Name = "string" }, 5))
 
-
     Expect.similar
         typedef2
         """
