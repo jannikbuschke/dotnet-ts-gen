@@ -12,7 +12,7 @@ type DuWithRecordFields =
 let typedef, value = renderTypeAndValue typedefof<DuWithRecordFields>
 
 [<Fact>]
-let ``Du with single record fields`` () =
+let ``Union with single record fields`` () =
 
     Expect.similar
         typedef
@@ -24,7 +24,7 @@ export type DuWithRecordFields_Case = "Case1" | "Case2"
 """
 
 [<Fact>]
-let ``Du with single record fields value`` () =
+let ``Union with single record fields value`` () =
     Expect.similar
         value
         """
@@ -43,7 +43,7 @@ type DuWithMultipleFields =
 let typedef2, value2 = renderTypeAndValue typedefof<DuWithMultipleFields>
 // TODO: add generic version
 [<Fact>]
-let ``Du with multiple fields`` () =
+let ``Union with multiple fields`` () =
     // let serialized0 =
     //     DefaultSerialize.serialize (DuWithMultipleFields.Case1(System.Guid.NewGuid(), "Hello world"))
     //
@@ -61,7 +61,7 @@ export type DuWithMultipleFields_Case = "Case1" | "Case2"
 """
 
 [<Fact>]
-let ``Du with multiple fields value`` () =
+let ``Union with multiple fields value`` () =
     Expect.similar
         value2
         """
