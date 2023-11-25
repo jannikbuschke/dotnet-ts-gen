@@ -41,7 +41,7 @@ let ``Empty class`` () =
         rendered
         """
 export type EmptyClass = {
-
+ 
 }
 """
 
@@ -51,5 +51,6 @@ let ``Empty class value`` () =
         value
         """
 export var defaultEmptyClass: EmptyClass = {
+ 
 }
 """

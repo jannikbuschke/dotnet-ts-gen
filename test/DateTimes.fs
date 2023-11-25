@@ -1,4 +1,4 @@
-module Test.DateTimesTest
+module Test.DateTime
 
 open System
 open Expecto
@@ -10,10 +10,18 @@ type SimpleRecord =
     Number: int
     Obj: obj }
 
+let definition, value = renderTypeAndValue typedefof<DateTime>
+
 [<Fact>]
-let ``DateTimes`` () =
+let  ``DateTime definition`` () =
 
   Expect.similar
-    (renderModule typedefof<DateTime>)
-    """export type DateTime = `${number}-${number}-${number}T${number}:${number}:${number}`
-export var defaultDateTime: DateTime = "0001-01-01T00:00:00" """
+    definition
+    """export type DateTime = `${number}-${number}-${number}T${number}:${number}:${number}`"""
+
+[<Fact>]
+let ``DateTime value`` () =
+
+  Expect.similar
+    value
+    """export var defaultDateTime: DateTime = "0001-01-01T00:00:00" """

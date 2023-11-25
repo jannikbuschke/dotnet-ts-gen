@@ -29,6 +29,6 @@ export type MyRecord = {
         """
 export var defaultMyRecord: MyRecord = {
  items: [],
- numbers: [],
+ numbers: []
 }
 """

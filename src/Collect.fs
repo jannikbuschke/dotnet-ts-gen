@@ -69,7 +69,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
   let getFilteredDeps (moduleName: string) (t: System.Type) =
     getDependencies t
     |> List.filter (fun v ->
-      let name = Gen.getModuleName v
+      let name = getModuleName v
       name = moduleName)
 
   let allTypes = System.Collections.Generic.HashSet<System.Type>()
@@ -92,7 +92,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
 
     allTypes
     |> Seq.toList
-    |> List.groupBy Gen.getModuleName
+    |> List.groupBy getModuleName
     |> List.map (fun (moduleName, items) ->
       let items =
         items
@@ -113,7 +113,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
       n.Types
       |> List.filter (fun t -> (not t.IsGenericType) || (t.IsGenericType && t.IsGenericTypeDefinition))
       |> List.collect getDependencies
-      |> List.map Gen.getModuleName
+      |> List.map getModuleName
 
     (deps |> List.distinct |> List.filter (fun v -> v <> n.Name))
 

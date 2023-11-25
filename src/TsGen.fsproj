@@ -12,6 +12,7 @@
         <Compile Include="TypeCache.fs" />
         <Compile Include="TopologicalSort.fs" />
         <Compile Include="PredefinedTypes.fs" />
+        <Compile Include="Signature.fs" />
         <Compile Include="Gen.fs" />
         <Compile Include="Collect.fs" />
         <Compile Include="Run.fs" />

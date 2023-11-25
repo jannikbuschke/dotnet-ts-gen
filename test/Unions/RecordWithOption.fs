@@ -1,8 +1,9 @@
-module Test.RecordWithOption
+module Test.Unions.RecordWithOption
 
 open System
 open Expecto
 open Xunit
+open Test
 
 type Record = { Id: string }
 
@@ -29,6 +30,6 @@ export type RecordWithOption = {
         """
 export var defaultRecordWithOption: RecordWithOption = {
  id: '00000000-0000-0000-0000-000000000000',
- numberOption: null,
+ numberOption: null
 }
 """

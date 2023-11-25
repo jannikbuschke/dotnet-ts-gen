@@ -1,7 +1,8 @@
-module Test.FSharpTypes
+module Test.Unions.FSharpOption
 
 open Expecto
 open Xunit
+open Test
 
 let rendered, value = renderTypeAndValue typedefof<Option<string>>
 

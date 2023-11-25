@@ -35,11 +35,11 @@ let ``Serialize FSharpMap`` () =
     Expect.similar mapComplexKey """[[[0,0],{"Id":"FOo"}],[[0,1],{"Id":"FOo111"}]]"""
 
 [<Fact>]
-let ``Render FSharp String Map`` () =
-    let rendered,value = renderTypeAndValue typeof
+let ``FSharpMap<string,'t>`` () =
+    let definition, value = renderTypeAndValue typeof
 
     Expect.similar
-        rendered
+        definition
         """
 export type FSharpStringMap<TValue> = { [key: string ]: TValue }
 """
@@ -50,21 +50,18 @@ export type FSharpStringMap<TValue> = { [key: string ]: TValue }
 export var defaultFSharpStringMap: <TValue>(t:string,tValue:TValue) => FSharpStringMap<TValue> = <TValue>(t:string,tValue:TValue) => ({})
 """
 
-
 [<Fact>]
-let ``Render FSharp Map`` () =
-    let rendered = renderTypeDef typedef
+let ``FSharpMap<'k,'t>`` () =
+    let definition, value = renderTypeAndValue typedef
 
     Expect.similar
-        rendered
+        definition
         """
 export type FSharpMap<TKey, TValue> = [TKey,TValue][]
 """
 
-    let rendered = renderValue typedef
-
     Expect.similar
-        rendered
+        value
         """
 export var defaultFSharpMap: <TKey, TValue>(tKey:TKey,tValue:TValue) => FSharpMap<TKey, TValue> = <TKey, TValue>(tKey:TKey,tValue:TValue) => []
 """
@@ -77,25 +74,27 @@ type LocalizableValue<'T> =
     { Default: 'T
       Localized: Map<Language, 'T> }
 
+let typedef0, value = renderTypeAndValue typedefof<LocalizableValue<string>>
 [<Fact>]
-let ``Render LocalizableValue`` () =
-    let typedef, value =
-        renderTypeDef typedefof<LocalizableValue<string>>, renderValue typedefof<LocalizableValue<string>>
+let ``Generic record with FSharpMap property - definition`` () =
 
     Expect.similar
-        typedef
+        typedef0
         """export type LocalizableValue<T> = {
   default: T
   localized: Microsoft_FSharp_Collections.FSharpMap<Language,T>
 }
 """
 
+[<Fact>]
+let ``Generic record with FSharpMap property - value`` () =
+
     Expect.similar
         value
         """
 export var defaultLocalizableValue: <T>(defaultT:T) => LocalizableValue<T> = <T>(defaultT:T) => ({
   default: defaultT,
-  localized: [],
+  localized: []
 })
 """
 
@@ -103,14 +102,20 @@ type LocalizableString = LocalizableValue<string>
 type Container = { Title: LocalizableString }
 
 [<Fact>]
-let ``Render LocalizableString`` () =
-    let rendered = renderTypeDef typedefof<Container>
+let ``Record with property of a generic record that has a map property`` () =
+    let rendered,value = renderTypeAndValue typedefof<Container>
 
     Expect.similar
         rendered
-        """export type Container = {
- title: LocalizableValue<System.String>
+        """
+export type Container = {
+  title: LocalizableValue<System.String>
 }
+"""
+
+    Expect.similar
+        value
+        """
 export var defaultContainer: Container = {
- title: defaultLocalizableValue(System.defaultString),
+  title: defaultLocalizableValue(System.defaultString)
 }"""

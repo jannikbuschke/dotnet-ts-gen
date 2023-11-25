@@ -48,10 +48,14 @@ module Serialization =
     //     JsonSerializer.Deserialize<'t>(v, options2)
 
     let serializeWithOptions<'t> (options: JsonFSharpOptions) (v: 't) =
-        JsonSerializer.Serialize<'t>(v, options.ToJsonSerializerOptions())
+        let o = options.ToJsonSerializerOptions()
+        o.PropertyNamingPolicy <- JsonNamingPolicy.CamelCase
+        JsonSerializer.Serialize<'t>(v, o)
 
     let deserializeWithOptions<'t> (options: JsonFSharpOptions) (v: string) =
-        JsonSerializer.Deserialize<'t>(v, options.ToJsonSerializerOptions())
+        let o = options.ToJsonSerializerOptions()
+        o.PropertyNamingPolicy <- JsonNamingPolicy.CamelCase
+        JsonSerializer.Deserialize<'t>(v, o)
     
     let serializeWithEncoding<'t> (encoding: JsonUnionEncoding) (v: 't) =
         serializeWithOptions (JsonFSharpOptions(encoding)) v

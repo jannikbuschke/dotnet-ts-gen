@@ -1,10 +1,11 @@
-module Test.SingleCaseDu
+module Test.Unions.SingleCaseDu
 
 open System
 open Expecto
 open TsGen
 open Xunit
 open System.Text.Json.Serialization
+open Test
 
 // let options = DefaultSerialize.JsonFSharpOptions
 let options = JsonFSharpOptions(Gen.defaultJsonUnionEncoding)
@@ -18,8 +19,6 @@ type MyRecord = { Id: MyRecordId }
 
 let serialized0, serialized1 =
     serialize (MyRecordId.MyRecordId(Guid.Empty)), serialize { Id = MyRecordId.MyRecordId(Guid.Empty) }
-
-let typedef, value = renderTypeAndValue typedefof<MyRecordId>
 
 type SerializeTestParams = (JsonUnionEncoding * string) list
 
@@ -51,9 +50,9 @@ let internalTag =
       "[\"MyRecordId\",\"00000000-0000-0000-0000-000000000000\"]"
       // Fields as record
       [ JsonUnionEncoding.NamedFields ],
-      "{\"Case\":\"MyRecordId\",\"Fields\":{\"Item\":\"00000000-0000-0000-0000-000000000000\"}}"
+      "{\"Case\":\"MyRecordId\",\"Fields\":{\"item\":\"00000000-0000-0000-0000-000000000000\"}}"
       // Untagged
-      [ JsonUnionEncoding.Untagged ], "{\"Item\":\"00000000-0000-0000-0000-000000000000\"}"
+      [ JsonUnionEncoding.Untagged ], "{\"item\":\"00000000-0000-0000-0000-000000000000\"}"
       // Single fields are unwrapped
       [ JsonUnionEncoding.UnwrapSingleFieldCases ],
       "{\"Case\":\"MyRecordId\",\"Fields\":\"00000000-0000-0000-0000-000000000000\"}" ]
@@ -70,10 +69,12 @@ let ``Union - single case, single field - serialized`` (encoding: JsonUnionEncod
     let serialized = serializeWithEncoding encoding (MyRecordId.MyRecordId Guid.Empty)
     Expect.similar serialized expected
 
+let typedef, value = renderTypeAndValue typedefof<MyRecordId>
+
 [<Fact>]
 let ``Union - single case, single field - unwrapped - definition`` () =
     Expect.similar
-        value
+        typedef
         """
 export type MyRecordId_Case_MyRecordId = System.Guid
 export type MyRecordId = MyRecordId_Case_MyRecordId
@@ -83,7 +84,7 @@ export type MyRecordId_Case = "MyRecordId"
 [<Fact>]
 let ``Union - single case, single field - unwrapped - value`` () =
     Expect.similar
-        typedef
+        value
         """
 export var MyRecordId_AllCases = [ "MyRecordId" ] as const
 export var defaultMyRecordId_Case_MyRecordId = '00000000-0000-0000-0000-000000000000'

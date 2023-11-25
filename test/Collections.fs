@@ -9,12 +9,12 @@ type MyRecord =
     { SimpleList: int list
       ComplexList: OtherRecord list }
 
+let recordDefinition, recordValue = renderTypeAndValue typedefof<MyRecord>
 [<Fact>]
-let ``Render record with collection properties`` () =
-    let typedef, value = renderTypeAndValue typedefof<MyRecord>
+let ``Record with FSharpList property definition`` () =
 
     Expect.similar
-        typedef
+        recordDefinition
         """
 export type MyRecord = {
   simpleList: Microsoft_FSharp_Collections.FSharpList<System.Int32>
@@ -22,21 +22,27 @@ export type MyRecord = {
 }
 """
 
+[<Fact>]
+let ``Record with FSharpList property value`` () =
     Expect.similar
-        value
+        recordValue
         """
 export var defaultMyRecord: MyRecord = {
-  simpleList: [] ,
+  simpleList: [],
   complexList: []
 }
 """
 
-[<Fact>]
-let ``Render FSharp List`` () =
-    let fsharpCoreRendered, value = renderTypeAndValue typedefof<List<string>>
+let definition, value = renderTypeAndValue typedefof<List<string>>
 
-    Expect.similar fsharpCoreRendered """export type FSharpList<T> = Array<T>"""
+[<Fact>]
+let ``FSharpList definition definition`` () =
+    Expect.similar definition """export type FSharpList<T> = Array<T>"""
+
+[<Fact>]
+let ``FSharpList definition value`` () =
     Expect.similar value """export var defaultFSharpList: <T>(t:T) => FSharpList<T> = <T>(t:T) => []"""
+
 //
 // [<Fact>]
 // let ``Render IEnumerable of KeyValue pairs`` () =

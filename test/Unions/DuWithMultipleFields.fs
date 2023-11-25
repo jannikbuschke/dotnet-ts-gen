@@ -1,6 +1,9 @@
-module Test.Dus
+module Test.Unions.MultipleFields
 
+open System.Text.Json.Serialization
 open Expecto
+open Test
+open TsGen
 open Xunit
 
 type SimpleRecord0 = { Name: string }
@@ -41,26 +44,33 @@ type DuWithMultipleFields =
     | Case2 of Foo: string * SimpleRecord * X: int32
 
 let typedef2, value2 = renderTypeAndValue typedefof<DuWithMultipleFields>
+
+let options = JsonFSharpOptions(Gen.defaultJsonUnionEncoding)
+let newtonsoftLike = JsonFSharpOptions.NewtonsoftLike()
+
+let serialize<'t> = serializeWithOptions<'t> options
+let deserialize<'t> = deserializeWithOptions<'t> options
+
 // TODO: add generic version
 [<Fact>]
-let ``Union with multiple fields`` () =
-    // let serialized0 =
-    //     DefaultSerialize.serialize (DuWithMultipleFields.Case1(System.Guid.NewGuid(), "Hello world"))
-    //
-    // let serialized1 =
-    //     DefaultSerialize.serialize (DuWithMultipleFields.Case2("FIII", { Name = "string" }, 5))
+let ``Union with multiple fields - definition`` () =
+    let serialized0 =
+        serialize (DuWithMultipleFields.Case1(System.Guid.NewGuid(), "Hello world"))
+    
+    let serialized1 =
+        serialize (DuWithMultipleFields.Case2("FIII", { Name = "string" }, 5))
 
     Expect.similar
         typedef2
         """
-export type DuWithMultipleFields_Case_Case1 = { Case: "Case1", Fields: { Item1: System.Guid, Item2: System.String } }
-export type DuWithMultipleFields_Case_Case2 = { Case: "Case2", Fields: { Foo: System.String, Item2: SimpleRecord, X: System.Int32 } }
+export type DuWithMultipleFields_Case_Case1 = { Case: "Case1", Fields: { item1: System.Guid, item2: System.String } }
+export type DuWithMultipleFields_Case_Case2 = { Case: "Case2", Fields: { foo: System.String, item2: SimpleRecord, x: System.Int32 } }
 export type DuWithMultipleFields = DuWithMultipleFields_Case_Case1 | DuWithMultipleFields_Case_Case2
 export type DuWithMultipleFields_Case = "Case1" | "Case2"
 """
 
 [<Fact>]
-let ``Union with multiple fields value`` () =
+let ``Union with multiple fields - value`` () =
     Expect.similar
         value2
         """

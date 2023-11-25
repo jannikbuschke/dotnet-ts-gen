@@ -19,8 +19,6 @@
         <Compile Include="Object.fs" />
         <Compile Include="RecordWithList.fs" />
         <Compile Include="RecordWithPrimitiveOption.fs" />
-        <Compile Include="RecordWithOption.fs" />
-        <Compile Include="RecordWithResult.fs" />
         <Compile Include="NestedGenerics.fs" />
         <Compile Include="EmptyClass.fs" />
         <Compile Include="Unit.fs" />
@@ -35,7 +33,9 @@
         <Compile Include="Unions\FSharpResult.fs" />
         <Compile Include="Unions\FSharpOption.fs" />
         <Compile Include="Unions\SingleCaseDu.fs" />
-        <Compile Include="Unions\Program.fs" />
+        <Compile Include="Unions\RecordWithOption.fs" />
+        <Compile Include="Unions\RecordWithResult.fs" />
+        <Compile Include="Program.fs" />
     </ItemGroup>
 
     <ItemGroup>

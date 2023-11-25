@@ -36,7 +36,7 @@ let ```render value Localizable<string>`` () =
         """
 export var defaultLocalizable: <a>(defaulta:a) => Localizable<a> = <a>(defaulta:a) => ({
  value: defaulta,
- localizations: ({}),
+ localizations: ({})
 })
 """
 

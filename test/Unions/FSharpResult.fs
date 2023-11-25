@@ -1,14 +1,14 @@
-module Test.FSharpResult
+module Test.Unions.FSharpResult
 
 open Expecto
 open Xunit
+open Test
 
 let typedef = typedefof<Result<string, string>>
 
 [<Fact>]
 let ``Render FSharpResult`` () =
   let rendered = renderTypeDef typedef
-  // let rendered = renderTypeAndValue2 typedef
 
   Expect.similar
     rendered
@@ -47,7 +47,7 @@ type RecordWithResult =
 let typedef2 = typedefof<RecordWithResult>
 
 [<Fact>]
-let ``Render FSharpResult #2`` () =
+let ``Render FSharpResult #2 - definition`` () =
   let rendered = renderTypeDef typedef2
 
   Expect.similar
@@ -56,22 +56,16 @@ let ``Render FSharpResult #2`` () =
 export type RecordWithResult = {
  result: Microsoft_FSharp_Core.FSharpResult<Microsoft_FSharp_Collections.FSharpList<MyRecord>,ApiError>
 }
-export var defaultRecordWithResult: RecordWithResult = {
- result: Microsoft_FSharp_Core.defaultFSharpResult(Microsoft_FSharp_Collections.defaultFSharpList(defaultMyRecord),defaultApiError),
-}
 """
 
 [<Fact>]
-let ``Render FSharpResult #2 Value`` () =
+let ``Render FSharpResult #2 - value`` () =
   let rendered = renderValue typedef2
 
   Expect.similar
     rendered
     """
-export type RecordWithResult = {
- result: Microsoft_FSharp_Core.FSharpResult<Microsoft_FSharp_Collections.FSharpList<MyRecord>,ApiError>
-}
 export var defaultRecordWithResult: RecordWithResult = {
- result: Microsoft_FSharp_Core.defaultFSharpResult(Microsoft_FSharp_Collections.defaultFSharpList(defaultMyRecord),defaultApiError),
+ result: Microsoft_FSharp_Core.defaultFSharpResult(Microsoft_FSharp_Collections.defaultFSharpList(defaultMyRecord),defaultApiError)
 }
 """
