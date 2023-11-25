@@ -6,8 +6,7 @@ type Configuration =
   { Types: System.Type list
     PredefinedTypes: PredefinedTypes.PreDefinedTypes
     ApiEndPoints: ApiEndpoint list
-    JsonUnionEncoding: JsonUnionEncoding
-     }
+    JsonUnionEncoding: JsonUnionEncoding }
 
 let withDefaults () =
   { Types =
@@ -32,18 +31,19 @@ let withDefaults () =
         typedefof<System.Object> ]
     PredefinedTypes = PredefinedTypes.defaultTypes
     ApiEndPoints = []
-    JsonUnionEncoding = Gen.defaultJsonUnionEncoding
-     }
+    JsonUnionEncoding = Gen.defaultJsonUnionEncoding }
 
 let forTypes types (generator: Configuration) = { generator with Types = types }
 
-let withJsonUnionEncoding encoding (generator:Configuration)=
+let withJsonUnionEncoding encoding (generator: Configuration) =
   { generator with JsonUnionEncoding = encoding }
 
 let withEndpoints endpoints (generator: Configuration) =
   let allTypes =
     generator.Types
-    @ (endpoints |> Seq.collect (fun v -> [ v.Request; v.Response ]) |> Seq.toList)
+    @ (endpoints
+       |> Seq.collect (fun v -> [ v.Request; v.Response ])
+       |> Seq.toList)
 
   { generator with
       Types = allTypes

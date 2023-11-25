@@ -19,16 +19,18 @@ let emptyPredefinedValues =
 type PreDefinedTypes = System.Collections.Generic.IDictionary<System.Type, PredefinedValues>
 
 let tryPredefinedType (defaultTypes: PreDefinedTypes) (propertyType: System.Type) =
-      match
-        defaultTypes.TryGetValue(
-          if propertyType.IsGenericType && not propertyType.IsGenericTypeDefinition then
-            propertyType.GetGenericTypeDefinition()
-          else
-            propertyType
-        )
-      with
-      | true, value -> Some value
-      | _ -> None
+  match
+    defaultTypes.TryGetValue
+      (
+        if propertyType.IsGenericType
+           && not propertyType.IsGenericTypeDefinition then
+          propertyType.GetGenericTypeDefinition()
+        else
+          propertyType
+      )
+    with
+  | true, value -> Some value
+  | _ -> None
 
 let defaultTypes =
   [ (typeof<string>,

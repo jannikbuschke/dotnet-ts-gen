@@ -39,7 +39,8 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
           (t.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
            |> Seq.collect (fun f ->
              if not f.PropertyType.IsGenericType
-                || (f.PropertyType.IsGenericType && f.PropertyType.IsGenericTypeDefinition) then
+                || (f.PropertyType.IsGenericType
+                    && f.PropertyType.IsGenericTypeDefinition) then
                [ f.PropertyType ]
              else
                getGenericDefinitionAndArgumentsAsDependencies f.PropertyType)
@@ -49,7 +50,10 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
         | TypeKind.Union ->
           let x =
             (FSharpType.GetUnionCases t)
-            |> Seq.collect (fun c -> c.GetFields() |> Array.map (fun f -> f.PropertyType) |> Array.toList)
+            |> Seq.collect (fun c ->
+              c.GetFields()
+              |> Array.map (fun f -> f.PropertyType)
+              |> Array.toList)
             |> Seq.toList
 
           x
@@ -57,7 +61,8 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
         | _ -> []
 
       let genericArgs =
-        if not t.IsGenericType || (t.IsGenericType && t.IsGenericTypeDefinition) then
+        if not t.IsGenericType
+           || (t.IsGenericType && t.IsGenericTypeDefinition) then
           []
         else
           getGenericDefinitionAndArgumentsAsDependencies t
@@ -82,7 +87,9 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
     else
       allTypes.Add t |> ignore
 
-      t |> getDependencies |> List.iter (collectDependenciesTransitively (depth + 1))
+      t
+      |> getDependencies
+      |> List.iter (collectDependenciesTransitively (depth + 1))
 
       ()
 
@@ -111,11 +118,15 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
   let getModuleDependencies (n: TsModule) =
     let deps =
       n.Types
-      |> List.filter (fun t -> (not t.IsGenericType) || (t.IsGenericType && t.IsGenericTypeDefinition))
+      |> List.filter (fun t ->
+        (not t.IsGenericType)
+        || (t.IsGenericType && t.IsGenericTypeDefinition))
       |> List.collect getDependencies
       |> List.map getModuleName
 
-    (deps |> List.distinct |> List.filter (fun v -> v <> n.Name))
+    (deps
+     |> List.distinct
+     |> List.filter (fun v -> v <> n.Name))
 
   {| GetModuleDependencies = getModuleDependencies
      getDependencies = getDependencies

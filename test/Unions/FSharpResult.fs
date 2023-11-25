@@ -23,10 +23,11 @@ export type FSharpResult_Case = "Ok" | "Error"
 """
 
 [<Fact>]
-let ``Render FSharpResult value``()=
+let ``Render FSharpResult value`` () =
   let rendered = renderValue typedef
 
-  Expect.similar rendered
+  Expect.similar
+    rendered
     """
 export var FSharpResult_AllCases = [ "Ok", "Error" ] as const
 export var defaultFSharpResult_Case_Ok = <T,TError>(defaultT:T,defaultTError:TError) => ({ Case: "Ok", Fields: defaultT })
@@ -54,7 +55,7 @@ let ``Render FSharpResult #2 - definition`` () =
     rendered
     """
 export type RecordWithResult = {
- result: Microsoft_FSharp_Core.FSharpResult<Microsoft_FSharp_Collections.FSharpList<MyRecord>,ApiError>
+  result: Microsoft_FSharp_Core.FSharpResult<Microsoft_FSharp_Collections.FSharpList<MyRecord>,ApiError>
 }
 """
 
@@ -66,6 +67,6 @@ let ``Render FSharpResult #2 - value`` () =
     rendered
     """
 export var defaultRecordWithResult: RecordWithResult = {
- result: Microsoft_FSharp_Core.defaultFSharpResult(Microsoft_FSharp_Collections.defaultFSharpList(defaultMyRecord),defaultApiError)
+  result: Microsoft_FSharp_Core.defaultFSharpResult(Microsoft_FSharp_Collections.defaultFSharpList(defaultMyRecord),defaultApiError)
 }
 """

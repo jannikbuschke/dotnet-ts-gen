@@ -13,15 +13,11 @@ type SimpleRecord =
 let definition, value = renderTypeAndValue typedefof<DateTime>
 
 [<Fact>]
-let  ``DateTime definition`` () =
+let ``DateTime definition`` () =
 
-  Expect.similar
-    definition
-    """export type DateTime = `${number}-${number}-${number}T${number}:${number}:${number}`"""
+  Expect.similar definition """export type DateTime = `${number}-${number}-${number}T${number}:${number}:${number}`"""
 
 [<Fact>]
 let ``DateTime value`` () =
 
-  Expect.similar
-    value
-    """export var defaultDateTime: DateTime = "0001-01-01T00:00:00" """
+  Expect.similar value """export var defaultDateTime: DateTime = "0001-01-01T00:00:00" """

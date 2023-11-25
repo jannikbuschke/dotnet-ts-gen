@@ -6,16 +6,17 @@ open Xunit
 type OtherRecord = { Id: string }
 
 type MyRecord =
-    { SimpleList: int list
-      ComplexList: OtherRecord list }
+  { SimpleList: int list
+    ComplexList: OtherRecord list }
 
 let recordDefinition, recordValue = renderTypeAndValue typedefof<MyRecord>
+
 [<Fact>]
 let ``Record with FSharpList property definition`` () =
 
-    Expect.similar
-        recordDefinition
-        """
+  Expect.similar
+    recordDefinition
+    """
 export type MyRecord = {
   simpleList: Microsoft_FSharp_Collections.FSharpList<System.Int32>
   complexList: Microsoft_FSharp_Collections.FSharpList<OtherRecord>
@@ -24,9 +25,9 @@ export type MyRecord = {
 
 [<Fact>]
 let ``Record with FSharpList property value`` () =
-    Expect.similar
-        recordValue
-        """
+  Expect.similar
+    recordValue
+    """
 export var defaultMyRecord: MyRecord = {
   simpleList: [],
   complexList: []
@@ -37,11 +38,11 @@ let definition, value = renderTypeAndValue typedefof<List<string>>
 
 [<Fact>]
 let ``FSharpList definition definition`` () =
-    Expect.similar definition """export type FSharpList<T> = Array<T>"""
+  Expect.similar definition """export type FSharpList<T> = Array<T>"""
 
 [<Fact>]
 let ``FSharpList definition value`` () =
-    Expect.similar value """export var defaultFSharpList: <T>(t:T) => FSharpList<T> = <T>(t:T) => []"""
+  Expect.similar value """export var defaultFSharpList: <T>(t:T) => FSharpList<T> = <T>(t:T) => []"""
 
 //
 // [<Fact>]

@@ -7,20 +7,20 @@ type A = { Data: System.Object; X: obj }
 
 [<Fact>]
 let ``Render record with obj`` () =
-    let rendered, value = renderTypeAndValue typedefof<A>
+  let rendered, value = renderTypeAndValue typedefof<A>
 
-    Expect.similar
-        rendered
-        """
+  Expect.similar
+    rendered
+    """
 export type A = {
  data: System.Object
  x: System.Object
 }
 """
 
-    Expect.similar
-        value
-        """
+  Expect.similar
+    value
+    """
 export var defaultA: A = {
  data: {},
  x: {}

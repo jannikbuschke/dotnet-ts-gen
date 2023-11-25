@@ -5,41 +5,41 @@ open Expecto
 open Xunit
 
 type EmptyRecord =
-    { Skip: Skippable<unit> }
+  { Skip: Skippable<unit> }
 
-    static member Instance = { Skip = Skippable.Skip }
+  static member Instance = { Skip = Skippable.Skip }
 
 [<Fact>]
 let ``Empty record`` () =
 
-    let rendered, value = renderTypeAndValue typeof<EmptyRecord>
+  let rendered, value = renderTypeAndValue typeof<EmptyRecord>
 
-    Expect.similar
-        rendered
-        """
+  Expect.similar
+    rendered
+    """
 export type EmptyRecord = {
    skip: System_Text_Json_Serialization.Skippable<Microsoft_FSharp_Core.Unit>
 }
 """
 
-    Expect.similar
-        value
-        """
+  Expect.similar
+    value
+    """
 export var defaultEmptyRecord: EmptyRecord = {
   skip: undefined
 }
 """
 
 type EmptyClass() =
-    let x = "foo"
+  let x = "foo"
 
 let rendered, value = renderTypeAndValue typeof<EmptyClass>
 
 [<Fact>]
 let ``Empty class`` () =
-    Expect.similar
-        rendered
-        """
+  Expect.similar
+    rendered
+    """
 export type EmptyClass = {
  
 }
@@ -47,9 +47,9 @@ export type EmptyClass = {
 
 [<Fact>]
 let ``Empty class value`` () =
-    Expect.similar
-        value
-        """
+  Expect.similar
+    value
+    """
 export var defaultEmptyClass: EmptyClass = {
  
 }

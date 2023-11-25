@@ -42,7 +42,7 @@
 // // to prevent typescript errors (reference used before declaration)
 // export type B = {
 //  a: A
-// } 
+// }
 // export var defaultB: B = {
 //  a: undefined as any, }
 // export type A = {

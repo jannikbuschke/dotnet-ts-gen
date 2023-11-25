@@ -25,7 +25,9 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
     |> ignore
 
     deps
-    |> List.iter (fun v -> builder.AppendLine($"import * as {v} from \"./{v}\"") |> ignore)
+    |> List.iter (fun v ->
+      builder.AppendLine($"import * as {v} from \"./{v}\"")
+      |> ignore)
 
     builder.AppendLine() |> ignore
 
@@ -35,7 +37,8 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
           let deps = collect.getDependencies v
 
           // Nullable remove
-          deps |> List.filter (fun x -> x.Namespace = v.Namespace))
+          deps
+          |> List.filter (fun x -> x.Namespace = v.Namespace))
 
         m.Types
 
@@ -46,7 +49,8 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
         .AppendLine("//*** Please ensure that your types don't have cyclic dependencies ***")
       |> ignore
 
-      cyclics |> List.iter (fun v -> builder.AppendLine("// " + v.Name) |> ignore)
+      cyclics
+      |> List.iter (fun v -> builder.AppendLine("// " + v.Name) |> ignore)
 
       builder
         .AppendLine("//*** ******************* ***")
@@ -61,7 +65,10 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
 
       let result =
         // workaround for Bullable<Guid>
-        if v.IsGenericType && not v.IsGenericTypeDefinition && v.Name.Contains("Nullable") then
+        if
+          v.IsGenericType && not v.IsGenericTypeDefinition
+          && v.Name.Contains("Nullable")
+        then
           ""
         else if isCyclic then
           $"""
@@ -79,7 +86,8 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
     |> List.iter (fun v -> builder.AppendLine(v) |> ignore)
 
     if cyclics.Length > 0 then
-      builder.AppendLine("// Render cyclic fixes") |> ignore
+      builder.AppendLine("// Render cyclic fixes")
+      |> ignore
 
     cyclics
     |> List.distinct
@@ -131,6 +139,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
 
       System.IO.File.AppendAllText($"{path}index.ts", sprintf "export { %s }%s" sanitizedName Environment.NewLine)
       ())
+
     ()
 
   let renderTypes path =
@@ -141,10 +150,16 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
     renderModules path modules
 
     stopWatch.Stop()
-    printfn "Generated client types in %d ms" (stopWatch.Elapsed.TotalMilliseconds |> Math.Round |> Convert.ToInt32)
+
+    printfn
+      "Generated client types in %d ms"
+      (stopWatch.Elapsed.TotalMilliseconds
+       |> Math.Round
+       |> Convert.ToInt32)
+
     ()
 
-  let renderApi() =
+  let renderApi () =
     printfn "Generate TS api..."
 
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
@@ -156,7 +171,9 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
 
     modules
     |> List.iter (fun m ->
-      $"""import * as {m.Name} from "./{m.Name}" """ |> appendTo api
+      $"""import * as {m.Name} from "./{m.Name}" """
+      |> appendTo api
+
       ())
 
     "" |> appendTo api
@@ -167,7 +184,8 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
     endpoints
     |> Seq.groupBy (fun v -> v.Method)
     |> Seq.iter (fun (httpVerb, endpoints) ->
-      $"""export type {httpVerb.ToString()} = {{""" |> appendTo api
+      $"""export type {httpVerb.ToString()} = {{"""
+      |> appendTo api
 
       endpoints
       |> Seq.iter (fun endpoint ->
@@ -176,10 +194,18 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
         let inputTypeName = endpoint.Request |> getTypename
         let outputTypename = endpoint.Response |> getTypename
 
-        $"""  "{endpoint.Route}": {inputTypeName};""" |> appendTo input
-        $"""  "{endpoint.Route}": {outputTypename};""" |> appendTo output
-        $"""  "{endpoint.Route}": "{endpoint.Method.ToString()}";""" |> appendTo method
-        $"""  "{endpoint.Route}": "{endpoint.Route}";""" |> appendTo api
+        $"""  "{endpoint.Route}": {inputTypeName};"""
+        |> appendTo input
+
+        $"""  "{endpoint.Route}": {outputTypename};"""
+        |> appendTo output
+
+        $"""  "{endpoint.Route}": "{endpoint.Method.ToString()}";"""
+        |> appendTo method
+
+        $"""  "{endpoint.Route}": "{endpoint.Route}";"""
+        |> appendTo api
+
         ())
 
       """}}""" |> appendTo api
@@ -201,22 +227,23 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
 
     let result = api.ToString()
     stopWatch.Stop()
-    printfn "Generated client api in %d ms" (stopWatch.Elapsed.TotalMilliseconds |> Math.Round |> Convert.ToInt32)
+
+    printfn
+      "Generated client api in %d ms"
+      (stopWatch.Elapsed.TotalMilliseconds
+       |> Math.Round
+       |> Convert.ToInt32)
+
     result
 
-  let renderApiToFile  path  api=
+  let renderApiToFile path api =
     System.IO.File.WriteAllText(path, api)
     ()
 
-  {|
-     renderTypesToDirectory = renderTypes
+  {| renderTypesToDirectory = renderTypes
      renderType = fun t -> render.renderType t RenderStrategy.RenderDefinition
-     renderValue = fun t ->
-       render.renderType t RenderStrategy.RenderValue
-     renderTypeAndValue = fun t ->
-       render.renderType t RenderStrategy.RenderDefinitionAndValue
-     renderTypes = fun() ->
-       modules |> List.map(fun m -> m, renderModule m)
+     renderValue = fun t -> render.renderType t RenderStrategy.RenderValue
+     renderTypeAndValue = fun t -> render.renderType t RenderStrategy.RenderDefinitionAndValue
+     renderTypes = fun () -> modules |> List.map (fun m -> m, renderModule m)
      renderApi = renderApi
-     renderApiToFile= fun path -> renderApiToFile path (renderApi())
-      |}
+     renderApiToFile = fun path -> renderApiToFile path (renderApi ()) |}

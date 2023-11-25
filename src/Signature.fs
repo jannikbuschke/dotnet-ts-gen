@@ -16,7 +16,10 @@ let getModuleName (t: System.Type) =
 let getName (t: System.Type) =
   let name = t.Name.Split("`").[0]
 
-  if t.IsArray then name.Replace("[]", "") + "Array" else name
+  if t.IsArray then
+    name.Replace("[]", "") + "Array"
+  else
+    name
 
 let getSignature (t: System.Type) =
   let modulName = getModuleName t
@@ -69,32 +72,34 @@ let rec getGenericParameterValues (callingModule: string) (t: System.Type) =
 let getFullTypeName (t: System.Type) = t.FullName
 
 let genericArgumentList (t: System.Type) =
-    match t.GetGenericArguments() |> Seq.toList with
-    | [] -> ""
-    | arguments -> "<" + (arguments |> List.map (fun v -> v.Name) |> String.concat ",") + ">"
+  match t.GetGenericArguments() |> Seq.toList with
+  | [] -> ""
+  | arguments ->
+    "<"
+    + (arguments
+       |> List.map (fun v -> v.Name)
+       |> String.concat ",")
+    + ">"
 
 let genericArgumentListAsParameters (t: System.Type) =
-    "("
-    + (t.GetGenericArguments()
-       |> Array.map (fun v -> "default" + v.Name + ":" + v.Name)
-       |> String.concat ",")
-    + ")"
+  "("
+  + (t.GetGenericArguments()
+     |> Array.map (fun v -> "default" + v.Name + ":" + v.Name)
+     |> String.concat ",")
+  + ")"
 
 let genericArgumentListAsParametersCall (t: System.Type) =
-    "("
-    + (t.GetGenericArguments()
-       |> Array.map (fun v -> "default" + v.Name)
-       |> String.concat ",")
-    + ")"
+  "("
+  + (t.GetGenericArguments()
+     |> Array.map (fun v -> "default" + v.Name)
+     |> String.concat ",")
+  + ")"
 
 let rec getPropertySignature (callingModule: string) (t: System.Type) =
   let kind = getKind t
 
   match kind with
-  | TypeKind.Array ->
-    getPropertySignature
-      callingModule
-      (typedefof<System.Collections.Generic.IEnumerable<_>>.MakeGenericType (t.GetElementType()))
+  | TypeKind.Array -> getPropertySignature callingModule (typedefof<System.Collections.Generic.IEnumerable<_>>.MakeGenericType (t.GetElementType()))
   | _ ->
     let moduleName, name = getSignature t
 

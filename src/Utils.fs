@@ -13,7 +13,8 @@ module Regex =
 
 module Utils =
   let toLower (s: string) =
-    (s.[0] |> Char.ToLower |> Char.ToString) + s.Substring(1)
+    (s.[0] |> Char.ToLower |> Char.ToString)
+    + s.Substring(1)
 
   let normalizeLineFeeds = Regex.replace @"(\r\n|\r|\n)" "\n"
 

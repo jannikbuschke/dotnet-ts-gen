@@ -7,16 +7,16 @@ let rendered, value = renderTypeAndValue typeof<unit>
 
 [<Fact>]
 let ``Unit`` () =
-    Expect.similar
-        rendered
-        """
+  Expect.similar
+    rendered
+    """
 export type Unit = {}
 """
 
 [<Fact>]
 let ``Unit value`` () =
-    Expect.similar
-        value
-        """
+  Expect.similar
+    value
+    """
 export var defaultUnit: Unit = ({})
 """
