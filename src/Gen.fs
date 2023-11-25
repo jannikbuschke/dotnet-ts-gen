@@ -100,7 +100,28 @@ let rec getPropertySignature (callingModule: string) (t: System.Type) =
       else
         modulName + "." + name
 
-let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
+let defaultJsonUnionEncoding =
+  JsonUnionEncoding.AdjacentTag
+  ||| JsonUnionEncoding.UnwrapSingleFieldCases
+  ||| JsonUnionEncoding.UnwrapRecordCases
+  ||| JsonUnionEncoding.UnwrapOption
+  ||| JsonUnionEncoding.UnwrapSingleCaseUnions
+  ||| JsonUnionEncoding.AllowUnorderedTag
+
+let supportedJsonUnionEncoding = defaultJsonUnionEncoding
+
+let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: JsonUnionEncoding) =
+
+  if jsonUnionEncoding <> supportedJsonUnionEncoding then
+    failwith (
+      "This encoding is currently not supported. The Only supported encoding currenlty is
+                                JsonUnionEncoding.AdjacentTag
+                                ||| JsonUnionEncoding.UnwrapSingleFieldCases
+                                ||| JsonUnionEncoding.UnwrapRecordCases
+                                ||| JsonUnionEncoding.UnwrapOption
+                                ||| JsonUnionEncoding.UnwrapSingleCaseUnions
+                                ||| JsonUnionEncoding.AllowUnorderedTag"
+    )
 
   let renderPropertyNameAndDefinition (callingModule: string) (fieldInfo: PropertyInfo) =
     let signature = getPropertySignature callingModule fieldInfo.PropertyType
@@ -500,15 +521,26 @@ export var default{name}: {name} = {predefined.InlineDefaultValue
         if t.IsGenericType && not t.IsGenericTypeDefinition then
           ""
         else
-          $"""export type FSharpList<T> = Array<T> // fullname {t.FullName}
-export var defaultFSharpList: <T>(t:T) => FSharpList<T> = <T>(t:T) => []
-"""
+          let def = $"""export type FSharpList<T> = Array<T>"""
+
+          let value =
+            "export var defaultFSharpList: <T>(t:T) => FSharpList<T> = <T>(t:T) => []"
+
+          match strategy with
+          | RenderDefinition -> def
+          | RenderValue -> value
+          | RenderDefinitionAndValue -> def + System.Environment.NewLine + System.Environment.NewLine + value
+      //           $"""export type FSharpList<T> = Array<T> // fullname {t.FullName}
+      // export var defaultFSharpList: <T>(t:T) => FSharpList<T> = <T>(t:T) => []
+      // """
 
       | TypeKind.Record ->
         if t.IsGenericType && not t.IsGenericTypeDefinition then
           ""
         else
-          renderRecord t strategy
+          let result = renderRecord t strategy
+          printfn "result %A" result
+          result
       | TypeKind.Union -> renderDu t
       | TypeKind.Array ->
         let name = getName t

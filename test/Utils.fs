@@ -1,7 +1,9 @@
 namespace Test
 
+open System.Text.Json
 open System.Text.RegularExpressions
 open Expecto
+open TsGen
 
 module Regex =
     let replace (pattern: string) (replacement: string) (input: string) =
@@ -50,29 +52,51 @@ module Serialization =
 
     let deserializeWithOptions<'t> (options: JsonFSharpOptions) (v: string) =
         JsonSerializer.Deserialize<'t>(v, options.ToJsonSerializerOptions())
+    
+    let serializeWithEncoding<'t> (encoding: JsonUnionEncoding) (v: 't) =
+        serializeWithOptions (JsonFSharpOptions(encoding)) v
+    
+    let deserializeWithEncoding<'t> (encoding: JsonUnionEncoding) (v: string) =
+        deserializeWithOptions<'t> (JsonFSharpOptions(encoding)) v
 
 [<AutoOpen>]
 module Helpers =
 
-    let configureFor t =
-        Config.withDefaults () |> Config.forTypes [ t ] |> Config.build
+    let configureFor unionEncoding (t: System.Type) =
+        Config.withDefaults ()
+        |> Config.withJsonUnionEncoding unionEncoding
+        |> Config.forTypes [ t ]
+        |> Config.build
 
     let renderModules t =
         let config = Config.withDefaults () |> Config.forTypes t |> Config.build
 
         config.renderTypes ()
 
-    let renderModule t =
-        let config = configureFor t
+    let renderModuleWithCustomEncoding unionEncoding t =
+        let config = configureFor unionEncoding t
         let renderedTypes = config.renderTypes ()
         renderedTypes |> List.find (fun (m, _) -> m.Name = t.Namespace) |> snd
 
-    let renderTypeDef t =
-        let config = configureFor t
+    let renderModule t =
+        renderModuleWithCustomEncoding Gen.defaultJsonUnionEncoding t
+
+    let renderCustomTypeDef jsonEncoding (t: System.Type) =
+        let config = configureFor jsonEncoding t
         config.renderType t
 
-    let renderValue t =
-        let config = configureFor t
+    let renderTypeDef t =
+        renderCustomTypeDef Gen.defaultJsonUnionEncoding t
+
+    let renderValueWithCustomEncoding encoding t =
+        let config = configureFor encoding t
         config.renderValue t
 
-    let renderTypeAndValue t = renderTypeDef t, renderValue t
+    let renderValue t =
+        renderValueWithCustomEncoding Gen.defaultJsonUnionEncoding t
+
+    let renderCustomTypeAndValue unionEncoding t =
+        renderCustomTypeDef unionEncoding t, renderValueWithCustomEncoding unionEncoding t
+
+    let renderTypeAndValue t =
+        renderCustomTypeAndValue Gen.defaultJsonUnionEncoding t

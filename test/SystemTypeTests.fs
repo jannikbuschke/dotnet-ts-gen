@@ -1,4 +1,4 @@
-﻿module SystemTypeTests
+﻿module Test.SystemTypeTests
 
 type X = { Id: string }
 

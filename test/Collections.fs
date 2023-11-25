@@ -26,8 +26,8 @@ export type MyRecord = {
         value
         """
 export var defaultMyRecord: MyRecord = {
-  simpleList: [],
-  complexList: [],
+  simpleList: [] ,
+  complexList: []
 }
 """
 

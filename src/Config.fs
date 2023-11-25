@@ -1,9 +1,13 @@
 ﻿module TsGen.Config
 
+open System.Text.Json.Serialization
+
 type Configuration =
   { Types: System.Type list
     PredefinedTypes: PredefinedTypes.PreDefinedTypes
-    ApiEndPoints: ApiEndpoint list }
+    ApiEndPoints: ApiEndpoint list
+    JsonUnionEncoding: JsonUnionEncoding
+     }
 
 let withDefaults () =
   { Types =
@@ -27,9 +31,14 @@ let withDefaults () =
         typedefof<System.TimeSpan>
         typedefof<System.Object> ]
     PredefinedTypes = PredefinedTypes.defaultTypes
-    ApiEndPoints = [] }
+    ApiEndPoints = []
+    JsonUnionEncoding = Gen.defaultJsonUnionEncoding
+     }
 
 let forTypes types (generator: Configuration) = { generator with Types = types }
+
+let withJsonUnionEncoding encoding (generator:Configuration)=
+  { generator with JsonUnionEncoding = encoding }
 
 let withEndpoints endpoints (generator: Configuration) =
   let allTypes =
@@ -41,4 +50,4 @@ let withEndpoints endpoints (generator: Configuration) =
       ApiEndPoints = endpoints }
 
 let build (generator: Configuration) =
-  Run.init generator.PredefinedTypes generator.Types generator.ApiEndPoints
+  Run.init generator.PredefinedTypes generator.Types generator.ApiEndPoints generator.JsonUnionEncoding

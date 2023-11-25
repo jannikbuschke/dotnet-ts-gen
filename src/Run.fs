@@ -4,10 +4,10 @@ open System
 open System.Text
 open TsGen.Gen
 
-let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (endpoints: ApiEndpoint list) =
+let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (endpoints: ApiEndpoint list) jsonUnionEncoding =
 
   let collect = Collect.init defaultTypes
-  let render = init defaultTypes
+  let render = init defaultTypes jsonUnionEncoding
 
   let modules = collect.collectModules types
 
