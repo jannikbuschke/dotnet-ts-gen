@@ -31,9 +31,10 @@
         <Compile Include="CircularReference.fs" />
         <Compile Include="Unions\Utils.fs" />
         <Compile Include="Unions\SingleCaseSingleField.fs" />
-        <Compile Include="Unions\DuWithMultipleFields.fs" />
+        <Compile Include="Unions\MultipleFields.fs" />
         <Compile Include="Unions\FSharpResult.fs" />
         <Compile Include="Unions\FSharpOption.fs" />
+        <Compile Include="Unions\SingleCaseMultipleFields.fs" />
         <Compile Include="Unions\RecordWithOption.fs" />
         <Compile Include="Unions\RecordWithResult.fs" />
         <Compile Include="Program.fs" />

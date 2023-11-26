@@ -6,11 +6,6 @@ open TsGen
 open Microsoft.FSharp.Reflection
 open TypeCache
 
-type RenderStrategy =
-  | RenderDefinitionAndValue
-  | RenderDefinition
-  | RenderValue
-
 let defaultJsonUnionEncoding =
   JsonUnionEncoding.AdjacentTag
   ||| JsonUnionEncoding.UnwrapSingleFieldCases
@@ -29,15 +24,15 @@ let renderPropertyNameAndDefinition (callingModule: string) (fieldInfo: Property
 let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: JsonUnionEncoding) =
   let tryGetPredefinedType = PredefinedTypes.tryPredefinedType defaultTypes
 
-  if jsonUnionEncoding <> supportedJsonUnionEncoding then
-    failwith
-      "This encoding is currently not supported. The Only supported encoding currently is
-                                JsonUnionEncoding.AdjacentTag
-                                ||| JsonUnionEncoding.UnwrapSingleFieldCases
-                                ||| JsonUnionEncoding.UnwrapRecordCases
-                                ||| JsonUnionEncoding.UnwrapOption
-                                ||| JsonUnionEncoding.UnwrapSingleCaseUnions
-                                ||| JsonUnionEncoding.AllowUnorderedTag"
+  // if jsonUnionEncoding <> supportedJsonUnionEncoding then
+  //   failwith
+  //     "This encoding is currently not supported. The Only supported encoding currently is
+  //                               JsonUnionEncoding.AdjacentTag
+  //                               ||| JsonUnionEncoding.UnwrapSingleFieldCases
+  //                               ||| JsonUnionEncoding.UnwrapRecordCases
+  //                               ||| JsonUnionEncoding.UnwrapOption
+  //                               ||| JsonUnionEncoding.UnwrapSingleCaseUnions
+  //                               ||| JsonUnionEncoding.AllowUnorderedTag"
 
   let renderSingleFieldUnionCaseDefinition (callingModule: string) (case: UnionCaseInfo) (fieldInfo: PropertyInfo) =
     $"""{{ Case: "{case.Name}", Fields: {getPropertySignature callingModule fieldInfo.PropertyType} }}"""
@@ -152,12 +147,6 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
 
     let name = $"{name}{genericParameterPostfix}"
     name
-
-  let renderDefinitionAndOrValue definition value strategy =
-    match strategy with
-    | RenderValue -> value
-    | RenderDefinition -> definition
-    | RenderDefinitionAndValue -> definition + System.Environment.NewLine + System.Environment.NewLine + value
 
   let renderDu (t: System.Type) (strategy: RenderStrategy) =
 
@@ -403,7 +392,7 @@ export type {name}_Case = {caseNameLiteral}"""
 
           renderDefinitionAndOrValue def value strategy
 
-      | TypeKind.Option -> "option"
+      | TypeKind.Option -> TsGen.Option.render jsonUnionEncoding strategy
       | TypeKind.Record ->
         if t.IsGenericType && not t.IsGenericTypeDefinition then
           ""
