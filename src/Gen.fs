@@ -27,18 +27,17 @@ let renderPropertyNameAndDefinition (callingModule: string) (fieldInfo: Property
   $"""  {Utils.camelize name}: {signature}"""
 
 let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: JsonUnionEncoding) =
-  let tryGetPredefinedType = TsGen.PredefinedTypes.tryPredefinedType defaultTypes
+  let tryGetPredefinedType = PredefinedTypes.tryPredefinedType defaultTypes
 
   if jsonUnionEncoding <> supportedJsonUnionEncoding then
-    failwith (
-      "This encoding is currently not supported. The Only supported encoding currenlty is
+    failwith
+      "This encoding is currently not supported. The Only supported encoding currently is
                                 JsonUnionEncoding.AdjacentTag
                                 ||| JsonUnionEncoding.UnwrapSingleFieldCases
                                 ||| JsonUnionEncoding.UnwrapRecordCases
                                 ||| JsonUnionEncoding.UnwrapOption
                                 ||| JsonUnionEncoding.UnwrapSingleCaseUnions
                                 ||| JsonUnionEncoding.AllowUnorderedTag"
-    )
 
   let renderSingleFieldUnionCaseDefinition (callingModule: string) (case: UnionCaseInfo) (fieldInfo: PropertyInfo) =
     $"""{{ Case: "{case.Name}", Fields: {getPropertySignature callingModule fieldInfo.PropertyType} }}"""
@@ -59,11 +58,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
     let name = getName propertyType
     let isGeneric = propertyType.IsGenericType
 
-    let prefix =
-      if moduleName = callingModule then
-        ""
-      else
-        moduleName + "."
+    let prefix = if moduleName = callingModule then "" else moduleName + "."
 
     let kind = getKind propertyType
 
@@ -105,17 +100,6 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
     else
       $"""  {fieldInfo.Name}: {value}"""
 
-  let getAnonymousFunctionSignatureForDefaultValue (t: System.Type) =
-    let genericArguments = genericArgumentList t
-    let parameters = genericArgumentListAsParameters t
-    genericArguments + parameters
-
-  let getNamedFunctionSignatureForDefaultValue (t: System.Type) =
-    let name = getName t
-    let genericArguments = genericArgumentList t
-    let signature = name + genericArguments
-    signature
-
   let renderSingleFieldUnionCaseDefaultValue (callingModule: string) (case: UnionCaseInfo) (fieldInfo: PropertyInfo) =
     let defaultValue = getDefaultValue callingModule fieldInfo.PropertyType
 
@@ -124,11 +108,14 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
     else
       $"""{{ Case: "{case.Name}", Fields: {defaultValue} }}"""
 
-  let renderMultiFieldUnionCaseDefaultValue (callingModule: string) (case: UnionCaseInfo) (fieldInfo: PropertyInfo list) =
+  let renderMultiFieldUnionCaseDefaultValue
+    (callingModule: string)
+    (case: UnionCaseInfo)
+    (fieldInfo: PropertyInfo list)
+    =
 
     let isGeneric =
-      fieldInfo
-      |> List.exists (fun v -> v.PropertyType.IsGenericParameter)
+      fieldInfo |> List.exists (fun v -> v.PropertyType.IsGenericParameter)
 
     let fields =
       fieldInfo
@@ -159,15 +146,9 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
   let getMultiFieldCaseSignature (name: string) (fields: PropertyInfo list) (case: UnionCaseInfo) =
     let name = getFieldCaseName name case
 
-    let isGeneric =
-      fields
-      |> List.exists (fun v -> v.PropertyType.IsGenericParameter)
+    let isGeneric = fields |> List.exists (fun v -> v.PropertyType.IsGenericParameter)
 
-    let genericParameterPostfix =
-      if isGeneric then
-        failwith "TODO"
-      else
-        ""
+    let genericParameterPostfix = if isGeneric then failwith "TODO" else ""
 
     let name = $"{name}{genericParameterPostfix}"
     name
@@ -176,11 +157,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
     match strategy with
     | RenderValue -> value
     | RenderDefinition -> definition
-    | RenderDefinitionAndValue ->
-      definition
-      + System.Environment.NewLine
-      + System.Environment.NewLine
-      + value
+    | RenderDefinitionAndValue -> definition + System.Environment.NewLine + System.Environment.NewLine + value
 
   let renderDu (t: System.Type) (strategy: RenderStrategy) =
 
@@ -190,14 +167,10 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
     let cases = (FSharpType.GetUnionCases t) |> Seq.toList
 
     let caseNameLiteral =
-      cases
-      |> List.map (fun v -> $"\"{v.Name}\"")
-      |> String.concat " | "
+      cases |> List.map (fun v -> $"\"{v.Name}\"") |> String.concat " | "
 
     let allCaseNames =
-      cases
-      |> List.map (fun v -> $"\"{v.Name}\"")
-      |> String.concat ", "
+      cases |> List.map (fun v -> $"\"{v.Name}\"") |> String.concat ", "
 
     let renderedCaseDefinitions =
       match cases with
@@ -237,9 +210,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
 
             $"""export type {singleFieldCaseSignature} = {multiFieldUnionCaseDefinition}"""
 
-        cases
-        |> List.map renderCase
-        |> String.concat System.Environment.NewLine
+        cases |> List.map renderCase |> String.concat System.Environment.NewLine
 
     let anonymousFunctionSignature = getAnonymousFunctionSignatureForDefaultValue t
 
@@ -284,9 +255,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
             else
               $"""export var default{signature} = {multiFieldUnionCaseDefaultValue}"""
 
-        cases
-        |> List.map renderCase
-        |> String.concat System.Environment.NewLine
+        cases |> List.map renderCase |> String.concat System.Environment.NewLine
 
     let firstCaseName =
       match cases with
@@ -311,10 +280,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
         let singleFieldCaseSignature = getMultiFieldCaseSignature name fields case
         singleFieldCaseSignature
 
-    let caseSignatures =
-      cases
-      |> List.map renderCaseSignature
-      |> String.concat " | "
+    let caseSignatures = cases |> List.map renderCaseSignature |> String.concat " | "
 
     let callParameters = genericArgumentListAsParametersCall t
 
@@ -393,8 +359,7 @@ export type {name}_Case = {caseNameLiteral}"""
                                                        |> Option.defaultValue "unknown // renderPredefinedTypeFromDefaultValue (generic)")}"""
 
         let value =
-          $"""export var default{name}: {anonymousFunctionSignature} => {name}{genericArguments} = {anonymousFunctionSignature} => {predefined.InlineDefaultValue
-                                                                                                                                    |> Option.defaultValue "unknown"}"""
+          $"""export var default{name}: {anonymousFunctionSignature} => {name}{genericArguments} = {anonymousFunctionSignature} => {predefined.InlineDefaultValue |> Option.defaultValue "unknown"}"""
 
         definition, value
       else
@@ -438,6 +403,7 @@ export type {name}_Case = {caseNameLiteral}"""
 
           renderDefinitionAndOrValue def value strategy
 
+      | TypeKind.Option -> "option"
       | TypeKind.Record ->
         if t.IsGenericType && not t.IsGenericTypeDefinition then
           ""
@@ -456,8 +422,7 @@ export type {name}_Case = {caseNameLiteral}"""
       | TypeKind.Map ->
         //if key type is string, use normal object
         let definition, value =
-          if not t.IsGenericTypeDefinition
-             && t.GenericTypeArguments.[0] = typeof<string> then
+          if not t.IsGenericTypeDefinition && t.GenericTypeArguments.[0] = typeof<string> then
             """export type FSharpStringMap<TValue> = { [key: string ]: TValue }""",
             """export var defaultFSharpStringMap: <TValue>(t:string,tValue:TValue) => FSharpStringMap<TValue> = <TValue>(t:string,tValue:TValue) => ({})"""
           else
@@ -468,16 +433,15 @@ export type {name}_Case = {caseNameLiteral}"""
       | TypeKind.Enum ->
         let name = getName t
 
-        let values =
-          t.GetEnumNames()
-          |> Array.map (fun v -> $"\"{v}\"")
-          |> Array.toList
+        let values = t.GetEnumNames() |> Array.map (fun v -> $"\"{v}\"") |> Array.toList
 
         $"""export type {name} = {values |> String.concat " | "}
 export var {name}_AllValues = [{values |> String.concat ", "}] as const
 export var default{name}: {name} = {values |> List.head}
 """
-      | _ ->
+      | TypeKind.Tuple
+      | TypeKind.Set
+      | TypeKind.Other ->
         if t.IsGenericParameter then
           ""
         else

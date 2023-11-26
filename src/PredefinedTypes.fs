@@ -41,12 +41,10 @@ let defaultTypes =
      { emptyPredefinedValues with
          InlineDefaultValue = Some "0"
          Definition = Some "number" })
-
-    (typedefof<Option<_>>,
-     { emptyPredefinedValues with
-         InlineDefaultValue = Some "null"
-         Definition = Some "T | null" })
-
+    // (typedefof<Option<_>>,
+    //  { emptyPredefinedValues with
+    //      InlineDefaultValue = Some "null"
+    //      Definition = Some "T | null" })
     (typeof<System.Guid>,
      { emptyPredefinedValues with
          InlineDefaultValue = Some $"'{(System.Guid.Empty.ToString())}'"

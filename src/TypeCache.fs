@@ -14,6 +14,7 @@ module TypeCache =
   type TypeKind =
     | Record
     | Union
+    | Option
     | List
     | Set
     | Array
@@ -33,19 +34,23 @@ module TypeCache =
       cache.GetOrAdd(
         ty,
         fun ty ->
-          if ty.IsGenericType
-             && ty.GetGenericTypeDefinition() = listTy then
+          if ty.IsGenericType && ty.GetGenericTypeDefinition() = listTy then
             TypeKind.List
-          elif ty.IsGenericType
-               && ty.GetGenericTypeDefinition() = setTy then
+          elif ty.IsGenericType && ty.GetGenericTypeDefinition() = setTy then
             TypeKind.Set
-          elif ty.IsGenericType
-               && ty.GetGenericTypeDefinition() = mapTy then
+          elif ty.IsGenericType && ty.GetGenericTypeDefinition() = mapTy then
             TypeKind.Map
           elif FSharpType.IsTuple(ty) then
             TypeKind.Tuple
           elif FSharpType.IsUnion(ty, true) then
-            TypeKind.Union
+            if
+              ty = typedefof<Option<_>>
+              || (not ty.IsGenericTypeDefinition
+                  && ty.GetGenericTypeDefinition() = typedefof<Option<_>>)
+            then
+              TypeKind.Option
+            else
+              TypeKind.Union
           elif FSharpType.IsRecord(ty, true) then
             TypeKind.Record
           elif ty.IsEnum then

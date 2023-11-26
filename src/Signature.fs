@@ -119,3 +119,15 @@ let rec getPropertySignature (callingModule: string) (t: System.Type) =
         name
       else
         modulName + "." + name
+
+
+let getAnonymousFunctionSignatureForDefaultValue (t: System.Type) =
+  let genericArguments = genericArgumentList t
+  let parameters = genericArgumentListAsParameters t
+  genericArguments + parameters
+
+let getNamedFunctionSignatureForDefaultValue (t: System.Type) =
+  let name = getName t
+  let genericArguments = genericArgumentList t
+  let signature = name + genericArguments
+  signature
