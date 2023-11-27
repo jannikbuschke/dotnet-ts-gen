@@ -3,9 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TsGen", "src\TsGen.fsproj", "{102E2224-D5CC-4142-90BD-9F1B2102C50B}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TinyTypeGen", "src\TinyTypeGen.fsproj", "{102E2224-D5CC-4142-90BD-9F1B2102C50B}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Test", "test\Test.fsproj", "{2D00A625-E01B-42B8-AE9B-982D6B592BC1}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TinyTypeGen.Test", "test\TinyTypeGen.Test.fsproj", "{2D00A625-E01B-42B8-AE9B-982D6B592BC1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{D62BFD5F-6FE6-42D5-AA0D-9EFE4AB3DF1C}"
+	ProjectSection(SolutionItems) = preProject
+		publish.fsx = publish.fsx
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
