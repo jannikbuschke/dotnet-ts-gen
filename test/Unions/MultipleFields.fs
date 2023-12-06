@@ -50,7 +50,7 @@ let inputsCase1 =
 
 [<Theory>]
 [<MemberData(nameof inputsCase1)>]
-let ``Record - Case1: Fieldless Case - serialized`` (encoding: JsonUnionEncoding) (expected: string) =
+let ``Record - Case1: field-less Case - serialized`` (encoding: JsonUnionEncoding) (expected: string) =
   let some = serializeWithEncoding encoding (Du.Case1)
   Expect.similar some expected
 
@@ -197,7 +197,6 @@ let inputsCase5 =
 let ``Record - Case 5 named field - serialized`` (encoding: JsonUnionEncoding) (expected: string) =
   let some = serializeWithEncoding encoding (Du.Case5(0,"test",{SimpleRecord0.Name="rec0"}))
   Expect.similar some expected
-
 
 let typedef, value = renderTypeAndValue typedefof<Du>
 
