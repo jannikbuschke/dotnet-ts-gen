@@ -177,9 +177,9 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
       ())
 
     "" |> appendTo api
-    """export type Input = {{""" |> appendTo input
-    """export type Output = {{""" |> appendTo output
-    """export type Method = {{""" |> appendTo method
+    """export type Input = {""" |> appendTo input
+    """export type Output = {""" |> appendTo output
+    """export type Method = {""" |> appendTo method
 
     endpoints
     |> Seq.groupBy (fun v -> v.Method)
@@ -208,14 +208,14 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
 
         ())
 
-      """}}""" |> appendTo api
+      """}""" |> appendTo api
       "" |> appendTo api
 
       ())
 
-    """}}""" |> appendTo output
-    """}}""" |> appendTo input
-    """}}""" |> appendTo method
+    """}""" |> appendTo output
+    """}""" |> appendTo input
+    """}""" |> appendTo method
 
     api
       .Append(input.ToString())
