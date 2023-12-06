@@ -23,7 +23,6 @@
         <Compile Include="EmptyClass.fs" />
         <Compile Include="Unit.fs" />
         <Compile Include="SimpleRecord.fs" />
-        <Compile Include="DateTimes.fs" />
         <Compile Include="RenderModule.fs" />
         <Compile Include="RenderModule2.fs" />
         <Compile Include="SerializeSomeTypes.fs" />
@@ -37,6 +36,9 @@
         <Compile Include="Unions\SingleCaseMultipleFields.fs" />
         <Compile Include="Unions\RecordWithOption.fs" />
         <Compile Include="Unions\RecordWithResult.fs" />
+        <Compile Include="DateTime\DateOnly.fs" />
+        <Compile Include="DateTime\TimeOnly.fs" />
+        <Compile Include="DateTime\DateTimes.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 
