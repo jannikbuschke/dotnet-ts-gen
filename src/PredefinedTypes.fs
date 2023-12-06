@@ -127,6 +127,18 @@ let defaultTypes =
      { emptyPredefinedValues with
          InlineDefaultValue = Some "\"00:00:00\""
          Definition = Some "`${number}:${number}:${number}`" })
+    (typedefof<System.DateOnly>,
+     {
+         emptyPredefinedValues with
+             InlineDefaultValue = Some "\"0000-00-00\""
+             Definition = Some "\"${number}-${number}-${number}\""
+     })
+    (typedefof<System.TimeOnly>,
+     {
+         emptyPredefinedValues with
+             InlineDefaultValue = Some "\"00:00:00\""
+             Definition = Some "\"${number}:${number}:${number}\""
+     })
     (typedefof<System.Collections.Generic.KeyValuePair<_, _>>,
      { emptyPredefinedValues with
          InlineDefaultValue = Some "({Key:defaultTKey,Value:defaultTValue})"
