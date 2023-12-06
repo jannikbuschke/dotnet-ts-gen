@@ -8,12 +8,12 @@ let render (encoding: JsonUnionEncoding) (strategy: RenderStrategy) =
   let definition, value =
     if is JsonUnionEncoding.Untagged then
       "{\"value\":T} | null", "null"
+    elif (is JsonUnionEncoding.UnwrapOption) || (is JsonUnionEncoding.FSharpLuLike) then
+      "T | null", "null"
     elif (is JsonUnionEncoding.NamedFields) then
       "{\"Case\":\"Some\",\"Fields\":{\"value\":T}} | null", "null"
     elif is JsonUnionEncoding.ThothLike then
       "[\"Some\",T] | null", "null"
-    elif (is JsonUnionEncoding.UnwrapOption) || (is JsonUnionEncoding.FSharpLuLike) then
-      "T | null", "null"
     elif is (JsonUnionEncoding.ExternalTag ||| JsonUnionEncoding.UnwrapSingleFieldCases) then
       "{Some: T} | null", "null"
     elif is JsonUnionEncoding.InternalTag || is JsonUnionEncoding.ThothLike then
