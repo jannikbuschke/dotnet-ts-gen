@@ -137,7 +137,7 @@ let defaultTypes =
      {
          emptyPredefinedValues with
              InlineDefaultValue = Some "\"00:00:00\""
-             Definition = Some "`${number}:${number}:${number`"
+             Definition = Some "`${number}:${number}:${number}`"
      })
     (typedefof<System.Collections.Generic.KeyValuePair<_, _>>,
      { emptyPredefinedValues with
