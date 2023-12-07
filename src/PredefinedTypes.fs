@@ -126,12 +126,12 @@ let defaultTypes =
     (typedefof<System.TimeSpan>,
      { emptyPredefinedValues with
          InlineDefaultValue = Some "\"00:00:00\""
-         Definition = Some "`${number}:${number}:${number}`" })
+         Definition = Some "`${string}:${string}:${string}`" })
     (typedefof<System.DateOnly>,
      {
          emptyPredefinedValues with
              InlineDefaultValue = Some "\"0000-00-00\""
-             Definition = Some "\"${number}-${number}-${number}\""
+             Definition = Some "`${string}-${string}-${string}`"
      })
     (typedefof<System.TimeOnly>,
      {
