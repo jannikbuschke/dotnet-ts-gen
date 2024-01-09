@@ -1,5 +1,6 @@
 ﻿module TsGen.Collect
 
+open System.Collections.Generic
 open System.Reflection
 open System.Text.Json.Serialization.TypeCache
 open Microsoft.FSharp.Reflection
@@ -57,7 +58,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
             |> Seq.toList
 
           x
-        | TypeKind.Array -> [ t.GetElementType() ]
+        | TypeKind.Array -> [ t.GetElementType(); typedefof<IEnumerable<_>> ]
         | _ -> []
 
       let genericArgs =
