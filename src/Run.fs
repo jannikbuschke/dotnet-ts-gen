@@ -14,6 +14,8 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
   let renderModule (m: TsModule) =
 
     let deps = collect.GetModuleDependencies m
+    // For some types somehow System_Collections_Generic is not detected as a dependency
+    let deps = ("System_Collections_Generic":: deps) |> List.distinct
 
     let builder = StringBuilder()
 
@@ -64,7 +66,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
       let isCyclic = cyclics |> List.contains v
 
       let result =
-        // workaround for Bullable<Guid>
+        // workaround for Nullable<Guid>
         if
           v.IsGenericType && not v.IsGenericTypeDefinition
           && v.Name.Contains("Nullable")

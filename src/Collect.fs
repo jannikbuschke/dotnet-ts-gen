@@ -32,7 +32,6 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
     | true, value -> value.Dependencies
     | _ ->
       let kind = getKind t
-
       let result =
         match kind with
         | TypeKind.Other
@@ -46,8 +45,6 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
              else
                getGenericDefinitionAndArgumentsAsDependencies f.PropertyType)
            |> Seq.toList)
-
-
         | TypeKind.Union ->
           let x =
             (FSharpType.GetUnionCases t)
