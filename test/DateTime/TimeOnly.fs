@@ -50,7 +50,7 @@ let ``TimeOnly - definition`` () =
   Expect.similar
     definition
     """
-export type TimeOnly = "${number}:${number}:${number}"
+export type TimeOnly = `${number}:${number}:${number}`
 """
 
 [<Fact>]

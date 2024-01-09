@@ -1,10 +1,18 @@
 module Test.Arrays
 
-open Expecto
 open Xunit
 
 type A = { Title: string }
 type MyRecord = { Field1: string []; Field2: A [] }
+
+[<Fact>]
+let deps ()=
+  let init = TsGen.Collect.init TsGen.PredefinedTypes.defaultTypes
+  let modules = init.collectModules [typeof<MyRecord>]
+  let modules = modules |> List.map(fun m -> m, init.GetModuleDependencies m)
+  let dependencies = init.getDependencies typedefof<MyRecord array>
+  ()
+  
 
 let rendered, value = renderTypeAndValue typedefof<MyRecord>
 

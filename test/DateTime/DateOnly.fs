@@ -50,7 +50,7 @@ let ``DateOnly - definition`` () =
   Expect.similar
     definition
     """
-export type DateOnly = "${number}-${number}-${number}"
+export type DateOnly = `${number}-${number}-${number}`
 """
 
 [<Fact>]
