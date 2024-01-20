@@ -61,49 +61,49 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
 
     sorted
     |> List.distinct
-    |> List.map (fun v ->
-
-      let isCyclic = cyclics |> List.contains v
-
-      let result =
-        // workaround for Nullable<Guid>
-        if
-          v.IsGenericType && not v.IsGenericTypeDefinition
-          && v.Name.Contains("Nullable")
-        then
-          ""
-        else if isCyclic then
-          $"""
-  // This type has cyclic dependencies: {v.FullName}
-  // in general this should be avoided. We render a 'stub' value here that will be changed at the bottom of this file
-  {render.renderType v RenderStrategy.RenderDefinition}
-  {render.renderStubValue v}
-  """
-        else
-          render.renderType v RenderStrategy.RenderDefinitionAndValue
-
-      result)
-
-    |> List.map Utils.cleanTs
-    |> List.iter (fun v -> builder.AppendLine(v) |> ignore)
-
-    if cyclics.Length > 0 then
-      builder.AppendLine("// Render cyclic fixes")
-      |> ignore
-
-    cyclics
-    |> List.distinct
-    |> List.map (fun v ->
-      let name = getName v
-
-      $"""//
-  // the type {v.FullName} has cyclic dependencies
-  // in general this should be avoided
+    |> List.map(fun v -> render.renderType v RenderStrategy.RenderDefinition)
+  //   |> List.map (fun v ->
   //
-  Object.assign(default{name}, ({render.renderType v RenderStrategy.RenderValue}))
-  """)
+  //     let isCyclic = cyclics |> List.contains v
+  //
+  //     let result =
+  //       // workaround for Nullable<Guid>
+  //       if
+  //         v.IsGenericType && not v.IsGenericTypeDefinition
+  //         && v.Name.Contains("Nullable")
+  //       then
+  //         ""
+  //       else if isCyclic then
+  //         $"""
+  // // This type has cyclic dependencies: {v.FullName}
+  // // in general this should be avoided. We render a 'stub' value here that will be changed at the bottom of this file
+  // {render.renderType v RenderStrategy.RenderDefinition}
+  // """
+  // // {render.renderStubValue v}
+  //       else
+  //         render.renderType v RenderStrategy.RenderDefinition
+  //
+  //     result)
     |> List.map Utils.cleanTs
     |> List.iter (fun v -> builder.AppendLine(v) |> ignore)
+
+  //   if cyclics.Length > 0 then
+  //     builder.AppendLine("// Render cyclic fixes")
+  //     |> ignore
+  //
+  //   cyclics
+  //   |> List.distinct
+  //   |> List.map (fun v ->
+  //     let name = getName v
+  //
+  //     $"""//
+  // // the type {v.FullName} has cyclic dependencies
+  // // in general this should be avoided
+  // //
+  // Object.assign(default{name}, ({render.renderType v RenderStrategy.RenderValue}))
+  // """)
+  //   |> List.map Utils.cleanTs
+  //   |> List.iter (fun v -> builder.AppendLine(v) |> ignore)
 
     builder.ToString().Replace("\r\n", "\n")
 

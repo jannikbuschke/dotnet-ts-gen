@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <Version>0.2.1</Version>
+        <Authors>Jannik Buschke</Authors>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PackageId>TinyTypeGen.Giraffe</PackageId>
+        <RootNamespace>TinyTypeGen</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Library.fs" />
+        <PackageReference Include="Giraffe" Version="*" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\TinyTypeGen\TinyTypeGen.fsproj" />
+    </ItemGroup>
+
+</Project>

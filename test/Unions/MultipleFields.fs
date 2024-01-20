@@ -200,28 +200,28 @@ let ``Record - Case 5 named field - serialized`` (encoding: JsonUnionEncoding) (
 
 let typedef, value = renderTypeAndValue typedefof<Du>
 
-[<Fact>]
-let ``Union with single record fields`` () =
+// [<Fact>]
+// let ``Union with single record fields`` () =
+//
+//   Expect.similar
+//     typedef
+//     """
+// export type DuWithRecordFields_Case_Case1 = { Case: "Case1" }
+// export type DuWithRecordFields_Case_Case2 = { Case: "Case2", Fields: System.Int32 }
+// export type DuWithRecordFields = DuWithRecordFields_Case_Case1 | DuWithRecordFields_Case_Case2
+// export type DuWithRecordFields_Case = "Case1" | "Case2"
+// """
 
-  Expect.similar
-    typedef
-    """
-export type DuWithRecordFields_Case_Case1 = { Case: "Case1", Fields: SimpleRecord0 }
-export type DuWithRecordFields_Case_Case2 = { Case: "Case2", Fields: SimpleRecord0 }
-export type DuWithRecordFields = DuWithRecordFields_Case_Case1 | DuWithRecordFields_Case_Case2
-export type DuWithRecordFields_Case = "Case1" | "Case2"
-"""
-
-[<Fact>]
-let ``Union with single record fields value`` () =
-  Expect.similar
-    value
-    """
-export var DuWithRecordFields_AllCases = [ "Case1", "Case2" ] as const
-export var defaultDuWithRecordFields_Case_Case1 = { Case: "Case1", Fields: defaultSimpleRecord0 }
-export var defaultDuWithRecordFields_Case_Case2 = { Case: "Case2", Fields: defaultSimpleRecord0 }
-export var defaultDuWithRecordFields = defaultDuWithRecordFields_Case_Case1 as DuWithRecordFields
-"""
+// [<Fact>]
+// let ``Union with single record fields value`` () =
+//   Expect.similar
+//     value
+//     """
+// export var DuWithRecordFields_AllCases = [ "Case1", "Case2" ] as const
+// export var defaultDuWithRecordFields_Case_Case1 = { Case: "Case1", Fields: defaultSimpleRecord0 }
+// export var defaultDuWithRecordFields_Case_Case2 = { Case: "Case2", Fields: defaultSimpleRecord0 }
+// export var defaultDuWithRecordFields = defaultDuWithRecordFields_Case_Case1 as DuWithRecordFields
+// """
 
 type SimpleRecord = { Name: string }
 

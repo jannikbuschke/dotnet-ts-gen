@@ -95,6 +95,31 @@ let genericArgumentListAsParametersCall (t: System.Type) =
      |> String.concat ",")
   + ")"
 
+let rec getDuPropertySignature (callingModule: string) (t: System.Type) =
+  let kind = getKind t
+
+  match kind with
+  | TypeKind.Array -> getDuPropertySignature callingModule (typedefof<System.Collections.Generic.IEnumerable<_>>.MakeGenericType (t.GetElementType()))
+  | _ ->
+    let moduleName, name = getSignature t
+
+    let name =
+      if moduleName = callingModule then
+        name
+      else
+        moduleName + "." + name
+
+    if t.IsGenericType then
+      name + (genericArgumentList t)
+    else
+      let modulName = getModuleName t
+      let name = getName t
+
+      if modulName = callingModule then
+        name
+      else
+        modulName + "." + name
+
 let rec getPropertySignature (callingModule: string) (t: System.Type) =
   let kind = getKind t
 

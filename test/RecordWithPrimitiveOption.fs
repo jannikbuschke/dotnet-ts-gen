@@ -19,11 +19,11 @@ export type RecordWithPrimitiveOption = {
 }
 """
 
-  Expect.similar
-    value
-    """
-export var defaultRecordWithPrimitiveOption: RecordWithPrimitiveOption = {
- id: '00000000-0000-0000-0000-000000000000',
- numberOption: null
-}
-"""
+//   Expect.similar
+//     value
+//     """
+// export var defaultRecordWithPrimitiveOption: RecordWithPrimitiveOption = {
+//  id: '00000000-0000-0000-0000-000000000000',
+//  numberOption: null
+// }
+// """

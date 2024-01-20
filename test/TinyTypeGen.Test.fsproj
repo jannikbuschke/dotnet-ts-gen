@@ -36,6 +36,7 @@
         <Compile Include="Unions\SingleCaseMultipleFields.fs" />
         <Compile Include="Unions\RecordWithOption.fs" />
         <Compile Include="Unions\RecordWithResult.fs" />
+        <Compile Include="Unions\GenericDu.fs" />
         <Compile Include="DateTime\DateOnly.fs" />
         <Compile Include="DateTime\TimeOnly.fs" />
         <Compile Include="DateTime\DateTimes.fs" />

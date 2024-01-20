@@ -37,15 +37,18 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
   let renderSingleFieldUnionCaseDefinition (callingModule: string) (case: UnionCaseInfo) (fieldInfo: PropertyInfo) =
     $"""{{ Case: "{case.Name}", Fields: {getPropertySignature callingModule fieldInfo.PropertyType} }}"""
 
-  let renderMultiFieldUnionCaseDefinition (callingModule: string) (case: UnionCaseInfo) (fieldInfo: PropertyInfo list) =
+  let renderMultiFieldUnionCaseDefinition (callingModule: string) (outerDu: System.Type) (case: UnionCaseInfo) (fieldInfo: PropertyInfo list) =
     let fields =
       fieldInfo
       |> List.map (fun v ->
         (Utils.camelize v.Name)
         + ": "
-        + getPropertySignature callingModule v.PropertyType)
+        
+        + getDuPropertySignature callingModule v.PropertyType
+        )
       |> String.concat ", "
 
+    
     $"""{{ Case: "{case.Name}", Fields: {{ {fields} }} }}"""
 
   let getDefaultValue (callingModule: string) (propertyType: System.Type) =
@@ -138,22 +141,18 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
     let name = $"{name}{genericParameterPostfix}"
     name
 
-  let getMultiFieldCaseSignature (name: string) (fields: PropertyInfo list) (case: UnionCaseInfo) =
+  let getMultiFieldCaseSignature (outerDu: System.Type) (name: string) (fields: PropertyInfo list) (case: UnionCaseInfo) =
     let name = getFieldCaseName name case
-
-    let isGeneric = fields |> List.exists (fun v -> v.PropertyType.IsGenericParameter)
-
-    let genericParameterPostfix = if isGeneric then failwith "TODO" else ""
-
+    let genericParameterPostfix = genericArgumentList outerDu
     let name = $"{name}{genericParameterPostfix}"
     name
 
-  let renderDu (t: System.Type) (strategy: RenderStrategy) =
+  let renderDu (outerDu: System.Type) (strategy: RenderStrategy) =
 
-    let callingModule = getModuleName t
+    let callingModule = getModuleName outerDu
 
-    let name = getName t
-    let cases = (FSharpType.GetUnionCases t) |> Seq.toList
+    let name = getName outerDu
+    let cases = (FSharpType.GetUnionCases outerDu) |> Seq.toList
 
     let caseNameLiteral =
       cases |> List.map (fun v -> $"\"{v.Name}\"") |> String.concat " | "
@@ -166,7 +165,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
       | [] -> failwith "todo"
       | [ singleCase ] ->
         let caseFields = singleCase.GetFields() |> Seq.toList
-
+ 
         match caseFields with
         | [] -> $"""export type {singleCase.Name} = {singleCase.Name} // DU single case no fields"""
         | [ singleField ] ->
@@ -176,7 +175,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
           let prop = getPropertySignature callingModule singleField.PropertyType
           $"""export type {singleFieldCaseSignature} = {prop}"""
         | _ -> failwith "todo"
-
+ 
       | cases ->
         let renderCase (case: UnionCaseInfo) =
 
@@ -192,16 +191,16 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
 
             $"""export type {singleFieldCaseSignature} = {singleFieldUnionCaseDefinition}"""
           | fields ->
-            let singleFieldCaseSignature = getMultiFieldCaseSignature name fields case
+            let singleFieldCaseSignature = getMultiFieldCaseSignature outerDu name fields case
 
             let multiFieldUnionCaseDefinition =
-              renderMultiFieldUnionCaseDefinition callingModule case fields
+              renderMultiFieldUnionCaseDefinition callingModule outerDu case fields
 
             $"""export type {singleFieldCaseSignature} = {multiFieldUnionCaseDefinition}"""
 
         cases |> List.map renderCase |> String.concat System.Environment.NewLine
 
-    let anonymousFunctionSignature = getAnonymousFunctionSignatureForDefaultValue t
+    let anonymousFunctionSignature = getAnonymousFunctionSignatureForDefaultValue outerDu
 
     let renderedCaseDefaultNamesAndValues =
       match cases with
@@ -229,7 +228,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
             let singleFieldUnionCaseDefaultValue =
               renderSingleFieldUnionCaseDefaultValue callingModule case singleField
 
-            if t.IsGenericType then
+            if outerDu.IsGenericType then
               $"""export var default{singleFieldCaseSignature} = {anonymousFunctionSignature} => {singleFieldUnionCaseDefaultValue}"""
             else
               $"""export var default{singleFieldCaseSignature} = {singleFieldUnionCaseDefaultValue}"""
@@ -239,7 +238,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
             let multiFieldUnionCaseDefaultValue =
               renderMultiFieldUnionCaseDefaultValue callingModule case fields
 
-            if t.IsGenericType then
+            if outerDu.IsGenericType then
               $"""export var default{signature} = {anonymousFunctionSignature} => {multiFieldUnionCaseDefaultValue}"""
             else
               $"""export var default{signature} = {multiFieldUnionCaseDefaultValue}"""
@@ -266,18 +265,18 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
         let singleFieldCaseSignature = getSingleFieldCaseSignature name singleField case
         singleFieldCaseSignature
       | fields ->
-        let singleFieldCaseSignature = getMultiFieldCaseSignature name fields case
+        let singleFieldCaseSignature = getMultiFieldCaseSignature outerDu name fields case
         singleFieldCaseSignature
 
     let caseSignatures = cases |> List.map renderCaseSignature |> String.concat " | "
 
-    let callParameters = genericArgumentListAsParametersCall t
+    let callParameters = genericArgumentListAsParametersCall outerDu
 
-    let signature = getNamedFunctionSignatureForDefaultValue t
+    let signature = getNamedFunctionSignatureForDefaultValue outerDu
     let defaultCase = firstCaseName
 
     let renderedDefaultCase =
-      if t.IsGenericType then
+      if outerDu.IsGenericType then
         $"""export var default{name} = {anonymousFunctionSignature} => {defaultCase}{callParameters} as {signature}"""
       else
         $"""export var default{name} = {defaultCase} as {signature}"""

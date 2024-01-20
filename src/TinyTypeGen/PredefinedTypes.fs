@@ -53,6 +53,22 @@ let defaultTypes =
      { emptyPredefinedValues with
          InlineDefaultValue = Some "0"
          Definition = Some "number" })
+    (typeof<int16>,
+     { emptyPredefinedValues with
+         InlineDefaultValue = Some "0"
+         Definition = Some "number" })
+    (typeof<uint16>,
+     { emptyPredefinedValues with
+         InlineDefaultValue = Some "0"
+         Definition = Some "number" })
+    (typeof<int8>,
+     { emptyPredefinedValues with
+         InlineDefaultValue = Some "0"
+         Definition = Some "number" })
+    (typeof<uint8>,
+     { emptyPredefinedValues with
+         InlineDefaultValue = Some "0"
+         Definition = Some "number" })
     (typeof<uint32>,
      { emptyPredefinedValues with
          InlineDefaultValue = Some "0"
