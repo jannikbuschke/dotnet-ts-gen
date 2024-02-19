@@ -12,7 +12,6 @@ let deps ()=
   let modules = modules |> List.map(fun m -> m, init.GetModuleDependencies m)
   let dependencies = init.getDependencies typedefof<MyRecord array>
   ()
-  
 
 let rendered, value = renderTypeAndValue typedefof<MyRecord>
 

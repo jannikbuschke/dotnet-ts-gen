@@ -43,7 +43,6 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
       |> List.map (fun v ->
         (Utils.camelize v.Name)
         + ": "
-        
         + getDuPropertySignature callingModule v.PropertyType
         )
       |> String.concat ", "
@@ -162,7 +161,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
 
     let renderedCaseDefinitions =
       match cases with
-      | [] -> failwith "todo"
+      | [] -> failwith "not yet implemented"
       | [ singleCase ] ->
         let caseFields = singleCase.GetFields() |> Seq.toList
  
@@ -174,7 +173,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
 
           let prop = getPropertySignature callingModule singleField.PropertyType
           $"""export type {singleFieldCaseSignature} = {prop}"""
-        | _ -> failwith "todo"
+        | _ -> failwith "not yet implemented"
  
       | cases ->
         let renderCase (case: UnionCaseInfo) =

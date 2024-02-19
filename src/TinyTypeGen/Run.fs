@@ -145,7 +145,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
     ()
 
   let renderTypes path =
-    printfn "Generate TS types..."
+    // printfn "Generate TS types..."
 
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
 
@@ -162,7 +162,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
     ()
 
   let renderApi () =
-    printfn "Generate TS api..."
+    // printfn "Generate TS api..."
 
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
 

@@ -76,24 +76,26 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
       name = moduleName)
 
   let allTypes = System.Collections.Generic.HashSet<System.Type>()
+  let collectDependencies (t:System.Type)=
+    let rec collectDependencies (depth: int) (t: System.Type) =
+      if depth > 100 then
+        failwith(sprintf "too deep (current type = %s)" t.FullName)
 
-  let rec collectDependenciesTransitively (depth: int) (t: System.Type) =
-    if depth > 20 then failwith "too deep"
+      if allTypes.Contains t then
+        ()
+      else
+        allTypes.Add t |> ignore
 
-    if allTypes.Contains t then
-      ()
-    else
-      allTypes.Add t |> ignore
+        t
+        |> getDependencies
+        |> List.iter (collectDependencies (depth + 1))
 
-      t
-      |> getDependencies
-      |> List.iter (collectDependenciesTransitively (depth + 1))
-
-      ()
+        ()
+    collectDependencies 0 t
 
   let collectModules (types: System.Type list) =
     (typedefof<obj> :: typedefof<System.Byte> :: types)
-    |> List.iter (collectDependenciesTransitively 0)
+    |> List.iter (collectDependencies)
 
     allTypes
     |> Seq.toList
