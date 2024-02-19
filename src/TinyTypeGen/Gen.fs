@@ -396,12 +396,15 @@ export type {name}_Case = {caseNameLiteral}"""
           ""
         else
           let result = renderRecord t strategy
-          printfn "result %A" result
           result
       | TypeKind.Union -> renderDu t strategy
       | TypeKind.Array ->
+        // Maybe not good
         let name = getName t
-        let definition = $"""export type {name}<T> = Array<T> // fullname {t.FullName}"""
+        let elementType = t.GetElementType()
+        let elModuleName, elName = getSignature elementType
+        let elementTypeName = if elModuleName = getModuleName t then elName else elModuleName + "." + elName
+        let definition = $"""export type {name} = Array<{elementTypeName}> // fullname {t.FullName}"""
         let value = $"""export var default{name}: <T>(t:T) => {name}<T> = <T>(t:T) => []"""
 
         renderDefinitionAndOrValue definition value strategy

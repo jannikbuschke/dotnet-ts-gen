@@ -37,3 +37,30 @@ export var defaultMyRecord: MyRecord = {
  field2: []
 }
 """
+
+
+let stringArray = typedefof<string array>
+
+[<Fact>]
+let ``StringArray definition`` () =
+  let rendered = renderTypeDef stringArray
+  Expect.similar
+    rendered
+    """
+export type StringArray = Array<String>  // fullname System.String[]
+"""
+
+type RecordWithListOfStringArrayProperty={
+  Prop: ResizeArray<string array>
+}
+
+[<Fact>]
+let ``Record with List<StringArray> prop definition`` () =
+  let rendered = renderTypeDef typedefof<RecordWithListOfStringArrayProperty>
+  Expect.similar
+    rendered
+    """
+export type RecordWithListOfStringArrayProperty = {
+ prop: System_Collections_Generic.List<System.StringArray>
+}
+"""

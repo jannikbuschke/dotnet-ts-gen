@@ -1,6 +1,7 @@
 ﻿[<AutoOpen>]
 module TsGen.Signature
 
+open System
 open System.Reflection
 open System.Text.Json.Serialization
 open TsGen
@@ -70,6 +71,7 @@ let rec getGenericParameterValues (callingModule: string) (t: System.Type) =
     ""
 
 let getFullTypeName (t: System.Type) = t.FullName
+
 
 let genericArgumentList (t: System.Type) =
   match t.GetGenericArguments() |> Seq.toList with

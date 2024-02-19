@@ -11,6 +11,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TinyTypeGen.Giraffe", "src\
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TinyTypeGen.NodaTime", "src\TinyTypeGen.NodaTime\TinyTypeGen.NodaTime.fsproj", "{0CF44D96-C042-497A-9D6A-C1ECB8C08F85}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TinyTypeGen.Test", "test\TinyTypeGen.Test.fsproj", "{28D8A567-3F9A-45BC-AE1D-361C36330A0E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{0CF44D96-C042-497A-9D6A-C1ECB8C08F85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CF44D96-C042-497A-9D6A-C1ECB8C08F85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CF44D96-C042-497A-9D6A-C1ECB8C08F85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28D8A567-3F9A-45BC-AE1D-361C36330A0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28D8A567-3F9A-45BC-AE1D-361C36330A0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28D8A567-3F9A-45BC-AE1D-361C36330A0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28D8A567-3F9A-45BC-AE1D-361C36330A0E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{E7278856-4D94-4932-9707-3902B267DF90} = {6DB70BCC-924E-494E-8495-25EE43D6772A}
