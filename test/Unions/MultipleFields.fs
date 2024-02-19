@@ -228,6 +228,7 @@ type SimpleRecord = { Name: string }
 type DuWithMultipleFields =
   | Case1 of System.Guid * string
   | Case2 of Foo: string * SimpleRecord * X: int32
+  | Case3 of Id: System.Guid * Comment: string option
 
 let typedef2, value2 = renderTypeAndValue typedefof<DuWithMultipleFields>
 
@@ -240,19 +241,20 @@ let deserialize<'t> = deserializeWithOptions<'t> options
 // TODO: add generic version
 [<Fact>]
 let ``Union with multiple fields - definition`` () =
-  let serialized0 =
-    serialize (DuWithMultipleFields.Case1(System.Guid.NewGuid(), "Hello world"))
-
-  let serialized1 =
-    serialize (DuWithMultipleFields.Case2("FIII", { Name = "string" }, 5))
+  // let serialized0 =
+  //   serialize (DuWithMultipleFields.Case1(System.Guid.NewGuid(), "Hello world"))
+  //
+  // let serialized1 =
+  //   serialize (DuWithMultipleFields.Case2("FIII", { Name = "string" }, 5))
 
   Expect.similar
     typedef2
     """
 export type DuWithMultipleFields_Case_Case1 = { Case: "Case1", Fields: { item1: System.Guid, item2: System.String } }
 export type DuWithMultipleFields_Case_Case2 = { Case: "Case2", Fields: { foo: System.String, item2: SimpleRecord, x: System.Int32 } }
-export type DuWithMultipleFields = DuWithMultipleFields_Case_Case1 | DuWithMultipleFields_Case_Case2
-export type DuWithMultipleFields_Case = "Case1" | "Case2"
+export type DuWithMultipleFields_Case_Case3 = { Case: "Case3", Fields: { id: System.Guid, comment: Microsoft_FSharp_Core.FSharpOption<System.String> } }
+export type DuWithMultipleFields = DuWithMultipleFields_Case_Case1 | DuWithMultipleFields_Case_Case2 | DuWithMultipleFields_Case_Case3
+export type DuWithMultipleFields_Case = "Case1" | "Case2" | "Case3"
 """
 
 [<Fact>]
@@ -260,8 +262,9 @@ let ``Union with multiple fields - value`` () =
   Expect.similar
     value2
     """
-export var DuWithMultipleFields_AllCases = [ "Case1", "Case2" ] as const
+export var DuWithMultipleFields_AllCases = [ "Case1", "Case2", "Case3" ] as const
 export var defaultDuWithMultipleFields_Case_Case1 = { Case: "Case1", Fields: { Item1: '00000000-0000-0000-0000-000000000000', Item2: '' } }
 export var defaultDuWithMultipleFields_Case_Case2 = { Case: "Case2", Fields: { Foo: '', Item2: defaultSimpleRecord, X: 0 } }
+export var defaultDuWithMultipleFields_Case_Case3 = { Case: "Case3", Fields: { Id: '00000000-0000-0000-0000-000000000000', Comment: Microsoft_FSharp_Core.defaultFSharpOption(System.defaultString) } }
 export var defaultDuWithMultipleFields = defaultDuWithMultipleFields_Case_Case1 as DuWithMultipleFields
 """

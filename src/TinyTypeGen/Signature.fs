@@ -112,7 +112,10 @@ let rec getDuPropertySignature (callingModule: string) (t: System.Type) =
         moduleName + "." + name
 
     if t.IsGenericType then
-      name + (genericArgumentList t)
+      if t.IsGenericTypeDefinition then
+        name + (genericArgumentList t)
+      else
+        name + (getGenericParameters callingModule t)
     else
       let modulName = getModuleName t
       let name = getName t
