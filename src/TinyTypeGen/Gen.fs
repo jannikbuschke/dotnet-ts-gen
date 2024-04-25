@@ -47,7 +47,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
         )
       |> String.concat ", "
 
-    
+
     $"""{{ Case: "{case.Name}", Fields: {{ {fields} }} }}"""
 
   let getDefaultValue (callingModule: string) (propertyType: System.Type) =
@@ -164,7 +164,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
       | [] -> failwith "not yet implemented"
       | [ singleCase ] ->
         let caseFields = singleCase.GetFields() |> Seq.toList
- 
+
         match caseFields with
         | [] -> $"""export type {singleCase.Name} = {singleCase.Name} // DU single case no fields"""
         | [ singleField ] ->
@@ -174,7 +174,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
           let prop = getPropertySignature callingModule singleField.PropertyType
           $"""export type {singleFieldCaseSignature} = {prop}"""
         | _ -> failwith "not yet implemented"
- 
+
       | cases ->
         let renderCase (case: UnionCaseInfo) =
 
@@ -292,24 +292,35 @@ export type {name}_Case = {caseNameLiteral}"""
 
     renderDefinitionAndOrValue definition value strategy
 
+  let ignoreList = [typedefof<FSharpFunc<_, _>>]
+  let isIgnored (x: System.Type) =
+      let t =
+        if x.IsGenericTypeDefinition then x else if x.IsGenericType then x.GetGenericTypeDefinition() else x
+      let shouldBeIgnored = ignoreList |> List.exists (fun v -> v = t)
+      shouldBeIgnored
+
+  let getProperties (t: System.Type) =
+    t.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
+    |> Seq.filter (fun x -> not (isIgnored x.PropertyType))
+
   let renderRecord (t: System.Type) (strategy: RenderStrategy) =
     if t.IsGenericType && not t.IsGenericTypeDefinition then
       failwith "A definition and value for a generic type that is not a generic type definition cannot be rendered"
 
     let callingModule = getModuleName t
     let name = getName t
-    let properties = t.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
+    let properties = getProperties t
 
     let fields =
       properties
-      |> Array.map (renderPropertyNameAndDefinition callingModule)
+      |> Seq.map (renderPropertyNameAndDefinition callingModule)
       |> String.concat System.Environment.NewLine
 
     let genericArguments = genericArgumentList t
 
     let fieldValues =
       properties
-      |> Array.map (renderPropertyNameAndValue true callingModule)
+      |> Seq.map (renderPropertyNameAndValue true callingModule)
       |> String.concat $",{System.Environment.NewLine}"
 
     let anonymousFunctionSignature = getAnonymousFunctionSignatureForDefaultValue t

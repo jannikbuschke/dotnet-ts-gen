@@ -29,6 +29,7 @@
         <Compile Include="NodaTime.fs" />
         <Compile Include="CircularReference.fs" />
         <Compile Include="RecursiveType.fs" />
+        <Compile Include="FsFunc.fs" />
         <Compile Include="Unions\Utils.fs" />
         <Compile Include="Unions\SingleCaseSingleField.fs" />
         <Compile Include="Unions\MultipleFields.fs" />

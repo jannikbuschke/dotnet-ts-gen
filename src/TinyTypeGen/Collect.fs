@@ -7,6 +7,8 @@ open Microsoft.FSharp.Reflection
 
 let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
 
+  let ignoreList = [typedefof<FSharpFunc<_, _>>]
+
   let rec getGenericDefinitionAndArgumentsAsDependencies (t: System.Type) =
     if t.IsGenericTypeDefinition then
       failwith "t is a generic type definition but should not be"
@@ -16,22 +18,30 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
 
     let genericDefinition = t.GetGenericTypeDefinition()
 
-    let args =
-      t.GenericTypeArguments
-      |> Seq.collect (fun v ->
-        if v.IsGenericType && not v.IsGenericTypeDefinition then
-          getGenericDefinitionAndArgumentsAsDependencies v
-        else
-          [ v ])
-      |> Seq.toList
+    if ignoreList |> List.contains genericDefinition then
+      []
+    else
 
-    [ genericDefinition ] @ args
+      let args =
+        t.GenericTypeArguments
+        |> Seq.collect (fun v ->
+          if v.IsGenericType && not v.IsGenericTypeDefinition then
+            getGenericDefinitionAndArgumentsAsDependencies v
+          else
+            [ v ])
+        |> Seq.toList
 
+      [ genericDefinition ] @ args
+
+  //maybe this should be recursive
   let _getDependencies (t: System.Type) =
+
+    // Microsoft_FSharp_Core.FSharpFunc
     match defaultTypes.TryGetValue t with
     | true, value -> value.Dependencies
     | _ ->
       let kind = getKind t
+
       let result =
         match kind with
         | TypeKind.Other
@@ -55,7 +65,9 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
             |> Seq.toList
 
           x
-        | TypeKind.Array -> [ t.GetElementType(); typedefof<IEnumerable<_>> ]
+        | TypeKind.Array ->
+          [ t.GetElementType()
+            typedefof<IEnumerable<_>> ]
         | _ -> []
 
       let genericArgs =
@@ -76,10 +88,11 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
       name = moduleName)
 
   let allTypes = System.Collections.Generic.HashSet<System.Type>()
-  let collectDependencies (t:System.Type)=
+
+  let collectDependencies (t: System.Type) =
     let rec collectDependencies (depth: int) (t: System.Type) =
       if depth > 100 then
-        failwith(sprintf "too deep (current type = %s)" t.FullName)
+        failwith (sprintf "too deep (current type = %s)" t.FullName)
 
       if allTypes.Contains t then
         ()
@@ -91,6 +104,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
         |> List.iter (collectDependencies (depth + 1))
 
         ()
+
     collectDependencies 0 t
 
   let collectModules (types: System.Type list) =
@@ -113,7 +127,9 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
         TopologicalSort.topologicalSort (getFilteredDeps moduleName) (items |> List.distinct)
 
       let sorted2 = sorted |> List.distinct
-      { Name = moduleName; Types = sorted2 })
+
+      { Name = moduleName
+        Types = (items |> List.distinct) })
 
   let getModuleDependencies (n: TsModule) =
     let deps =
