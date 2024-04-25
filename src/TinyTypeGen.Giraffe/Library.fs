@@ -1,5 +1,6 @@
 ﻿module TinyTypeGen.Giraffe
 
+open System.Net
 open System.Threading.Tasks
 open Giraffe
 open Microsoft.AspNetCore.Http
@@ -17,7 +18,8 @@ let queryEndpointWithoutInput<'response, 'error> (url: string) (handler: HttpCon
       let! response = handler ctx ()
       match response with
       | Result.Ok result -> return! json result next ctx
-      | Result.Error error -> return! json error next ctx
+      | Result.Error error ->
+        return! (setStatusCode ((int) HttpStatusCode.BadRequest) >=> json error) next ctx
     })
 
 let queryEndpoint<'request, 'response, 'error> (url: string) (handler: HttpContext -> 'request -> Task<Result<'response, 'error>>) =
@@ -28,7 +30,8 @@ let queryEndpoint<'request, 'response, 'error> (url: string) (handler: HttpConte
 
       match response with
       | Result.Ok result -> return! json result next ctx
-      | Result.Error error -> return! json error next ctx
+      | Result.Error error ->
+        return! (setStatusCode ((int) HttpStatusCode.BadRequest) >=> json error) next ctx
     })
 
 let mutationEndpoint<'request, 'response, 'error> (url: string) (handler: HttpContext -> 'request -> Task<Result<'response, 'error>>) =
@@ -39,7 +42,8 @@ let mutationEndpoint<'request, 'response, 'error> (url: string) (handler: HttpCo
 
       match response with
       | Result.Ok result -> return! json result next ctx
-      | Result.Error error -> return! json error next ctx
+      | Result.Error error ->
+        return! (setStatusCode ((int) HttpStatusCode.BadRequest) >=> json error) next ctx
     })
 
 let toGiraffeEndpoint (e: TsGen.ApiEndpoint * HttpHandler) =
