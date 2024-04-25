@@ -10,7 +10,7 @@ let ``Unit`` () =
   Expect.similar
     rendered
     """
-export type Unit = {}
+export type Unit = null
 """
 
 [<Fact>]
@@ -18,5 +18,5 @@ let ``Unit value`` () =
   Expect.similar
     value
     """
-export var defaultUnit: Unit = ({})
+export var defaultUnit: Unit = null
 """

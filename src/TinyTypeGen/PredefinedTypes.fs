@@ -53,6 +53,14 @@ let defaultTypes =
      { emptyPredefinedValues with
          InlineDefaultValue = Some "0"
          Definition = Some "number" })
+    (typeof<single>,//float32
+     { emptyPredefinedValues with
+         InlineDefaultValue = Some "0"
+         Definition = Some "number" })
+    (typeof<decimal>,
+     { emptyPredefinedValues with
+         InlineDefaultValue = Some "0"
+         Definition = Some "number" })
     (typeof<int16>,
      { emptyPredefinedValues with
          InlineDefaultValue = Some "0"
@@ -96,8 +104,8 @@ let defaultTypes =
     (typeof<obj>, { emptyPredefinedValues with InlineDefaultValue = Some "{}" })
     (typeof<unit>,
      { emptyPredefinedValues with
-         Definition = Some("{}")
-         InlineDefaultValue = Some "({})" })
+         Definition = Some("null")
+         InlineDefaultValue = Some "null" })
     (typedefof<System.Tuple<_, _>>,
      { emptyPredefinedValues with
          InlineDefaultValue = Some "[defaultT1,defaultT2]"
@@ -119,6 +127,10 @@ let defaultTypes =
          InlineDefaultValue = Some "[]"
          Definition = Some "Array<T>" })
     (typedefof<System.Collections.Generic.IReadOnlySet<_>>,
+     { emptyPredefinedValues with
+         InlineDefaultValue = Some "[]"
+         Definition = Some "Array<T>" })
+    (typedefof<System.Collections.Generic.ICollection<_>>,
      { emptyPredefinedValues with
          InlineDefaultValue = Some "[]"
          Definition = Some "Array<T>" })
