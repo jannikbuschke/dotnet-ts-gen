@@ -84,13 +84,16 @@ let execute =
     (deleteFolder ".\\src\\TinyTypeGen\\bin")
     >> (deleteFolder ".\\src\\TinyTypeGen.Giraffe\\bin")
     >> (deleteFolder ".\\src\\TinyTypeGen.NodaTime\\bin")
+    >> (deleteFolder ".\\src\\TinyTypeGen.AspNetCore\\bin")
     >> restore
     >> pack ".\\src\\TinyTypeGen\\TinyTypeGen.fsproj"
     >> pack ".\\src\\TinyTypeGen.Giraffe\\TinyTypeGen.Giraffe.fsproj"
     >> pack ".\\src\\TinyTypeGen.NodaTime\\TinyTypeGen.NodaTime.fsproj"
+    >> pack ".\\src\\TinyTypeGen.AspNetCore\\TinyTypeGen.AspNetCore.fsproj"
     >> publish ".\\src\\TinyTypeGen\\bin\\Release" "TinyTypeGen.*.nupkg"
     >> publish ".\\src\\TinyTypeGen.Giraffe\\bin\\Release" "TinyTypeGen.*.nupkg"
     >> publish ".\\src\\TinyTypeGen.NodaTime\\bin\\Release" "TinyTypeGen.*.nupkg"
+    >> publish ".\\src\\TinyTypeGen.AspNetCore\\bin\\Release" "TinyTypeGen.*.nupkg"
 
 
 execute ()

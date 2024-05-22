@@ -8,7 +8,6 @@
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <PackageId>TinyTypeGen.Giraffe</PackageId>
-        <RootNamespace>TinyTypeGen</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
