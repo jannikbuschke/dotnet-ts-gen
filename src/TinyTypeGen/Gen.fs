@@ -304,7 +304,8 @@ export type {name}_Case = {caseNameLiteral}"""
     |> Seq.filter (fun x -> not (isIgnored x.PropertyType))
 
   let renderRecord (t: System.Type) (strategy: RenderStrategy) =
-    if t.IsGenericType && not t.IsGenericTypeDefinition then
+    let isAnonymous = isAnonymousRecord t
+    if t.IsGenericType && not t.IsGenericTypeDefinition && not isAnonymous then
       failwith "A definition and value for a generic type that is not a generic type definition cannot be rendered"
 
     let callingModule = getModuleName t
@@ -316,7 +317,7 @@ export type {name}_Case = {caseNameLiteral}"""
       |> Seq.map (renderPropertyNameAndDefinition callingModule)
       |> String.concat System.Environment.NewLine
 
-    let genericArguments = genericArgumentList t
+    let genericArguments = if not isAnonymous then genericArgumentList t else ""
 
     let fieldValues =
       properties
@@ -404,7 +405,10 @@ export type {name}_Case = {caseNameLiteral}"""
       | TypeKind.Option -> TsGen.Option.render jsonUnionEncoding strategy
       | TypeKind.Record ->
         if t.IsGenericType && not t.IsGenericTypeDefinition then
-          ""
+          if isAnonymousRecord t then
+            renderRecord t strategy
+          else
+            ""
         else
           let result = renderRecord t strategy
           result

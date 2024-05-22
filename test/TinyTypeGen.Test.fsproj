@@ -18,6 +18,7 @@
         <Compile Include="Arrays.fs" />
         <Compile Include="Object.fs" />
         <Compile Include="RecordWithList.fs" />
+        <Compile Include="AnonymousTypes.fs" />
         <Compile Include="RecordWithPrimitiveOption.fs" />
         <Compile Include="NestedGenerics.fs" />
         <Compile Include="EmptyClass.fs" />

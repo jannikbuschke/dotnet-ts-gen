@@ -14,11 +14,15 @@ let getModuleName (t: System.Type) =
   else
     "___"
 
+let isAnonymousRecord (t: System.Type) = t.Name.StartsWith "<>f__AnonymousType"
+
 let getName (t: System.Type) =
   let name = t.Name.Split("`").[0]
 
   if t.IsArray then
     name.Replace("[]", "") + "Array"
+  elif isAnonymousRecord t then
+    name.Replace("<>f__","f__")
   else
     name
 
@@ -74,14 +78,17 @@ let getFullTypeName (t: System.Type) = t.FullName
 
 
 let genericArgumentList (t: System.Type) =
-  match t.GetGenericArguments() |> Seq.toList with
-  | [] -> ""
-  | arguments ->
-    "<"
-    + (arguments
-       |> List.map (fun v -> v.Name)
-       |> String.concat ",")
-    + ">"
+  if isAnonymousRecord t then
+    ""
+  else
+    match t.GetGenericArguments() |> Seq.toList with
+    | [] -> ""
+    | arguments ->
+      "<"
+      + (arguments
+         |> List.map (fun v -> v.Name)
+         |> String.concat ",")
+      + ">"
 
 let genericArgumentListAsParameters (t: System.Type) =
   "("
@@ -140,7 +147,10 @@ let rec getPropertySignature (callingModule: string) (t: System.Type) =
         moduleName + "." + name
 
     if t.IsGenericType then
-      name + (getGenericParameters callingModule t)
+      if isAnonymousRecord t then
+        name
+      else
+        name + (getGenericParameters callingModule t)
     else
       let modulName = getModuleName t
       let name = getName t
