@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <Version>0.16.0</Version>
+        <Authors>Jannik Buschke</Authors>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PackageId>TinyTypeGen.AspNetCore</PackageId>
+        <RootNamespace>TinyTypeGen.AspNet</RootNamespace>
+    </PropertyGroup>
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Library.fs"/>
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\TinyTypeGen\TinyTypeGen.fsproj" />
+    </ItemGroup>
+
+</Project>
