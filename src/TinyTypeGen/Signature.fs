@@ -25,7 +25,7 @@ let getModuleName (t: System.Type) =
 
   if t.Namespace <> null then
     let ns =
-      if t.FullName <> null && not t.IsGenericParameter && t.FullName.Contains "+" && isTypeDeclaredInModule t then
+      if t.FullName <> null && not t.IsGenericType && not t.IsGenericParameter && t.FullName.Contains "+" && isTypeDeclaredInModule t then
         // static nested class
         let name = t.Name
         let fullname = t.FullName
