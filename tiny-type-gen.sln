@@ -15,6 +15,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TinyTypeGen.Test", "test\Ti
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TinyTypeGen.AspNetCore", "src\TinyTypeGen.AspNetCore\TinyTypeGen.AspNetCore.fsproj", "{82289323-A82C-4606-BB49-CC344205325A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{AE802319-A01C-4A9F-9365-E426EE5A8888}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +26,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AE802319-A01C-4A9F-9365-E426EE5A8888}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE802319-A01C-4A9F-9365-E426EE5A8888}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7278856-4D94-4932-9707-3902B267DF90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E7278856-4D94-4932-9707-3902B267DF90}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7278856-4D94-4932-9707-3902B267DF90}.Release|Any CPU.ActiveCfg = Release|Any CPU
