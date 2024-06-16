@@ -9,18 +9,36 @@ open Microsoft.FSharp.Reflection
 open TypeCache
 open System.Linq
 
+/// Checks if a type is declared in a module
+let isTypeDeclaredInModule (t: Type) =
+    match t.DeclaringType with
+    | null -> false
+    | dt when dt.IsClass && dt.IsAbstract && dt.IsSealed ->
+        // F# modules are static classes (abstract and sealed)
+        true
+    | _ -> false
+
 let getModuleName (t: System.Type) =
   let name = t.Name
   let fullname = t.FullName
   let ns = t.Namespace
 
   if t.Namespace <> null then
-    if t.FullName.Contains "+" then
-      // static nested class
-      let parts = t.FullName.Split("+")
-      parts.Take(parts.Length - 1) |> String.concat "_"
+    let ns =
+      if t.FullName <> null && not t.IsGenericParameter && t.FullName.Contains "+" && isTypeDeclaredInModule t then
+        // static nested class
+        let name = t.Name
+        let fullname = t.FullName
+        let declaringType = t.DeclaringType
+        let parts = t.FullName.Split("+")
+        (parts.Take(parts.Length - 1) |> String.concat "_")
+      else
+        t.Namespace
+    let result = ns.Replace(".","_")
+    if result.Contains("Test") then
+      result.Replace("Test.T", "Test_T")
     else
-      t.Namespace.Replace(".", "_")
+      result
   else
     "___"
 

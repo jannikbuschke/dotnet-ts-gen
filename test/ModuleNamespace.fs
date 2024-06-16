@@ -11,5 +11,5 @@ module M2 =
 [<Fact>]
 let ``Render Module types in Module namespace`` () =
   let moduleName = TsGen.Signature.getModuleName typedefof<M1.M1Type>
-  Expect.equal moduleName "Test.ModuleTypes_M1" "should equal"
+  Expect.equal moduleName "Test_ModuleTypes_M1" "should equal"
 
