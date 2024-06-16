@@ -34,14 +34,13 @@ class Build : NukeBuild
     Project AspNetCoreProject => Solution.src.TinyTypeGen_AspNetCore;
     Project GiraffeProject => Solution.src.TinyTypeGen_Giraffe;
 
-    private static string GetVersion()
+    static string GetVersion()
     {
         var versionJson = File.ReadAllText(RootDirectory / "version.json");
         var v = JsonSerializer.Deserialize<VersionInf>(versionJson);
         var version = v.version.Split("-");
         var versionPrefix = version[0];
         var versionSuffix = version.Length > 1 ? "-" + version[1] : null;
-        Log.Information("version = {Value} {suffix}", versionPrefix, versionSuffix);
         var ancestor = GitTasks.Git($"merge-base {GitTasks.GitCurrentBranch()} main", workingDirectory: null, logOutput: false)
             .Select(v => v.Text)
             .Single();
@@ -49,8 +48,21 @@ class Build : NukeBuild
             .Select(v => v.Text)
             .Single();
         var result = $"{versionPrefix}.0.{count}{versionSuffix}";
+        Log.Information("version = {Value}", result);
         return result;
     }
+
+    Target Clean => _ => _.Executes(() =>
+    {
+        if (Directory.Exists(OutputDirectory))
+        {
+            foreach (var file in Directory.EnumerateFiles(OutputDirectory))
+            {
+                Log.Information("file {value}", file);
+                File.Delete(file);
+            }
+        }
+    });
 
     Target Restore => _ => _
         .Executes(() =>
@@ -59,28 +71,62 @@ class Build : NukeBuild
         });
 
     Target Compile => _ => _
-        .DependsOn(Restore)
+        .DependsOn(Restore, Clean)
         .Executes(() =>
         {
             var version = GetVersion();
             DotNetTasks.DotNetBuild(_ => _
-                    .SetProjectFile(CoreProject)
-                    .SetConfiguration("Release")
-                    .SetVersion(version)
+                .SetProjectFile(Solution)
+                .SetConfiguration("Release")
+                .SetVersion(version)
             );
         });
+
+    AbsolutePath OutputDirectory = RootDirectory / "output";
 
     Target Pack => _ => _
         .DependsOn(Compile)
         .Executes(() =>
         {
+            var version = GetVersion();
             DotNetTasks.DotNetPack(_ => _
                 .SetConfiguration("Release")
-                .SetProject(Solution)
-                .EnableNoRestore()
+                .SetProject(CoreProject)
+                .SetVersion(version)
                 .EnableNoBuild()
+                .SetOutputDirectory(OutputDirectory)
                 .SetIncludeSymbols(true)
-                .SetVersion(GetVersion()));
+                .SetVersion(GetVersion())
+            );
+            DotNetTasks.DotNetPack(_ => _
+                .SetConfiguration("Release")
+                .SetOutputDirectory(OutputDirectory)
+                .SetProject(AspNetCoreProject)
+                .SetVersion(version)
+                .SetIncludeSymbols(true));
+            DotNetTasks.DotNetPack(_ => _
+                .SetConfiguration("Release")
+                .SetOutputDirectory(OutputDirectory)
+                .SetProject(GiraffeProject)
+                .SetVersion(version)
+                .SetIncludeSymbols(true)
+            );
+        });
+
+    [Parameter] string NugetApiUrl = "https://api.nuget.org/v3/index.json";
+
+    Target Push => _ => _
+        .DependsOn(Pack)
+        .Requires(() => NugetApiUrl)
+        .Executes(() =>
+        {
+            var env = File.ReadAllText(RootDirectory / ".env.local");
+            var apiKey = env.Split("=")[1];
+            DotNetTasks.DotNetNuGetPush(_ => _
+                .SetTargetPath(OutputDirectory / "*.nupkg")
+                .SetSource(NugetApiUrl)
+                .SetApiKey(apiKey)
+            );
         });
 
     Target Test => _ => _

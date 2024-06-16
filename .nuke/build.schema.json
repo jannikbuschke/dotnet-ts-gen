@@ -39,6 +39,9 @@
           "type": "boolean",
           "description": "Disables displaying the NUKE logo"
         },
+        "NugetApiUrl": {
+          "type": "string"
+        },
         "Partition": {
           "type": "string",
           "description": "Partition to use on CI"
@@ -64,11 +67,13 @@
           "items": {
             "type": "string",
             "enum": [
+              "Clean",
               "Compile",
               "Pack",
               "Print",
               "PrintGit",
               "Publish",
+              "Push",
               "Restore",
               "Test"
             ]
@@ -84,11 +89,13 @@
           "items": {
             "type": "string",
             "enum": [
+              "Clean",
               "Compile",
               "Pack",
               "Print",
               "PrintGit",
               "Publish",
+              "Push",
               "Restore",
               "Test"
             ]
