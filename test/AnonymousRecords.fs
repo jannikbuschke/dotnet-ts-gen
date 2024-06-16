@@ -11,25 +11,26 @@ type RecordWithAnonymousField = {
 
 [<Fact>]
 let ``Render AnonymousRecord`` () =
-  let rendered = renderTypeDef typeof<AnonymousRecord>
+  let rendered = renderTypeDef typedefof<AnonymousRecord>
 
   Expect.similar
     rendered
     """
-export type f__AnonymousType650789795 = {
- id: System.String
- name: System.String
+export type f__AnonymousType650789795<Id,Name> = {
+ id: Id
+ name: Name
 }
 """
 
 [<Fact>]
 let ``Render Record with AnonymousRecord field`` () =
+  let modules = renderModules [typeof<RecordWithAnonymousField> ]
   let rendered = renderTypeDef typedefof<RecordWithAnonymousField>
 
   Expect.similar
     rendered
     """
 export type RecordWithAnonymousField = {
- field: ___.f__AnonymousType650789795
+ field: ___.f__AnonymousType650789795<System.String,System.String>
 }
 """

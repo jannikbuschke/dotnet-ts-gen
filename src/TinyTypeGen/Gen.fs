@@ -24,16 +24,6 @@ let renderPropertyNameAndDefinition (callingModule: string) (fieldInfo: Property
 let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: JsonUnionEncoding) =
   let tryGetPredefinedType = PredefinedTypes.tryPredefinedType defaultTypes
 
-  // if jsonUnionEncoding <> supportedJsonUnionEncoding then
-  //   failwith
-  //     "This encoding is currently not supported. The Only supported encoding currently is
-  //                               JsonUnionEncoding.AdjacentTag
-  //                               ||| JsonUnionEncoding.UnwrapSingleFieldCases
-  //                               ||| JsonUnionEncoding.UnwrapRecordCases
-  //                               ||| JsonUnionEncoding.UnwrapOption
-  //                               ||| JsonUnionEncoding.UnwrapSingleCaseUnions
-  //                               ||| JsonUnionEncoding.AllowUnorderedTag"
-
   let renderSingleFieldUnionCaseDefinition (callingModule: string) (case: UnionCaseInfo) (fieldInfo: PropertyInfo) =
     $"""{{ Case: "{case.Name}", Fields: {getPropertySignature callingModule fieldInfo.PropertyType} }}"""
 
@@ -46,7 +36,6 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
         + getDuPropertySignature callingModule v.PropertyType
         )
       |> String.concat ", "
-
 
     $"""{{ Case: "{case.Name}", Fields: {{ {fields} }} }}"""
 
