@@ -7,10 +7,20 @@ open System.Text.Json.Serialization
 open TsGen
 open Microsoft.FSharp.Reflection
 open TypeCache
+open System.Linq
 
 let getModuleName (t: System.Type) =
+  let name = t.Name
+  let fullname = t.FullName
+  let ns = t.Namespace
+
   if t.Namespace <> null then
-    t.Namespace.Replace(".", "_")
+    if t.FullName.Contains "+" then
+      // static nested class
+      let parts = t.FullName.Split("+")
+      parts.Take(parts.Length - 1) |> String.concat "_"
+    else
+      t.Namespace.Replace(".", "_")
   else
     "___"
 
@@ -22,7 +32,7 @@ let getName (t: System.Type) =
   if t.IsArray then
     name.Replace("[]", "") + "Array"
   elif isAnonymousRecord t then
-    name.Replace("<>f__","f__")
+    name.Replace("<>f__", "f__")
   else
     name
 
@@ -76,19 +86,31 @@ let rec getGenericParameterValues (callingModule: string) (t: System.Type) =
 
 let getFullTypeName (t: System.Type) = t.FullName
 
+let isAnonymousRecordProperty (name: string) =
+  name.StartsWith("<") && not (name.EndsWith(">"))
+
+let stripAnonymousGenericName (name: string) =
+  name.Substring(1, name.IndexOf(">") - 1)
 
 let genericArgumentList (t: System.Type) =
-  if isAnonymousRecord t then
-    ""
-  else
-    match t.GetGenericArguments() |> Seq.toList with
+  let result =
+    let args = t.GetGenericArguments() |> Seq.toList
+
+    match args with
     | [] -> ""
     | arguments ->
       "<"
       + (arguments
-         |> List.map (fun v -> v.Name)
+         |> List.map (fun v ->
+           let name = v.Name
+           // workaround for f# anonymous records, syntax is not yet well understood
+           if isAnonymousRecordProperty name then
+             stripAnonymousGenericName name
+           else
+             name)
          |> String.concat ",")
       + ">"
+  result
 
 let genericArgumentListAsParameters (t: System.Type) =
   "("
@@ -135,31 +157,33 @@ let rec getDuPropertySignature (callingModule: string) (t: System.Type) =
 let rec getPropertySignature (callingModule: string) (t: System.Type) =
   let kind = getKind t
 
-  match kind with
-  | TypeKind.Array -> getPropertySignature callingModule (typedefof<System.Collections.Generic.IEnumerable<_>>.MakeGenericType (t.GetElementType()))
-  | _ ->
-    let moduleName, name = getSignature t
+  let result =
+    match kind with
+    | TypeKind.Array -> getPropertySignature callingModule (typedefof<System.Collections.Generic.IEnumerable<_>>.MakeGenericType (t.GetElementType()))
+    | _ ->
+      let moduleName, name = getSignature t
 
-    let name =
-      if moduleName = callingModule then
-        name
-      else
-        moduleName + "." + name
+      let name =
+        if moduleName = callingModule then
+          name
+        else
+          moduleName + "." + name
 
-    if t.IsGenericType then
-      if isAnonymousRecord t then
-        name
-      else
+      if t.IsGenericType then
         name + (getGenericParameters callingModule t)
-    else
-      let modulName = getModuleName t
-      let name = getName t
-
-      if modulName = callingModule then
-        name
       else
-        modulName + "." + name
+        let modulName = getModuleName t
+        let name = getName t
 
+        if modulName = callingModule then
+          name
+        else
+          modulName + "." + name
+
+  if isAnonymousRecordProperty result then
+    stripAnonymousGenericName result
+  else
+    result
 
 let getAnonymousFunctionSignatureForDefaultValue (t: System.Type) =
   let genericArguments = genericArgumentList t

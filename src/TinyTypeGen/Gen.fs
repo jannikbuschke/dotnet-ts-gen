@@ -306,7 +306,7 @@ export type {name}_Case = {caseNameLiteral}"""
       |> Seq.map (renderPropertyNameAndDefinition callingModule)
       |> String.concat System.Environment.NewLine
 
-    let genericArguments = if not isAnonymous then genericArgumentList t else ""
+    let genericArguments = genericArgumentList t
 
     let fieldValues =
       properties
