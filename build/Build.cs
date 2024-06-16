@@ -76,7 +76,7 @@ class Build : NukeBuild
         {
             DotNetTasks.DotNetPack(_ => _
                 .SetConfiguration("Release")
-                .SetProject(CoreProject)
+                .SetProject(Solution)
                 .EnableNoRestore()
                 .EnableNoBuild()
                 .SetIncludeSymbols(true)
