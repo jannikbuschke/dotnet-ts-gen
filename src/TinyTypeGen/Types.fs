@@ -26,9 +26,10 @@ type RenderStrategy =
   | RenderValue
 
 [<AutoOpen>]
-module Render = 
-  let renderDefinitionAndOrValue definition value strategy =
-    match strategy with
-    | RenderValue -> value
-    | RenderDefinition -> definition
-    | RenderDefinitionAndValue -> definition + System.Environment.NewLine + System.Environment.NewLine + value
+module Render =
+  let renderDefinitionAndOrValue definition = // value strategy =
+    definition
+// match strategy with
+// | RenderValue -> value
+// | RenderDefinition -> definition
+// | RenderDefinitionAndValue -> definition + System.Environment.NewLine + System.Environment.NewLine + value

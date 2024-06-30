@@ -11,12 +11,12 @@ open System.Linq
 
 /// Checks if a type is declared in a module
 let isTypeDeclaredInModule (t: Type) =
-    match t.DeclaringType with
-    | null -> false
-    | dt when dt.IsClass && dt.IsAbstract && dt.IsSealed ->
-        // F# modules are static classes (abstract and sealed)
-        true
-    | _ -> false
+  match t.DeclaringType with
+  | null -> false
+  | dt when dt.IsClass && dt.IsAbstract && dt.IsSealed ->
+    // F# modules are static classes (abstract and sealed)
+    true
+  | _ -> false
 
 let getModuleName (t: System.Type) =
   let name = t.Name
@@ -25,27 +25,51 @@ let getModuleName (t: System.Type) =
 
   if t.Namespace <> null then
     let ns =
-      if t.FullName <> null && not t.IsGenericType && not t.IsGenericParameter && t.FullName.Contains "+" && isTypeDeclaredInModule t then
-        // static nested class
-        let name = t.Name
-        let fullname = t.FullName
-        let declaringType = t.DeclaringType
-        let parts = t.FullName.Split("+")
-        (parts.Take(parts.Length - 1) |> String.concat "_")
-      else
-        t.Namespace
-    let result = ns.Replace(".","_")
-    if result.Contains("Test") then
-      result.Replace("Test.T", "Test_T")
-    else
-      result
+      // if t.FullName <> null
+      //    && not t.IsGenericType
+      //    && not t.IsGenericParameter
+      //    && t.FullName.Contains "+"
+      //    && isTypeDeclaredInModule t then
+      //   // static nested class
+      //   let name = t.Name
+      //   let fullname = t.FullName
+      //   let declaringType = t.DeclaringType
+      //   let parts = t.FullName.Split("+")
+      //   (parts.Take(parts.Length - 1) |> String.concat ".")
+      // else
+      t.Namespace
+
+      let x = []
+      x |> List.fold
+
+    let result = ns.Replace(".", "_")
+
+    result
   else
     "___"
 
 let isAnonymousRecord (t: System.Type) = t.Name.StartsWith "<>f__AnonymousType"
 
 let getName (t: System.Type) =
-  let name = t.Name.Split("`").[0]
+  let name =
+    if t.FullName <> null
+       && not t.IsGenericType
+       && not t.IsGenericParameter
+       && t.FullName.Contains "+"
+       && isTypeDeclaredInModule t then
+      // include declaring type in name
+      let name = t.DeclaringType.Name + "_" + t.Name
+      name
+    // static nested class
+    // let name = t.Name
+    // let fullname = t.FullName
+    // let declaringType = t.DeclaringType
+    // let parts = t.FullName.Split("+")
+    // (parts.Take(parts.Length - 1) |> String.concat ".")
+    else
+      t.Name //.Split("`").[0]
+
+  let name = name.Split("`").[0]
 
   if t.IsArray then
     name.Replace("[]", "") + "Array"
@@ -128,6 +152,7 @@ let genericArgumentList (t: System.Type) =
              name)
          |> String.concat ",")
       + ">"
+
   result
 
 let genericArgumentListAsParameters (t: System.Type) =
@@ -148,7 +173,10 @@ let rec getDuPropertySignature (callingModule: string) (t: System.Type) =
   let kind = getKind t
 
   match kind with
-  | TypeKind.Array -> getDuPropertySignature callingModule (typedefof<System.Collections.Generic.IEnumerable<_>>.MakeGenericType (t.GetElementType()))
+  | TypeKind.Array ->
+    getDuPropertySignature
+      callingModule
+      (typedefof<System.Collections.Generic.IEnumerable<_>>.MakeGenericType (t.GetElementType()))
   | _ ->
     let moduleName, name = getSignature t
 
@@ -177,7 +205,10 @@ let rec getPropertySignature (callingModule: string) (t: System.Type) =
 
   let result =
     match kind with
-    | TypeKind.Array -> getPropertySignature callingModule (typedefof<System.Collections.Generic.IEnumerable<_>>.MakeGenericType (t.GetElementType()))
+    | TypeKind.Array ->
+      getPropertySignature
+        callingModule
+        (typedefof<System.Collections.Generic.IEnumerable<_>>.MakeGenericType (t.GetElementType()))
     | _ ->
       let moduleName, name = getSignature t
 

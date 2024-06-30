@@ -43,4 +43,4 @@ let render (encoding: JsonUnionEncoding) (strategy: RenderStrategy) =
     "export var defaultFSharpOption: <T>(defaultT:T) => FSharpOption<T> = <T>(defaultT:T) => "
     + value
 
-  renderDefinitionAndOrValue definition value strategy
+  renderDefinitionAndOrValue definition //value strategy
