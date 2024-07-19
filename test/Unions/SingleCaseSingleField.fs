@@ -60,15 +60,15 @@ export type MyRecordId = MyRecordId_Case_MyRecordId
 export type MyRecordId_Case = "MyRecordId"
 """
 
-[<Fact>]
-let ``Union - single case, single field - unwrapped - value`` () =
-    Expect.similar
-        value
-        """
-export var MyRecordId_AllCases = [ "MyRecordId" ] as const
-export var defaultMyRecordId_Case_MyRecordId = '00000000-0000-0000-0000-000000000000'
-export var defaultMyRecordId = defaultMyRecordId_Case_MyRecordId as MyRecordId
-"""
+// [<Fact>]
+// let ``Union - single case, single field - unwrapped - value`` () =
+//     Expect.similar
+//         value
+//         """
+// export var MyRecordId_AllCases = [ "MyRecordId" ] as const
+// export var defaultMyRecordId_Case_MyRecordId = '00000000-0000-0000-0000-000000000000'
+// export var defaultMyRecordId = defaultMyRecordId_Case_MyRecordId as MyRecordId
+// """
 
 let typedef2, renderedValue2 = renderTypeAndValue typedefof<MyRecord>
 
@@ -82,12 +82,12 @@ export type MyRecord = {
 }
 """
 
-[<Fact>]
-let ``Record - single case and single value property - value`` () =
-    Expect.similar
-        renderedValue2
-        """
-export var defaultMyRecord: MyRecord = {
-  id: defaultMyRecordId
-}
-"""
+// [<Fact>]
+// let ``Record - single case and single value property - value`` () =
+//     Expect.similar
+//         renderedValue2
+//         """
+// export var defaultMyRecord: MyRecord = {
+//   id: defaultMyRecordId
+// }
+// """

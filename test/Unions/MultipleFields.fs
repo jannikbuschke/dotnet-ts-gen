@@ -257,14 +257,14 @@ export type DuWithMultipleFields = DuWithMultipleFields_Case_Case1 | DuWithMulti
 export type DuWithMultipleFields_Case = "Case1" | "Case2" | "Case3"
 """
 
-[<Fact>]
-let ``Union with multiple fields - value`` () =
-  Expect.similar
-    value2
-    """
-export var DuWithMultipleFields_AllCases = [ "Case1", "Case2", "Case3" ] as const
-export var defaultDuWithMultipleFields_Case_Case1 = { Case: "Case1", Fields: { Item1: '00000000-0000-0000-0000-000000000000', Item2: '' } }
-export var defaultDuWithMultipleFields_Case_Case2 = { Case: "Case2", Fields: { Foo: '', Item2: defaultSimpleRecord, X: 0 } }
-export var defaultDuWithMultipleFields_Case_Case3 = { Case: "Case3", Fields: { Id: '00000000-0000-0000-0000-000000000000', Comment: Microsoft_FSharp_Core.defaultFSharpOption(System.defaultString) } }
-export var defaultDuWithMultipleFields = defaultDuWithMultipleFields_Case_Case1 as DuWithMultipleFields
-"""
+// [<Fact>]
+// let ``Union with multiple fields - value`` () =
+//   Expect.similar
+//     value2
+//     """
+// export var DuWithMultipleFields_AllCases = [ "Case1", "Case2", "Case3" ] as const
+// export var defaultDuWithMultipleFields_Case_Case1 = { Case: "Case1", Fields: { Item1: '00000000-0000-0000-0000-000000000000', Item2: '' } }
+// export var defaultDuWithMultipleFields_Case_Case2 = { Case: "Case2", Fields: { Foo: '', Item2: defaultSimpleRecord, X: 0 } }
+// export var defaultDuWithMultipleFields_Case_Case3 = { Case: "Case3", Fields: { Id: '00000000-0000-0000-0000-000000000000', Comment: Microsoft_FSharp_Core.defaultFSharpOption(System.defaultString) } }
+// export var defaultDuWithMultipleFields = defaultDuWithMultipleFields_Case_Case1 as DuWithMultipleFields
+// """

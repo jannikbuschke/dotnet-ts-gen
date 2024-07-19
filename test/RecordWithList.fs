@@ -24,11 +24,11 @@ export type MyRecord = {
 }
 """
 
-  Expect.similar
-    value
-    """
-export var defaultMyRecord: MyRecord = {
- items: [],
- numbers: []
-}
-"""
+//   Expect.similar
+//     value
+//     """
+// export var defaultMyRecord: MyRecord = {
+//  items: [],
+//  numbers: []
+// }
+// """

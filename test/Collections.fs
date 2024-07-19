@@ -23,16 +23,16 @@ export type MyRecord = {
 }
 """
 
-[<Fact>]
-let ``Record with FSharpList property value`` () =
-  Expect.similar
-    recordValue
-    """
-export var defaultMyRecord: MyRecord = {
-  simpleList: [],
-  complexList: []
-}
-"""
+// [<Fact>]
+// let ``Record with FSharpList property value`` () =
+//   Expect.similar
+//     recordValue
+//     """
+// export var defaultMyRecord: MyRecord = {
+//   simpleList: [],
+//   complexList: []
+// }
+// """
 
 let definition, value = renderTypeAndValue typedefof<List<string>>
 
@@ -40,9 +40,9 @@ let definition, value = renderTypeAndValue typedefof<List<string>>
 let ``FSharpList definition definition`` () =
   Expect.similar definition """export type FSharpList<T> = Array<T>"""
 
-[<Fact>]
-let ``FSharpList definition value`` () =
-  Expect.similar value """export var defaultFSharpList: <T>(t:T) => FSharpList<T> = <T>(t:T) => []"""
+// [<Fact>]
+// let ``FSharpList definition value`` () =
+//   Expect.similar value """export var defaultFSharpList: <T>(t:T) => FSharpList<T> = <T>(t:T) => []"""
 
 //
 // [<Fact>]

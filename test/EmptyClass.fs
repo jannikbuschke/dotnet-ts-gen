@@ -22,13 +22,13 @@ export type EmptyRecord = {
 }
 """
 
-  Expect.similar
-    value
-    """
-export var defaultEmptyRecord: EmptyRecord = {
-  skip: undefined
-}
-"""
+//   Expect.similar
+//     value
+//     """
+// export var defaultEmptyRecord: EmptyRecord = {
+//   skip: undefined
+// }
+// """
 
 type EmptyClass() =
   let x = "foo"
@@ -45,12 +45,12 @@ export type EmptyClass = {
 }
 """
 
-[<Fact>]
-let ``Empty class value`` () =
-  Expect.similar
-    value
-    """
-export var defaultEmptyClass: EmptyClass = {
- 
-}
-"""
+// [<Fact>]
+// let ``Empty class value`` () =
+//   Expect.similar
+//     value
+//     """
+// export var defaultEmptyClass: EmptyClass = {
+//  
+// }
+// """

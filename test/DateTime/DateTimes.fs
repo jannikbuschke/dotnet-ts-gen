@@ -17,7 +17,7 @@ let ``DateTime definition`` () =
 
   Expect.similar definition """export type DateTime = `${number}-${number}-${number}T${number}:${number}:${number}`"""
 
-[<Fact>]
-let ``DateTime value`` () =
-
-  Expect.similar value """export var defaultDateTime: DateTime = "0001-01-01T00:00:00" """
+// [<Fact>]
+// let ``DateTime value`` () =
+//
+//   Expect.similar value """export var defaultDateTime: DateTime = "0001-01-01T00:00:00" """

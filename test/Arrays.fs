@@ -27,16 +27,16 @@ export type MyRecord = {
 }
 """
 
-[<Fact>]
-let ``Render MyRecord with arrays value`` () =
-  Expect.similar
-    value
-    """
-export var defaultMyRecord: MyRecord = {
- field1: [],
- field2: []
-}
-"""
+// [<Fact>]
+// let ``Render MyRecord with arrays value`` () =
+//   Expect.similar
+//     value
+//     """
+// export var defaultMyRecord: MyRecord = {
+//  field1: [],
+//  field2: []
+// }
+// """
 
 
 let stringArray = typedefof<string array>

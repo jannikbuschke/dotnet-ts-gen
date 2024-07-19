@@ -25,22 +25,22 @@ let getModuleName (t: System.Type) =
 
   if t.Namespace <> null then
     let ns =
-      // if t.FullName <> null
-      //    && not t.IsGenericType
-      //    && not t.IsGenericParameter
-      //    && t.FullName.Contains "+"
-      //    && isTypeDeclaredInModule t then
-      //   // static nested class
-      //   let name = t.Name
-      //   let fullname = t.FullName
-      //   let declaringType = t.DeclaringType
-      //   let parts = t.FullName.Split("+")
-      //   (parts.Take(parts.Length - 1) |> String.concat ".")
-      // else
-      t.Namespace
+      if t.FullName <> null
+         && not t.IsGenericType
+         && not t.IsGenericParameter
+         && t.FullName.Contains "+"
+         && isTypeDeclaredInModule t then
+        // static nested class
+        let name = t.Name
+        let fullname = t.FullName
+        let declaringType = t.DeclaringType
+        let parts = t.FullName.Split("+")
+        (parts.Take(parts.Length - 1) |> String.concat ".")
+      else
+        t.Namespace
 
-      let x = []
-      x |> List.fold
+      // let x = []
+      // x |> List.fold
 
     let result = ns.Replace(".", "_")
 
@@ -51,23 +51,24 @@ let getModuleName (t: System.Type) =
 let isAnonymousRecord (t: System.Type) = t.Name.StartsWith "<>f__AnonymousType"
 
 let getName (t: System.Type) =
-  let name =
-    if t.FullName <> null
-       && not t.IsGenericType
-       && not t.IsGenericParameter
-       && t.FullName.Contains "+"
-       && isTypeDeclaredInModule t then
-      // include declaring type in name
-      let name = t.DeclaringType.Name + "_" + t.Name
-      name
-    // static nested class
-    // let name = t.Name
-    // let fullname = t.FullName
-    // let declaringType = t.DeclaringType
-    // let parts = t.FullName.Split("+")
-    // (parts.Take(parts.Length - 1) |> String.concat ".")
-    else
-      t.Name //.Split("`").[0]
+  let name = t.Name.Split("`").[0]
+  // let name =
+  //   if t.FullName <> null
+  //      && not t.IsGenericType
+  //      && not t.IsGenericParameter
+  //      && t.FullName.Contains "+"
+  //      && isTypeDeclaredInModule t then
+  //     // include declaring type in name
+  //     let name = t.DeclaringType.Name + "_" + t.Name
+  //     name
+  //   // static nested class
+  //   // let name = t.Name
+  //   // let fullname = t.FullName
+  //   // let declaringType = t.DeclaringType
+  //   // let parts = t.FullName.Split("+")
+  //   // (parts.Take(parts.Length - 1) |> String.concat ".")
+  //   else
+  //     t.Name //.Split("`").[0]
 
   let name = name.Split("`").[0]
 

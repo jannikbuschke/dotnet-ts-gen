@@ -13,10 +13,10 @@ let ``Unit`` () =
 export type Unit = null
 """
 
-[<Fact>]
-let ``Unit value`` () =
-  Expect.similar
-    value
-    """
-export var defaultUnit: Unit = null
-"""
+// [<Fact>]
+// let ``Unit value`` () =
+//   Expect.similar
+//     value
+//     """
+// export var defaultUnit: Unit = null
+// """

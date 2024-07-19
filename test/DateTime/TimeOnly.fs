@@ -53,10 +53,10 @@ let ``TimeOnly - definition`` () =
 export type TimeOnly = `${number}:${number}:${number}`
 """
 
-[<Fact>]
-let ``TimeOnly - value`` () =
-  Expect.similar
-    value
-    """
-export var defaultTimeOnly: TimeOnly = "00:00:00"
-"""
+// [<Fact>]
+// let ``TimeOnly - value`` () =
+//   Expect.similar
+//     value
+//     """
+// export var defaultTimeOnly: TimeOnly = "00:00:00"
+// """

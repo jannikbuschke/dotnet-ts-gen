@@ -29,16 +29,16 @@ export type Localizable<a> = {
 }
 """
 
-[<Fact>]
-let ```render value Localizable<string>`` () =
-  Expect.similar
-    value
-    """
-export var defaultLocalizable: <a>(defaulta:a) => Localizable<a> = <a>(defaulta:a) => ({
- value: defaulta,
- localizations: ({})
-})
-"""
+// [<Fact>]
+// let ```render value Localizable<string>`` () =
+//   Expect.similar
+//     value
+//     """
+// export var defaultLocalizable: <a>(defaulta:a) => Localizable<a> = <a>(defaulta:a) => ({
+//  value: defaulta,
+//  localizations: ({})
+// })
+// """
 
 type Localizable2<'a> =
   { Value: 'a

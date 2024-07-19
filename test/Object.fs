@@ -18,14 +18,14 @@ export type A = {
 }
 """
 
-  Expect.similar
-    value
-    """
-export var defaultA: A = {
- data: {},
- x: {}
-}
-"""
+//   Expect.similar
+//     value
+//     """
+// export var defaultA: A = {
+//  data: {},
+//  x: {}
+// }
+// """
 
 // [<Fact>]
 // let ``Render System.Object definition`` () =

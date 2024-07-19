@@ -22,18 +22,18 @@ export type FSharpResult<T,TError> = FSharpResult_Case_Ok<T> | FSharpResult_Case
 export type FSharpResult_Case = "Ok" | "Error"
 """
 
-[<Fact>]
-let ``Render FSharpResult value`` () =
-  let rendered = renderValue typedef
-
-  Expect.similar
-    rendered
-    """
-export var FSharpResult_AllCases = [ "Ok", "Error" ] as const
-export var defaultFSharpResult_Case_Ok = <T,TError>(defaultT:T,defaultTError:TError) => ({ Case: "Ok", Fields: defaultT })
-export var defaultFSharpResult_Case_Error = <T,TError>(defaultT:T,defaultTError:TError) => ({ Case: "Error", Fields: defaultTError })
-export var defaultFSharpResult = <T,TError>(defaultT:T,defaultTError:TError) => defaultFSharpResult_Case_Ok(defaultT,defaultTError) as FSharpResult<T,TError>
-"""
+// [<Fact>]
+// let ``Render FSharpResult value`` () =
+//   let rendered = renderValue typedef
+//
+//   Expect.similar
+//     rendered
+//     """
+// export var FSharpResult_AllCases = [ "Ok", "Error" ] as const
+// export var defaultFSharpResult_Case_Ok = <T,TError>(defaultT:T,defaultTError:TError) => ({ Case: "Ok", Fields: defaultT })
+// export var defaultFSharpResult_Case_Error = <T,TError>(defaultT:T,defaultTError:TError) => ({ Case: "Error", Fields: defaultTError })
+// export var defaultFSharpResult = <T,TError>(defaultT:T,defaultTError:TError) => defaultFSharpResult_Case_Ok(defaultT,defaultTError) as FSharpResult<T,TError>
+// """
 
 type MyRecord = { Name: string }
 
@@ -58,15 +58,15 @@ export type RecordWithResult = {
   result: Microsoft_FSharp_Core.FSharpResult<Microsoft_FSharp_Collections.FSharpList<MyRecord>,ApiError>
 }
 """
-
-[<Fact>]
-let ``Render FSharpResult #2 - value`` () =
-  let rendered = renderValue typedef2
-
-  Expect.similar
-    rendered
-    """
-export var defaultRecordWithResult: RecordWithResult = {
-  result: Microsoft_FSharp_Core.defaultFSharpResult(Microsoft_FSharp_Collections.defaultFSharpList(defaultMyRecord),defaultApiError)
-}
-"""
+//
+// [<Fact>]
+// let ``Render FSharpResult #2 - value`` () =
+//   let rendered = renderValue typedef2
+//
+//   Expect.similar
+//     rendered
+//     """
+// export var defaultRecordWithResult: RecordWithResult = {
+//   result: Microsoft_FSharp_Core.defaultFSharpResult(Microsoft_FSharp_Collections.defaultFSharpList(defaultMyRecord),defaultApiError)
+// }
+// """

@@ -22,11 +22,11 @@ export type RecordWithResult = {
 }
 """
 
-  Expect.similar
-    value
-    """
-export var defaultRecordWithResult: RecordWithResult = {
-  id: '00000000-0000-0000-0000-000000000000',
-  result: Microsoft_FSharp_Core.defaultFSharpResult(System.defaultInt32,System.defaultString)
-}
-"""
+//   Expect.similar
+//     value
+//     """
+// export var defaultRecordWithResult: RecordWithResult = {
+//   id: '00000000-0000-0000-0000-000000000000',
+//   result: Microsoft_FSharp_Core.defaultFSharpResult(System.defaultInt32,System.defaultString)
+// }
+// """

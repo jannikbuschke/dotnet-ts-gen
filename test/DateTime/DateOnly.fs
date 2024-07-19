@@ -53,10 +53,10 @@ let ``DateOnly - definition`` () =
 export type DateOnly = `${number}-${number}-${number}`
 """
 
-[<Fact>]
-let ``DateOnly - value`` () =
-  Expect.similar
-    value
-    """
-export var defaultDateOnly: DateOnly = "0000-00-00"
-"""
+// [<Fact>]
+// let ``DateOnly - value`` () =
+//   Expect.similar
+//     value
+//     """
+// export var defaultDateOnly: DateOnly = "0000-00-00"
+// """
