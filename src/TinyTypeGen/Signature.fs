@@ -24,7 +24,6 @@ let getModuleName (t: System.Type) =
   let ns = t.Namespace
 
   if t.Namespace <> null then
-// <<<<<<< Updated upstream
     let ns =
       if t.FullName <> null
          && not t.IsGenericType
@@ -54,6 +53,7 @@ let getModuleName (t: System.Type) =
 
     let result = ns.Replace(".", "_")
 
+    if result.Contains "`" then failwith "Generic type name not supported"
     result
 // =======
 //     // if t.FullName = null

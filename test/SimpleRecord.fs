@@ -10,10 +10,10 @@ type SimpleRecord =
     Number: int
     Obj: obj }
 
-let rendered, value = renderTypeAndValue typedefof<SimpleRecord>
 
 [<Fact>]
 let ``Render simple record`` () =
+  let rendered, value = renderTypeAndValue typedefof<SimpleRecord>
 
   Expect.similar
     rendered
