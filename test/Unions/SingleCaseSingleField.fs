@@ -48,10 +48,10 @@ let ``Union - single case, single field - serialized`` (encoding: JsonUnionEncod
     let serialized = serializeWithEncoding encoding (MyRecordId.MyRecordId Guid.Empty)
     Expect.similar serialized expected
 
-let typedef, value = renderTypeAndValue typedefof<MyRecordId>
 
 [<Fact>]
 let ``Union - single case, single field - unwrapped - definition`` () =
+    let typedef, value = renderTypeAndValue typedefof<MyRecordId>
     Expect.similar
         typedef
         """
@@ -70,10 +70,10 @@ export type MyRecordId_Case = "MyRecordId"
 // export var defaultMyRecordId = defaultMyRecordId_Case_MyRecordId as MyRecordId
 // """
 
-let typedef2, renderedValue2 = renderTypeAndValue typedefof<MyRecord>
 
 [<Fact>]
 let ``Record - single case and single value property - definition`` () =
+    let typedef2, renderedValue2 = renderTypeAndValue typedefof<MyRecord>
     Expect.similar
         typedef2
         """

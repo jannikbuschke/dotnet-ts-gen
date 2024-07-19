@@ -24,10 +24,20 @@ let getModuleName (t: System.Type) =
   let ns = t.Namespace
 
   if t.Namespace <> null then
+// <<<<<<< Updated upstream
     let ns =
       if t.FullName <> null
          && not t.IsGenericType
          && not t.IsGenericParameter
+         && t.FullName.Contains "+"
+         && isTypeDeclaredInModule t then
+        // static nested class
+        let name = t.Name
+        let fullname = t.FullName
+        let declaringType = t.DeclaringType
+        let parts = t.FullName.Split("+")
+        (parts.Take(parts.Length - 1) |> String.concat ".")
+      else if t.FullName <> null
          && t.FullName.Contains "+"
          && isTypeDeclaredInModule t then
         // static nested class
@@ -45,6 +55,17 @@ let getModuleName (t: System.Type) =
     let result = ns.Replace(".", "_")
 
     result
+// =======
+//     // if t.FullName = null
+//     // then t.Namespace.Replace(".", "_")
+//     // else
+//     if t.FullName.Contains "+" then
+//       // static nested class
+//       let parts = t.FullName.Split("+")
+//       parts.Take(parts.Length - 1) |> String.concat "_"
+//     else
+//       t.Namespace.Replace(".", "_")
+// >>>>>>> Stashed changes
   else
     "___"
 
@@ -88,14 +109,15 @@ let getSignature (t: System.Type) =
 // <T>
 let rec getGenericParameters (callingModule: string) (t: System.Type) =
   if t.IsGenericType then
+    // let genericArgs = t.GetGenericArguments()
     "<"
-    + (t.GenericTypeArguments
+    + (t.GetGenericArguments()
        |> Seq.map (fun v ->
          let modulName = getModuleName v
          let name = getName v
 
          let name =
-           if modulName = callingModule then
+           if modulName = callingModule || v.IsGenericParameter then
              name
            else
              modulName + "." + name
@@ -204,6 +226,9 @@ let rec getDuPropertySignature (callingModule: string) (t: System.Type) =
 let rec getPropertySignature (callingModule: string) (t: System.Type) =
   let kind = getKind t
 
+  // if t.IsGenericTypeParameter then
+  //   t.Name
+  // else
   let result =
     match kind with
     | TypeKind.Array ->
@@ -214,7 +239,7 @@ let rec getPropertySignature (callingModule: string) (t: System.Type) =
       let moduleName, name = getSignature t
 
       let name =
-        if moduleName = callingModule then
+        if moduleName = callingModule || t.IsGenericParameter then
           name
         else
           moduleName + "." + name
@@ -222,10 +247,11 @@ let rec getPropertySignature (callingModule: string) (t: System.Type) =
       if t.IsGenericType then
         name + (getGenericParameters callingModule t)
       else
+        // weird
         let modulName = getModuleName t
         let name = getName t
 
-        if modulName = callingModule then
+        if modulName = callingModule || t.IsGenericParameter then
           name
         else
           modulName + "." + name

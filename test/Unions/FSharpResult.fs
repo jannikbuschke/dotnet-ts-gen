@@ -4,10 +4,10 @@ open Expecto
 open Xunit
 open Test
 
-let typedef = typedefof<Result<string, string>>
 
 [<Fact>]
 let ``Render FSharpResult`` () =
+  let typedef = typedefof<Result<string, string>>
   let rendered = renderTypeDef typedef
 
   Expect.similar

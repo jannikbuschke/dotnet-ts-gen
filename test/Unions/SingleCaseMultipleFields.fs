@@ -9,7 +9,7 @@ type SingleCaseMultipleFields =
   | SingleCaseMultipleFields of string * int
 
 // TODO: not yet supported
-let definition, value = renderTypeAndValue typedefof<SingleCaseMultipleFields>
+// let definition, value = renderTypeAndValue typedefof<SingleCaseMultipleFields>
 
 // [<Fact>]
 // let ``FSharpOption - default - definition`` () =

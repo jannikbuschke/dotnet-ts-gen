@@ -19,8 +19,8 @@ let supportedJsonUnionEncoding = defaultJsonUnionEncoding
 let renderPropertyNameAndDefinition (callingModule: string) (fieldInfo: PropertyInfo) =
   let signature = getPropertySignature callingModule fieldInfo.PropertyType
   let name = fieldInfo.Name
-  let fieldName = Utils.camelize name
-  $"""  {fieldName}: {signature}"""
+  let result = $"""  {Utils.camelize name}: {signature}"""
+  result
 
 let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: JsonUnionEncoding) =
   let tryGetPredefinedType = PredefinedTypes.tryPredefinedType defaultTypes

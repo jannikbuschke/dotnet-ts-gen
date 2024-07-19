@@ -198,7 +198,7 @@ let ``Record - Case 5 named field - serialized`` (encoding: JsonUnionEncoding) (
   let some = serializeWithEncoding encoding (Du.Case5(0,"test",{SimpleRecord0.Name="rec0"}))
   Expect.similar some expected
 
-let typedef, value = renderTypeAndValue typedefof<Du>
+// let typedef, value = renderTypeAndValue typedefof<Du>
 
 // [<Fact>]
 // let ``Union with single record fields`` () =
@@ -230,8 +230,6 @@ type DuWithMultipleFields =
   | Case2 of Foo: string * SimpleRecord * X: int32
   | Case3 of Id: System.Guid * Comment: string option
 
-let typedef2, value2 = renderTypeAndValue typedefof<DuWithMultipleFields>
-
 let options = JsonFSharpOptions(Gen.defaultJsonUnionEncoding)
 let newtonsoftLike = JsonFSharpOptions.NewtonsoftLike()
 
@@ -241,6 +239,7 @@ let deserialize<'t> = deserializeWithOptions<'t> options
 // TODO: add generic version
 [<Fact>]
 let ``Union with multiple fields - definition`` () =
+  let typedef2, value2 = renderTypeAndValue typedefof<DuWithMultipleFields>
   // let serialized0 =
   //   serialize (DuWithMultipleFields.Case1(System.Guid.NewGuid(), "Hello world"))
   //

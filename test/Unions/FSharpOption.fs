@@ -5,10 +5,10 @@ open Expecto
 open Xunit
 open Test
 
-let definition, value = renderTypeAndValue typedefof<Option<string>>
 
 [<Fact>]
 let ``FSharpOption - default - definition`` () =
+  let definition, value = renderTypeAndValue typedefof<Option<string>>
 
   Expect.similar
     definition

@@ -20,7 +20,9 @@ let getEndpoints(services: IServiceProvider) =
   let adcp = services.GetRequiredService<IActionDescriptorCollectionProvider>()
   let descriptors = adcp.ActionDescriptors.Items.OfType<ControllerActionDescriptor>()
 
-  let wrapperTypes = [typeof<Task<_>>.GetGenericTypeDefinition(); typeof<ValueTask<_>>.GetGenericTypeDefinition(); typeof<Microsoft.AspNetCore.Mvc.ActionResult<_>>.GetGenericTypeDefinition()]
+  let wrapperTypes = [typeof<Task<_>>.GetGenericTypeDefinition()
+                      typeof<ValueTask<_>>.GetGenericTypeDefinition()
+                      typeof<Microsoft.AspNetCore.Mvc.ActionResult<_>>.GetGenericTypeDefinition()]
   let rec toResultType(input: Type) =
     if (input.IsGenericType && not input.IsGenericTypeDefinition && (wrapperTypes.Contains(input.GetGenericTypeDefinition())))
     then
@@ -30,14 +32,17 @@ let getEndpoints(services: IServiceProvider) =
 
   let apiEndpoints =
        descriptors
-       |> Seq.filter(fun x->x.AttributeRouteInfo <> null)
+       |> Seq.filter(fun x -> x.AttributeRouteInfo <> null)
        |> Seq.map(fun x ->
-
-            let methods = x.EndpointMetadata.OfType<Microsoft.AspNetCore.Routing.HttpMethodMetadata>() |> Seq.collect(fun v -> v.HttpMethods)
+            let methods = x.EndpointMetadata.OfType<Microsoft.AspNetCore.Routing.HttpMethodMetadata>()
+                          |> Seq.collect(fun v -> v.HttpMethods)
             let method = methods.FirstOrDefault()
             let verb = verb method
-            let inputType = x.MethodInfo.GetParameters().FirstOrDefault() |> Option.ofObj |> Option.map _.ParameterType |> Option.defaultValue (typeof<Unit>)
-            { TsGen.ApiEndpoint.Request=inputType
+            let inputType = x.MethodInfo.GetParameters().FirstOrDefault()
+                            |> Option.ofObj
+                            |> Option.map _.ParameterType
+                            |> Option.defaultValue (typeof<Unit>)
+            { TsGen.ApiEndpoint.Request = inputType
               TsGen.ApiEndpoint.Response = toResultType(x.MethodInfo.ReturnType)
               TsGen.ApiEndpoint.Method = verb
               TsGen.ApiEndpoint.Route = "/" + x.AttributeRouteInfo.Template }

@@ -9,11 +9,11 @@ type MyRecord =
   { SimpleList: int list
     ComplexList: OtherRecord list }
 
-let recordDefinition, recordValue = renderTypeAndValue typedefof<MyRecord>
 
 [<Fact>]
 let ``Record with FSharpList property definition`` () =
 
+  let recordDefinition = renderTypeDef typedefof<MyRecord>
   Expect.similar
     recordDefinition
     """

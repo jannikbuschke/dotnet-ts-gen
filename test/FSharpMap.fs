@@ -81,6 +81,18 @@ type LocalizableValue<'T> =
   { Default: 'T
     Localized: Map<Language, 'T> }
 
+open System.Linq
+
+[<Fact>]
+let ``Generic parameter should not contain namespace``()=
+  let t = typedefof<LocalizableValue<_>>
+  let pType = t.GetProperties().First(fun x -> x.Name = "Localized")
+  let result = TsGen.Gen.renderPropertyNameAndDefinition "xxx" pType
+  
+  Expect.similar
+    result
+    "localized: Microsoft_FSharp_Collections.FSharpMap<Test_FSharpMap.Language,T>"
+
 [<Fact>]
 let ``Generic record with FSharpMap property - definition`` () =
   let typedef0 = renderTypeDef typedefof<LocalizableValue<string>>
