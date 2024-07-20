@@ -115,7 +115,7 @@ class Build : NukeBuild
 
     [Parameter] string NugetApiUrl = "https://api.nuget.org/v3/index.json";
 
-    Target Push => _ => _
+    Target Publish => _ => _
         .DependsOn(Pack)
         .Requires(() => NugetApiUrl)
         .Executes(() =>
@@ -136,13 +136,6 @@ class Build : NukeBuild
                 .SetProjectFile("")
             );
         });
-
-    Target Publish => _ => _
-        .Executes(() =>
-            {
-                DotNetTasks.DotNetNuGetPush();
-            }
-        );
 
     [GitRepository] readonly GitRepository Repository;
 

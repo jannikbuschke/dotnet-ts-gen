@@ -73,7 +73,6 @@
               "Print",
               "PrintGit",
               "Publish",
-              "Push",
               "Restore",
               "Test"
             ]
@@ -95,7 +94,6 @@
               "Print",
               "PrintGit",
               "Publish",
-              "Push",
               "Restore",
               "Test"
             ]
