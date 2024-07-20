@@ -116,7 +116,7 @@ class Build : NukeBuild
     [Parameter] string NugetApiUrl = "https://api.nuget.org/v3/index.json";
 
     Target Publish => _ => _
-        .DependsOn(Pack)
+        .DependsOn(Pack, Test)
         .Requires(() => NugetApiUrl)
         .Executes(() =>
         {
@@ -133,7 +133,10 @@ class Build : NukeBuild
         .Executes(() =>
         {
             DotNetTasks.DotNetTest(_ => _
-                .SetProjectFile("")
+                .SetProjectFile(Solution.TinyTypeGen_Test)
+            );
+            DotNetTasks.DotNetTest(_ => _
+                .SetProjectFile(Solution.theasoft.TheasoftTests)
             );
         });
 
