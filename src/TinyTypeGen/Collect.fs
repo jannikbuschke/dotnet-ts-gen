@@ -33,6 +33,13 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
 
       [ genericDefinition ] @ args
 
+  let getTypeOrGenericDefinitionAndArgumentsAsDependencies (t: System.Type) =
+    if not t.IsGenericType
+                    || (t.IsGenericType
+                        && t.IsGenericTypeDefinition) then
+                   [ t ]
+                 else
+                   getGenericDefinitionAndArgumentsAsDependencies t
   //maybe this should be recursive
   let _getDependencies (t: System.Type) =
 
@@ -48,20 +55,20 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
         | TypeKind.Record ->
           (t.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
            |> Seq.collect (fun f ->
-             if not f.PropertyType.IsGenericType
-                || (f.PropertyType.IsGenericType
-                    && f.PropertyType.IsGenericTypeDefinition) then
-               [ f.PropertyType ]
-             else
-               getGenericDefinitionAndArgumentsAsDependencies f.PropertyType)
+             getTypeOrGenericDefinitionAndArgumentsAsDependencies f.PropertyType
+           )
            |> Seq.toList)
         | TypeKind.Union ->
           let x =
             (FSharpType.GetUnionCases t)
             |> Seq.collect (fun c ->
               c.GetFields()
-              |> Array.map (fun f -> f.PropertyType)
-              |> Array.toList)
+              |> Array.toList
+              |> List.collect (fun f ->
+                printfn " collect for type %s" f.PropertyType.FullName
+                getTypeOrGenericDefinitionAndArgumentsAsDependencies f.PropertyType
+                )
+            )
             |> Seq.toList
 
           x
@@ -147,3 +154,5 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
   {| GetModuleDependencies = getModuleDependencies
      getDependencies = getDependencies
      collectModules = collectModules |}
+
+let getDependencies a = (init PredefinedTypes.defaultTypes).getDependencies a
