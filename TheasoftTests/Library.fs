@@ -30,6 +30,22 @@ let expectModuleName(t:System.Type,expected: string) =
   ()
 
 [<Fact>]
+let ``foo123``() =
+  let init = TsGen.Collect.init PredefinedTypes.defaultTypes
+  let absentQueriesModules =
+    init.collectModules [typedefof<TheasoftTests.UsingPaginatedQuery.PaginatedResultWrapper>]
+    |> List.find(fun x -> x.Name = "TheasoftTests_UsingPaginatedQuery")
+
+  let rawDeps = init.GetRawDeps absentQueriesModules
+  let deps = init.GetModuleDependencies absentQueriesModules
+  let expectedDeps = [
+    "System"
+    "Absents_Queries"
+  ]
+  expectedDeps |> List.iter(fun x -> Assert.Contains(x, deps))
+  ()
+
+[<Fact>]
 let ``foo``() =
   let init = TsGen.Collect.init PredefinedTypes.defaultTypes
   let absentQueriesModules =
@@ -50,6 +66,7 @@ let ``foo``() =
 [<Theory>]
 [<InlineData(typeof<Absents.RequestAbsentApproval>, "Absents")>]
 [<InlineData(typeof<Absents.AbstractWorkflow.Node>, "Absents_AbstractWorkflow")>]
+[<InlineData(typeof<Absents.Queries.PaginatedResult<_>>, "Absents_Queries")>]
 let ``Should give correct module names``(t, expectedName: string) =
   expectModuleName(t, expectedName)
 

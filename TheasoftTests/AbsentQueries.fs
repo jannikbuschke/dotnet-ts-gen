@@ -30,7 +30,7 @@ type OverlapStatus =
   | Overlapping
   | SameAsReturnDay
 
-type OffsetReason=
+type OffsetReason =
   | Mask
   | Other
 
@@ -41,14 +41,12 @@ type ActivityInPeriod =
     Time: TimeOnly option
     ActivityTypeName: string
     ActivityType: ActivityType
-    OverlapStatus: OverlapStatus
-     }
+    OverlapStatus: OverlapStatus }
 
 type ActivitiesAndBasicCastsInPeriod =
   { StartOfAbsence: ActivityInPeriod
     EndOfAbsence: ActivityInPeriod
-    GroupedActivities: (OverlapStatus * ActivityInPeriod list) list
-    }
+    GroupedActivities: (OverlapStatus * ActivityInPeriod list) list }
 
 [<CLIMutable>]
 type GetActivitiesAndCasts = { Period: Period }
@@ -56,11 +54,10 @@ type GetActivitiesAndCasts = { Period: Period }
 [<CLIMutable>]
 type GetMyRequests = { Page: int; PageSize: int }
 
-type MyRequestListItem = {
-  Result: WorkflowResult option
-  CreatedAt: DateOnly option
-  Period: Period
-}
+type MyRequestListItem =
+  { Result: WorkflowResult option
+    CreatedAt: DateOnly option
+    Period: Period }
 
 [<RequireQualifiedAccess>]
 type StatusFilter =
@@ -82,22 +79,24 @@ type Sort =
   | RequestedAtAsc
 
 [<CLIMutable>]
-type GetMyApprovalsRequest = {
-  StatusFilter: StatusFilter
-  MyDecision: MyDecisionFilter
-  PersonId: PersonId option
-  Page: int
-  Sort: Sort
-}
+type GetMyApprovalsRequest =
+  { StatusFilter: StatusFilter
+    MyDecision: MyDecisionFilter
+    PersonId: PersonId option
+    Page: int
+    Sort: Sort }
 
-type SortOrder = | Asc | Desc
+type PaginatedResult<'T> = { Items: 'T list; Count: int }
+
+type SortOrder =
+  | Asc
+  | Desc
 
 [<CLIMutable>]
-type MyApprovalListItem = {
-  Result: WorkflowResult option
-  CreatedAt: DateOnly option
-  Period: Period
-}
+type MyApprovalListItem =
+  { Result: WorkflowResult option
+    CreatedAt: DateOnly option
+    Period: Period }
 
 [<CLIMutable>]
 type GetApprovalWorkflow = { Id: int }
@@ -118,5 +117,4 @@ type AbsentApprovalForReview =
     CompletedNodes: AbsentApprovalNode list
     PendingNodes: AbsentApprovalNode list
     CanResolvePersonUsers: bool
-    Status:WorkflowNodeStatus
-    }
+    Status: WorkflowNodeStatus }

@@ -12,6 +12,7 @@
         <Compile Include="EventsAndTypes.fs" />
         <Compile Include="AbsentQueries.fs" />
         <Compile Include="Utils.fs" />
+        <Compile Include="UsingPaginatedQuery.fs" />
         <Compile Include="Library.fs"/>
     </ItemGroup>
     <ItemGroup>

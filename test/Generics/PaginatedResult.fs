@@ -22,10 +22,8 @@ let ``x`` () =
   Expect.similar
     rendered
     """
-export type SimpleRecord = {
-  id: System.Guid
-  name: System.String
-  number: System.Int32
-  obj: System.Object
+export type PaginatedResult<response> = {
+ items: System_Collections_Generic.IEnumerable<response>
+ total: System.Int32
 }
 """

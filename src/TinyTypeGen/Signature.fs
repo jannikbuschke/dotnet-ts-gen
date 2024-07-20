@@ -38,8 +38,6 @@ let getModuleName (t: System.Type) =
         let parts = t.FullName.Split("+")
         (parts.Take(parts.Length - 1) |> String.concat ".")
       else if t.FullName <> null
-          && not t.IsGenericType
-         && not t.IsGenericParameter
          && t.FullName.Contains "+"
          && isTypeDeclaredInModule t then
         // static nested class
