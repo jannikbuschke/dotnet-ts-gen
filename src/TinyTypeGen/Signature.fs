@@ -49,12 +49,10 @@ let getModuleName (t: System.Type) =
       else
         t.Namespace
 
-      // let x = []
-      // x |> List.fold
-
+    //let name = name.Split("`").[0]
     let result = ns.Replace(".", "_")
-
-    if result.Contains "`" then failwith $"Generic type {t.Name} name not supported"
+    let result = result.Split("`").[0]
+    if result.Contains "`" then failwith $"Modulename for '{t.Name}' resulted in '{result}' containing a `, which is not supported. This is a bug"
     result
 
   else

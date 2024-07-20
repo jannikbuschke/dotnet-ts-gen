@@ -7,103 +7,78 @@ open TsGen
 open Xunit
 open TsGen.Collect
 
-let deps<'t> () =
+let deps<'t>() =
   let init = TsGen.Collect.init PredefinedTypes.defaultTypes
   let deps = init.getDependencies typedefof<'t>
-
-  let imports =
-    deps
-    |> Seq.map Signature.getModuleName
-    |> Seq.toList
-
+  let imports = deps |> Seq.map Signature.getModuleName |> Seq.toList
   imports
 
-let expectDeps<'t> (expected: string list) =
-  let imports = deps<'t> ()
-
-  expected
-  |> List.iter (fun expected -> Assert.Contains(expected, imports))
-
+let expectDeps<'t>(expected: string list) =
+  let imports = deps<'t>()
+  expected |> List.iter(fun expected ->
+    Assert.Contains(expected, imports))  
   ()
 
 [<Fact>]
-let ``RequestAbsentApproval should give correct dependencies`` () =
-  expectDeps<RequestAbsentApproval>
-    [ "Microsoft_FSharp_Core"
-      "System"
-      "Absents" ]
-
+let ``RequestAbsentApproval should give correct dependencies``() =
+  expectDeps<RequestAbsentApproval> ["Microsoft_FSharp_Core"; "System"; "Absents"]
   ()
 
-let expectModuleName (t: System.Type, expected: string) =
+let expectModuleName(t:System.Type,expected: string) =
   let moduleName = Signature.getModuleName t
   Expect.eq moduleName expected
   ()
 
 [<Fact>]
-let ``foo123`` () =
+let ``foo123``() =
   let init = TsGen.Collect.init PredefinedTypes.defaultTypes
-
   let absentQueriesModules =
-    init.collectModules [ typedefof<TheasoftTests.UsingPaginatedQuery.PaginatedResultWrapper> ]
-    |> List.find (fun x -> x.Name = "TheasoftTests_UsingPaginatedQuery")
+    init.collectModules [typedefof<TheasoftTests.UsingPaginatedQuery.PaginatedResultWrapper>]
+    |> List.find(fun x -> x.Name = "TheasoftTests_UsingPaginatedQuery")
 
   let rawDeps = init.GetRawDeps absentQueriesModules
   let deps = init.GetModuleDependencies absentQueriesModules
-  let expectedDeps = [ "System"; "Absents_Queries" ]
-
-  expectedDeps
-  |> List.iter (fun x -> Assert.Contains(x, deps))
-
+  let expectedDeps = [
+    "System"
+    "Absents_Queries"
+  ]
+  expectedDeps |> List.iter(fun x -> Assert.Contains(x, deps))
   ()
 
 [<Fact>]
-let ``foo`` () =
+let ``foo``() =
   let init = TsGen.Collect.init PredefinedTypes.defaultTypes
-
   let absentQueriesModules =
-    init.collectModules [ typedefof<AbsentApprovalForReview> ]
-    |> List.find (fun x -> x.Name = "Absents_Queries")
+    init.collectModules [typedefof<AbsentApprovalForReview>]
+    |> List.find(fun x -> x.Name = "Absents_Queries")
 
   let deps = init.GetModuleDependencies absentQueriesModules
-
-  let expectedDeps =
-    [ "System"
-      "Microsoft_FSharp_Core"
-      "Absents"
-      "Microsoft_FSharp_Collections"
-      "Absents_AbstractWorkflow" ]
-
-  expectedDeps
-  |> List.iter (fun x -> Assert.Contains(x, deps))
-
+  let expectedDeps = [
+    "System"
+    "Microsoft_FSharp_Core"
+    "Absents"
+    "Microsoft_FSharp_Collections"
+    "Absents_AbstractWorkflow"
+  ]
+  expectedDeps |> List.iter(fun x -> Assert.Contains(x, deps))
   ()
 
 [<Theory>]
 [<InlineData(typeof<Absents.RequestAbsentApproval>, "Absents")>]
 [<InlineData(typeof<Absents.AbstractWorkflow.Node>, "Absents_AbstractWorkflow")>]
 [<InlineData(typeof<Absents.Queries.PaginatedResult<_>>, "Absents_Queries")>]
-let ``Should give correct module names`` (t, expectedName: string) = expectModuleName (t, expectedName)
+let ``Should give correct module names``(t, expectedName: string) =
+  expectModuleName(t, expectedName)
 
 [<Fact>]
-let ``Should give correct dependencies`` () =
-  expectDeps<Absents.AbstractWorkflow.Node>
-    [ "Microsoft_FSharp_Core"
-      "System"
-      "Absents_AbstractWorkflow" ]
-
-  expectDeps<Absents.AbsentApprovalNode>
-    [ "Microsoft_FSharp_Core"
-      "System"
-      "Absents"
-      "Absents_AbstractWorkflow" ]
-
+let ``Should give correct dependencies``() =
+  expectDeps<Absents.AbstractWorkflow.Node> ["Microsoft_FSharp_Core"; "System"; "Absents_AbstractWorkflow"]
+  expectDeps<Absents.AbsentApprovalNode> ["Microsoft_FSharp_Core"; "System"; "Absents";"Absents_AbstractWorkflow"]
   ()
 
 [<Fact>]
 let ``Should render AbsenceRequestEvent`` () =
   let typedef0 = renderTypeDef typedefof<AbsenceRequestEvent>
-
   Expect.similar
     typedef0
     """export type AbsenceRequestEvent_Case_ApprovalWorkflowCreated = { Case: "ApprovalWorkflowCreated", Fields: AbsentApprovalWorkflowCreated }

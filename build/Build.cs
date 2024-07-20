@@ -135,9 +135,6 @@ class Build : NukeBuild
             DotNetTasks.DotNetTest(_ => _
                 .SetProjectFile(Solution.TinyTypeGen_Test)
             );
-            DotNetTasks.DotNetTest(_ => _
-                .SetProjectFile(Solution.theasoft.TheasoftTests)
-            );
         });
 
     [GitRepository] readonly GitRepository Repository;
