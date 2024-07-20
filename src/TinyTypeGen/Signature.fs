@@ -24,6 +24,7 @@ let getModuleName (t: System.Type) =
   let ns = t.Namespace
 
   if t.Namespace <> null then
+
     let ns =
       if t.FullName <> null
          && not t.IsGenericType
@@ -37,6 +38,8 @@ let getModuleName (t: System.Type) =
         let parts = t.FullName.Split("+")
         (parts.Take(parts.Length - 1) |> String.concat ".")
       else if t.FullName <> null
+          && not t.IsGenericType
+         && not t.IsGenericParameter
          && t.FullName.Contains "+"
          && isTypeDeclaredInModule t then
         // static nested class
@@ -53,19 +56,9 @@ let getModuleName (t: System.Type) =
 
     let result = ns.Replace(".", "_")
 
-    if result.Contains "`" then failwith "Generic type name not supported"
+    if result.Contains "`" then failwith $"Generic type {t.Name} name not supported"
     result
-// =======
-//     // if t.FullName = null
-//     // then t.Namespace.Replace(".", "_")
-//     // else
-//     if t.FullName.Contains "+" then
-//       // static nested class
-//       let parts = t.FullName.Split("+")
-//       parts.Take(parts.Length - 1) |> String.concat "_"
-//     else
-//       t.Namespace.Replace(".", "_")
-// >>>>>>> Stashed changes
+
   else
     "___"
 
