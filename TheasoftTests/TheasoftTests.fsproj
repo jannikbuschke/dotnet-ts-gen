@@ -6,6 +6,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="AbstractWorkflow.fs" />
+        <Compile Include="Ids.fs" />
+        <Compile Include="Types.fs" />
+        <Compile Include="EventsAndTypes.fs" />
+        <Compile Include="AbsentQueries.fs" />
         <Compile Include="Utils.fs" />
         <Compile Include="Library.fs"/>
     </ItemGroup>
@@ -24,6 +29,10 @@
         </PackageReference>
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\..\..\theasoft\Theasoft.v4\src\app-server-modules\Absents\Absents.fsproj" />
+<!--      <ProjectReference Include="..\..\..\theasoft\Theasoft.v4\src\app-server-modules\Absents\Absents.fsproj" />-->
+      <ProjectReference Include="..\src\TinyTypeGen.AspNetCore\TinyTypeGen.AspNetCore.fsproj" />
+      <ProjectReference Include="..\src\TinyTypeGen.Giraffe\TinyTypeGen.Giraffe.fsproj" />
+      <ProjectReference Include="..\src\TinyTypeGen.NodaTime\TinyTypeGen.NodaTime.fsproj" />
+      <ProjectReference Include="..\src\TinyTypeGen\TinyTypeGen.fsproj" />
     </ItemGroup>
 </Project>

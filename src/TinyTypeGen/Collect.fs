@@ -138,20 +138,36 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
       { Name = moduleName
         Types = (items |> List.distinct) })
 
-  let getModuleDependencies (n: TsModule) =
+  let getRawDeps (n: TsModule) =
+    let d0 =
+      n.Types
+      |> List.filter (fun t ->
+        (not t.IsGenericType)
+        || (t.IsGenericType && t.IsGenericTypeDefinition))
+      |> List.collect getDependencies
     let deps =
       n.Types
       |> List.filter (fun t ->
         (not t.IsGenericType)
         || (t.IsGenericType && t.IsGenericTypeDefinition))
       |> List.collect getDependencies
-      |> List.map getModuleName
+    deps
+
+  let getModuleDependencies (n: TsModule) =
+    // let d0 =
+    //   n.Types
+    //   |> List.filter (fun t ->
+    //     (not t.IsGenericType)
+    //     || (t.IsGenericType && t.IsGenericTypeDefinition))
+    //   |> List.collect getDependencies
+    let deps = getRawDeps n |> List.map getModuleName
 
     (deps
      |> List.distinct
      |> List.filter (fun v -> v <> n.Name))
 
-  {| GetModuleDependencies = getModuleDependencies
+  {| GetRawDeps = getRawDeps
+     GetModuleDependencies = getModuleDependencies
      getDependencies = getDependencies
      collectModules = collectModules |}
 
