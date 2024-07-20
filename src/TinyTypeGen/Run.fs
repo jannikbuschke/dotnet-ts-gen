@@ -15,7 +15,8 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
 
     let deps = collect.GetModuleDependencies m
     // For some types somehow System_Collections_Generic is not detected as a dependency
-    let deps = ("System_Collections_Generic":: deps) |> List.distinct
+    let deps = (["System_Collections_Generic"; "Microsoft_FSharp_Core"; "System_Text_Json_Serialization"; "Microsoft_FSharp_Collections"] @ deps) |> List.distinct
+
 
     let builder = StringBuilder()
 
