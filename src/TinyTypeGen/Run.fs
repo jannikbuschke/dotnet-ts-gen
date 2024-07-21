@@ -36,11 +36,15 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
     let sorted, cyclics =
       TopologicalSort.topologicalSort
         (fun v ->
+          let moduleName = getModuleName v
           let deps = collect.getDependencies v
 
           // Nullable remove
-          deps
-          |> List.filter (fun x -> x.Namespace = v.Namespace))
+          let filtered =
+            deps
+            |> List.filter (fun x -> getModuleName x = moduleName)
+          filtered
+          )
 
         m.Types
 
