@@ -18,7 +18,13 @@ type ApiEndpoint =
 
 type TsModule =
   { Name: string
-    Types: System.Type list }
+    Types: System.Type list
+     }
+type TsModuleWithDeps = {
+  Name:string
+  Types: System.Type list
+  Dependencies: System.Type list
+}
 
 type RenderStrategy =
   | RenderDefinitionAndValue

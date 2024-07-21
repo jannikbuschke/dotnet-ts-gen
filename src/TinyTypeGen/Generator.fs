@@ -13,7 +13,7 @@ type Generator(collector:Collector,config:Config.Configuration)=
   member this.GetRawModuleDependencies(m: TsModule) =
     collector.getRawDeps m
   member this.GetModules() =
-    collector.collectModules(config.Types)
+    collector.GetModulesWithDependencies config.Types
   member this.RenderApiToFile(file: string) =
     renderer.renderApiToFile file
   member this.RenderTypesToDirectory(directory: string) =

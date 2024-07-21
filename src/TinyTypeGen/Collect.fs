@@ -164,6 +164,12 @@ type Collector(defaultTypes:PredefinedTypes.PreDefinedTypes)=
      |> List.distinct
      |> List.filter (fun v -> v <> n.Name))
 
+  member this.GetModulesWithDependencies(types: System.Type list) =
+    let modules = this.collectModules types
+    modules |> List.map(fun m->
+     let deps = this.getRawDeps m
+     { TsModuleWithDeps.Dependencies = deps; Name = m.Name;Types = m.Types } )
+
 let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
 
   let collector = new Collector(defaultTypes)
