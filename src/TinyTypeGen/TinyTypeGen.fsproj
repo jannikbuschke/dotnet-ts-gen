@@ -20,7 +20,7 @@
         <Compile Include="PredefinedTypes.fs" />
         <Compile Include="Signature.fs" />
         <Compile Include="Option.fs" />
-        <Compile Include="Gen.fs" />
+        <Compile Include="Renderer\Gen.fs" />
         <Compile Include="Collect.fs" />
         <Compile Include="Run.fs" />
         <Compile Include="Config.fs" />

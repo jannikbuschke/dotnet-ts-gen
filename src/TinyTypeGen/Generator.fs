@@ -25,7 +25,7 @@ type GeneratorBuilder() =
   member this.AddTypes(types: Type array)=
     config <- { config with Types = config.Types @ (types |> Seq.toList) }
   member this.AddEndpoints(endpoints: ApiEndpoint array)=
-    config <- { config with ApiEndPoints = config.ApiEndPoints @ (endpoints |> Seq.toList) }
+    config <- config |> Config.withEndpoints (config.ApiEndPoints @ (endpoints |> Seq.toList))
   member this.Build() =
     let collector = Collector(config.PredefinedTypes)
     Generator(collector,config)
