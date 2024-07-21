@@ -22,13 +22,10 @@ let renderPropertyNameAndDefinition (callingModule: string) (fieldInfo: Property
   let result = $"""  {Utils.camelize name}: {signature}"""
   result
 
-let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: JsonUnionEncoding) =
-  let tryGetPredefinedType = PredefinedTypes.tryPredefinedType defaultTypes
+let renderSingleFieldUnionCaseDefinition (callingModule: string) (case: UnionCaseInfo) (fieldInfo: PropertyInfo) =
+  $"""{{ Case: "{case.Name}", Fields: {getPropertySignature callingModule fieldInfo.PropertyType} }}"""
 
-  let renderSingleFieldUnionCaseDefinition (callingModule: string) (case: UnionCaseInfo) (fieldInfo: PropertyInfo) =
-    $"""{{ Case: "{case.Name}", Fields: {getPropertySignature callingModule fieldInfo.PropertyType} }}"""
-
-  let renderMultiFieldUnionCaseDefinition
+let renderMultiFieldUnionCaseDefinition
     (callingModule: string)
     (outerDu: System.Type)
     (case: UnionCaseInfo)
@@ -43,7 +40,36 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
       |> String.concat ", "
 
     $"""{{ Case: "{case.Name}", Fields: {{ {fields} }} }}"""
+let getFieldCaseName (name: string) (case: UnionCaseInfo) =
+    let name = $"{name}_Case_{case.Name}"
+    name
 
+let getSingleFieldCaseSignature (name: string) (singleField: PropertyInfo) (case: UnionCaseInfo) =
+    let name = getFieldCaseName name case
+
+    let genericParameterPostfix =
+      if singleField.PropertyType.IsGenericParameter then
+        "<" + singleField.PropertyType.Name + ">"
+      else
+        ""
+
+    let name = $"{name}{genericParameterPostfix}"
+    name
+let getMultiFieldCaseSignature
+    (outerDu: System.Type)
+    (name: string)
+    (fields: PropertyInfo list)
+    (case: UnionCaseInfo)
+    =
+    let name = getFieldCaseName name case
+    let genericParameterPostfix = genericArgumentList outerDu
+    let name = $"{name}{genericParameterPostfix}"
+    name
+
+let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: JsonUnionEncoding) =
+  let tryGetPredefinedType = PredefinedTypes.tryPredefinedType defaultTypes
+
+  (*
   let getDefaultValue (callingModule: string) (propertyType: System.Type) =
     let moduleName = getModuleName propertyType
     let name = getName propertyType
@@ -85,25 +111,26 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
       )
 
     value
+    *)
 
-  let renderPropertyNameAndValue (camelize: bool) (callingModule: string) (fieldInfo: PropertyInfo) =
+  (*let renderPropertyNameAndValue (camelize: bool) (callingModule: string) (fieldInfo: PropertyInfo) =
     let propertyType = fieldInfo.PropertyType
     let value = getDefaultValue callingModule propertyType
 
     if camelize then
       $"""  {Utils.camelize fieldInfo.Name}: {value}"""
     else
-      $"""  {fieldInfo.Name}: {value}"""
+      $"""  {fieldInfo.Name}: {value}"""*)
 
-  let renderSingleFieldUnionCaseDefaultValue (callingModule: string) (case: UnionCaseInfo) (fieldInfo: PropertyInfo) =
+  (*let renderSingleFieldUnionCaseDefaultValue (callingModule: string) (case: UnionCaseInfo) (fieldInfo: PropertyInfo) =
     let defaultValue = getDefaultValue callingModule fieldInfo.PropertyType
 
     if fieldInfo.PropertyType.IsGenericParameter then
       $"""({{ Case: "{case.Name}", Fields: {defaultValue} }})"""
     else
-      $"""{{ Case: "{case.Name}", Fields: {defaultValue} }}"""
+      $"""{{ Case: "{case.Name}", Fields: {defaultValue} }}"""*)
 
-  let renderMultiFieldUnionCaseDefaultValue
+  (*let renderMultiFieldUnionCaseDefaultValue
     (callingModule: string)
     (case: UnionCaseInfo)
     (fieldInfo: PropertyInfo list)
@@ -121,34 +148,8 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
     if isGeneric then
       $"""({{ Case: "{case.Name}", Fields: {{ {fields} }})"""
     else
-      $"""{{ Case: "{case.Name}", Fields: {{ {fields} }}  }}"""
+      $"""{{ Case: "{case.Name}", Fields: {{ {fields} }}  }}"""*)
 
-  let getFieldCaseName (name: string) (case: UnionCaseInfo) =
-    let name = $"{name}_Case_{case.Name}"
-    name
-
-  let getSingleFieldCaseSignature (name: string) (singleField: PropertyInfo) (case: UnionCaseInfo) =
-    let name = getFieldCaseName name case
-
-    let genericParameterPostfix =
-      if singleField.PropertyType.IsGenericParameter then
-        "<" + singleField.PropertyType.Name + ">"
-      else
-        ""
-
-    let name = $"{name}{genericParameterPostfix}"
-    name
-
-  let getMultiFieldCaseSignature
-    (outerDu: System.Type)
-    (name: string)
-    (fields: PropertyInfo list)
-    (case: UnionCaseInfo)
-    =
-    let name = getFieldCaseName name case
-    let genericParameterPostfix = genericArgumentList outerDu
-    let name = $"{name}{genericParameterPostfix}"
-    name
 
   let renderDu (outerDu: System.Type) (strategy: RenderStrategy) =
 
@@ -212,7 +213,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
     let anonymousFunctionSignature =
       getAnonymousFunctionSignatureForDefaultValue outerDu
 
-    let renderedCaseDefaultNamesAndValues =
+    (*let renderedCaseDefaultNamesAndValues =
       match cases with
       | [] -> failwith "todo"
       | [ singleCase ] ->
@@ -255,7 +256,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
 
         cases
         |> List.map renderCase
-        |> String.concat System.Environment.NewLine
+        |> String.concat System.Environment.NewLine *)
 
     let firstCaseName =
       match cases with
@@ -301,10 +302,10 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
 export type {signature} = {caseSignatures}
 export type {name}_Case = {caseNameLiteral}"""
 
-    let value =
+    (*let value =
       $"""export var {name}_AllCases = [ {allCaseNames} ] as const
 {renderedCaseDefaultNamesAndValues}
-{renderedDefaultCase}"""
+{renderedDefaultCase}"""*)
 
     renderDefinitionAndOrValue definition //value strategy
 
