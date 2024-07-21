@@ -42,11 +42,9 @@ let testInputs =
 let ``DateOnly - serialized`` (encoding: JsonUnionEncoding) (expected: string) =
     let serialized = serializeWithEncoding encoding (DateOnly.Parse("2023-05-05"))
     Expect.similar serialized expected
-
-let definition,value = renderTypeAndValue typedefof<DateOnly>
 [<Fact>]
 let ``DateOnly - definition`` () =
-
+  let definition,value = renderTypeAndValue typedefof<DateOnly>
   Expect.similar
     definition
     """

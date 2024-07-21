@@ -43,10 +43,11 @@ let ``TimeOnly - serialized`` (encoding: JsonUnionEncoding) (expected: string) =
     let serialized = serializeWithEncoding encoding (TimeOnly.Parse("09:05"))
     Expect.similar serialized expected
 
-let definition,value = renderTypeAndValue typedefof<TimeOnly>
+
 [<Fact>]
 let ``TimeOnly - definition`` () =
 
+  let definition,value = renderTypeAndValue typedefof<TimeOnly>
   Expect.similar
     definition
     """

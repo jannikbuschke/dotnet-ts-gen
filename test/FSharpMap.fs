@@ -87,7 +87,7 @@ open System.Linq
 let ``Generic parameter should not contain namespace``()=
   let t = typedefof<LocalizableValue<_>>
   let pType = t.GetProperties().First(fun x -> x.Name = "Localized")
-  let result = TsGen.Gen.renderPropertyNameAndDefinition "xxx" pType
+  let result = TinyTypeGen.Renderer.RenderFunctions.renderPropertyNameAndDefinition "xxx" pType
   
   Expect.similar
     result

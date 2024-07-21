@@ -10,11 +10,11 @@ type SimpleRecord =
     Number: int
     Obj: obj }
 
-let definition, value = renderTypeAndValue typedefof<DateTime>
 
 [<Fact>]
 let ``DateTime definition`` () =
 
+  let definition, value = renderTypeAndValue typedefof<DateTime>
   Expect.similar definition """export type DateTime = `${number}-${number}-${number}T${number}:${number}:${number}`"""
 
 // [<Fact>]
