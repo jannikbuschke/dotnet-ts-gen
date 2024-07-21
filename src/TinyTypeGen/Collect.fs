@@ -5,9 +5,9 @@ open System.Reflection
 open System.Text.Json.Serialization.TypeCache
 open Microsoft.FSharp.Reflection
 
-let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
-
+type Collector(defaultTypes:PredefinedTypes.PreDefinedTypes)=
   let ignoreList = [typedefof<FSharpFunc<_, _>>]
+  let allTypes = System.Collections.Generic.HashSet<System.Type>()
 
   let rec getGenericDefinitionAndArgumentsAsDependencies (t: System.Type) =
     if t.IsGenericTypeDefinition then
@@ -86,17 +86,15 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
 
       result @ genericArgs
 
-  let getDependencies (t: System.Type) = _getDependencies t |> List.distinct
+  member this.getDependencies (t: System.Type) = _getDependencies t |> List.distinct
 
-  let getFilteredDeps (moduleName: string) (t: System.Type) =
-    getDependencies t
+  member this.getFilteredDeps (moduleName: string) (t: System.Type) =
+    this.getDependencies t
     |> List.filter (fun v ->
       let name = getModuleName v
       name = moduleName)
 
-  let allTypes = System.Collections.Generic.HashSet<System.Type>()
-
-  let collectDependencies (t: System.Type) =
+  member this.collectDependencies (t: System.Type) =
     let rec collectDependencies (depth: int) (t: System.Type) =
       if depth > 100 then
         failwith (sprintf "too deep (current type = %s)" t.FullName)
@@ -107,16 +105,16 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
         allTypes.Add t |> ignore
 
         t
-        |> getDependencies
+        |> this.getDependencies
         |> List.iter (collectDependencies (depth + 1))
 
         ()
 
     collectDependencies 0 t
 
-  let collectModules (types: System.Type list) =
+  member this.collectModules (types: System.Type list) =
     (typedefof<obj> :: typedefof<System.Byte> :: types)
-    |> List.iter (collectDependencies)
+    |> List.iter (this.collectDependencies)
 
     allTypes
     |> Seq.toList
@@ -131,44 +129,48 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
             v)
 
       let sorted, _ =
-        TopologicalSort.topologicalSort (getFilteredDeps moduleName) (items |> List.distinct)
+        TopologicalSort.topologicalSort (this.getFilteredDeps moduleName) (items |> List.distinct)
 
       let sorted2 = sorted |> List.distinct
 
       { Name = moduleName
         Types = (items |> List.distinct) })
 
-  let getRawDeps (n: TsModule) =
+  member this.getRawDeps (n: TsModule) =
     let d0 =
       n.Types
       |> List.filter (fun t ->
         (not t.IsGenericType)
         || (t.IsGenericType && t.IsGenericTypeDefinition))
-      |> List.collect getDependencies
+      |> List.collect this.getDependencies
     let deps =
       n.Types
       |> List.filter (fun t ->
         (not t.IsGenericType)
         || (t.IsGenericType && t.IsGenericTypeDefinition))
-      |> List.collect getDependencies
+      |> List.collect this.getDependencies
     deps
 
-  let getModuleDependencies (n: TsModule) =
+  member this.getModuleDependencies (n: TsModule) =
     // let d0 =
     //   n.Types
     //   |> List.filter (fun t ->
     //     (not t.IsGenericType)
     //     || (t.IsGenericType && t.IsGenericTypeDefinition))
     //   |> List.collect getDependencies
-    let deps = getRawDeps n |> List.map getModuleName
+    let deps = this.getRawDeps n |> List.map getModuleName
 
     (deps
      |> List.distinct
      |> List.filter (fun v -> v <> n.Name))
 
-  {| GetRawDeps = getRawDeps
-     GetModuleDependencies = getModuleDependencies
-     getDependencies = getDependencies
-     collectModules = collectModules |}
+let init (defaultTypes: PredefinedTypes.PreDefinedTypes) =
+
+  let collector = new Collector(defaultTypes)
+
+  {| GetRawDeps = collector.getRawDeps
+     GetModuleDependencies = collector.getModuleDependencies
+     getDependencies = collector.getDependencies
+     collectModules = collector.collectModules |}
 
 let getDependencies a = (init PredefinedTypes.defaultTypes).getDependencies a

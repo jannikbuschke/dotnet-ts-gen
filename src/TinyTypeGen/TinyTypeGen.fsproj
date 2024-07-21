@@ -24,6 +24,7 @@
         <Compile Include="Collect.fs" />
         <Compile Include="Run.fs" />
         <Compile Include="Config.fs" />
+        <Compile Include="Generator.fs" />
     </ItemGroup>
 
     <ItemGroup>

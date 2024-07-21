@@ -45,13 +45,16 @@
         <Compile Include="DateTime\DateOnly.fs" />
         <Compile Include="DateTime\TimeOnly.fs" />
         <Compile Include="DateTime\DateTimes.fs" />
+        <Compile Include="Scenario1\EStatus.fs" />
         <Compile Include="Scenario1\AbstractWorkflow.fs" />
         <Compile Include="Scenario1\Ids.fs" />
         <Compile Include="Scenario1\Types.fs" />
         <Compile Include="Scenario1\EventsAndTypes.fs" />
         <Compile Include="Scenario1\AbsentQueries.fs" />
         <Compile Include="Scenario1\UsingPaginatedQuery.fs" />
+        <Compile Include="Scenario1\PersonStatus.fs" />
         <Compile Include="Scenario1\Library.fs" />
+        <Compile Include="Scenario1\Config.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

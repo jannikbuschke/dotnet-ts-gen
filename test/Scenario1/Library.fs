@@ -10,7 +10,7 @@ open TsGen.Collect
 let deps<'t>() =
   let init = TsGen.Collect.init PredefinedTypes.defaultTypes
   let deps = init.getDependencies typedefof<'t>
-  let imports = deps |> Seq.map Signature.getModuleName |> Seq.toList
+  let imports = deps |> Seq.map Signature.getModuleName |> Seq.toList |> List.distinct
   imports
 
 let expectDeps<'t>(expected: string list) =
@@ -21,10 +21,33 @@ let expectDeps<'t>(expected: string list) =
 
 [<Fact>]
 let ``RequestAbsentApproval should give correct dependencies``() =
-  expectDeps<RequestAbsentApproval> ["Microsoft_FSharp_Core"; "System"; "Absents"]
+  expectDeps<RequestAbsentApproval> [
+    "Microsoft_FSharp_Core"
+    "System"
+  ]
   ()
 
-let expectModuleName(t:System.Type,expected: string) =
+[<Fact>]
+let ``PersonStatus give correct dependencies``() =
+  expectDeps<PersonStatus> [
+    "Microsoft_FSharp_Core"
+    "System"
+    "Theasoft_DataClasses_Personal_ts_DataPersStatus"
+//    "Theasoft_DataClasses_Personal"
+    "System_Collections_Generic"
+  ]
+  ()
+
+[<Fact>]
+let ``LeaveRequestApprover give correct dependencies``() =
+  expectDeps<LeaveRequestApprover> [
+    "System"
+    "Absents_AbstractWorkflow"
+    "Microsoft_FSharp_Core"
+  ]
+  ()
+
+let expectModuleName(t: System.Type,expected: string) =
   let moduleName = Signature.getModuleName t
   Expect.eq moduleName expected
   ()
