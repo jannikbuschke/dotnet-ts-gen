@@ -8,5 +8,13 @@ F# types like records (including anonymous records) and unions as well as F# col
 
 # Get started
 
-`dotnet add package TinyTypegen`
+`dotnet add package TinyTypeGen --version 1.0.0.21-alpha`
 
+```cs
+var builder = new TinyTypeGen.GeneratorBuilder();
+builder.AddTypes([typeof(FSharpResult<,>), typeof(MyType)])
+builder.AddEndpoints(MyModule.endpoints);
+var generator = builder.Build();
+generator.RenderTypesToDirectory("../my-client/src/client/");
+generator.RenderApiToFile("../my-client/src/client/api.ts");
+```
