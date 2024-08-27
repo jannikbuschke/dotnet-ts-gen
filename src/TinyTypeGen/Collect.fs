@@ -65,7 +65,6 @@ type Collector(defaultTypes:PredefinedTypes.PreDefinedTypes)=
               c.GetFields()
               |> Array.toList
               |> List.collect (fun f ->
-                printfn " collect for type %s" f.PropertyType.FullName
                 getTypeOrGenericDefinitionAndArgumentsAsDependencies f.PropertyType
                 )
             )
