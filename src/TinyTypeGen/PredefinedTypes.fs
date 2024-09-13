@@ -170,7 +170,7 @@ let defaultTypes =
     (typedefof<System.Collections.Generic.KeyValuePair<_, _>>,
      { emptyPredefinedValues with
          InlineDefaultValue = Some "({Key:defaultTKey,Value:defaultTValue})"
-         Definition = Some "({Key:TKey,Value:TValue})" })
+         Definition = Some "({key:TKey,value:TValue})" })
     (typedefof<System.Collections.Generic.Dictionary<_, _>>,
      { emptyPredefinedValues with
          InlineDefaultValue = Some "({})"
