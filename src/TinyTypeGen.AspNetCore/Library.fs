@@ -51,7 +51,7 @@ let getEndpoints (services: IServiceProvider) =
         builder
         |> TinyTypeGen.DynamicType.createProperty (p.Name, p.ParameterType)
 
-        builder.CreateType()
+        TinyTypeGen.DynamicType.build builder
       else
         p.ParameterType
     | parameters ->
@@ -62,8 +62,7 @@ let getEndpoints (services: IServiceProvider) =
         TinyTypeGen.DynamicType.createProperty (x.Name, x.ParameterType) builder
         |> ignore)
 
-      let t = builder.CreateType()
-      t
+      TinyTypeGen.DynamicType.build builder
 
   let apiEndpoints =
     descriptors

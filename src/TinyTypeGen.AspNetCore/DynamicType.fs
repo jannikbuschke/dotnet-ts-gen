@@ -4,6 +4,8 @@ open System
 open System.Reflection
 open System.Reflection.Emit
 
+let cache = System.Collections.Generic.Dictionary<string, Type>()
+
 let createBuilder (name: string) =
   let assemblyName = AssemblyName("DynamicAssembly")
 
@@ -54,3 +56,11 @@ let createProperty (propertyName: string, propertyType: Type) (typeBuilder: Type
 
   propertyBuilder.SetGetMethod(getMethodBuilder)
   propertyBuilder.SetSetMethod(setMethodBuilder)
+
+let build (typeBuilder: TypeBuilder) =
+  if cache.ContainsKey(typeBuilder.Name) then
+    cache.[typeBuilder.Name]
+  else
+    let t = typeBuilder.CreateType()
+    cache.Add(t.Name, t)
+    t
