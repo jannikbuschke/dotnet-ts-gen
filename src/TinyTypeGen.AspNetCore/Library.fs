@@ -46,8 +46,7 @@ let getEndpoints (services: IServiceProvider) =
     | [] -> typeof<Unit>
     | [ p ] ->
       if p.ParameterType.IsPrimitive then
-        let builder =
-          TinyTypeGen.DynamicType.createBuilder (sprintf "%s%s%d" nameSpace name (p.GetHashCode()))
+        let builder = TinyTypeGen.DynamicType.createBuilder (sprintf "%s%s" nameSpace name)
 
         builder
         |> TinyTypeGen.DynamicType.createProperty (p.Name, p.ParameterType)
@@ -56,8 +55,7 @@ let getEndpoints (services: IServiceProvider) =
       else
         p.ParameterType
     | parameters ->
-      let builder =
-        TinyTypeGen.DynamicType.createBuilder (sprintf "%s%s%d" nameSpace name (parameters.GetHashCode()))
+      let builder = TinyTypeGen.DynamicType.createBuilder (sprintf "%s%s" nameSpace name)
 
       parameters
       |> List.iter (fun x ->
@@ -84,7 +82,7 @@ let getEndpoints (services: IServiceProvider) =
       let method = methods.FirstOrDefault()
       let verb = verb method
       let parameters = x.MethodInfo.GetParameters() |> Seq.toList
-      let name = sprintf "%sRequest" x.ActionName
+      let name = sprintf "%s_Request" x.ActionName
 
       let inputType =
         parameters
