@@ -1,5 +1,6 @@
 ﻿module TsGen.PredefinedTypes
 
+open System
 open System.Text.Json.Serialization
 
 type PredefinedValues =
@@ -81,10 +82,22 @@ let defaultTypes =
      { emptyPredefinedValues with
          InlineDefaultValue = Some "0"
          Definition = Some "number" })
+    (typeof<uint64>,
+     { emptyPredefinedValues with
+         InlineDefaultValue = Some "0"
+         Definition = Some "number" })
     (typeof<int64>,
      { emptyPredefinedValues with
          InlineDefaultValue = Some "0"
          Definition = Some "number" })
+    (typeof<Int128>,
+     { emptyPredefinedValues with
+         InlineDefaultValue = Some "0"
+         Definition = Some "number" })
+    (typeof<Char>,
+     { emptyPredefinedValues with
+         InlineDefaultValue = Some "''"
+         Definition = Some "string" })
     (typeof<float>,
      { emptyPredefinedValues with
          InlineDefaultValue = Some "0.0"
@@ -106,6 +119,10 @@ let defaultTypes =
      { emptyPredefinedValues with
          Definition = Some("null")
          InlineDefaultValue = Some "null" })
+    (typedefof<System.ValueTuple<_, _>>,
+     { emptyPredefinedValues with
+         InlineDefaultValue = Some "[defaultT1,defaultT2]"
+         Definition = Some "[T1,T2]" })
     (typedefof<System.Tuple<_, _>>,
      { emptyPredefinedValues with
          InlineDefaultValue = Some "[defaultT1,defaultT2]"
