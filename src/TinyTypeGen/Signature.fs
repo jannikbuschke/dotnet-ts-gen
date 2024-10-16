@@ -64,38 +64,7 @@ let getModuleName (t: System.Type) =
 
 let isAnonymousRecord (t: System.Type) = t.Name.StartsWith "<>f__AnonymousType"
 
-let getName (t: System.Type) =
-  let name = t.Name.Split("`").[0]
-  // let name =
-  //   if t.FullName <> null
-  //      && not t.IsGenericType
-  //      && not t.IsGenericParameter
-  //      && t.FullName.Contains "+"
-  //      && isTypeDeclaredInModule t then
-  //     // include declaring type in name
-  //     let name = t.DeclaringType.Name + "_" + t.Name
-  //     name
-  //   // static nested class
-  //   // let name = t.Name
-  //   // let fullname = t.FullName
-  //   // let declaringType = t.DeclaringType
-  //   // let parts = t.FullName.Split("+")
-  //   // (parts.Take(parts.Length - 1) |> String.concat ".")
-  //   else
-  //     t.Name //.Split("`").[0]
-
-  let name = name.Split("`").[0]
-
-  if t.IsArray then
-    name.Replace("[]", "") + "Array"
-  elif isAnonymousRecord t then
-    name.Replace("<>f__", "f__")
-  else
-    name
-
-let getSignature (t: System.Type) (predefinedTypes: PredefinedTypes.PreDefinedTypes) =
-  let modulName = getModuleName t
-
+let getName (t: System.Type)(predefinedTypes:PredefinedTypes.PreDefinedTypes) =
   let tg =
     if t.IsGenericType && not t.IsGenericTypeDefinition then
       t.GetGenericTypeDefinition()
@@ -108,10 +77,43 @@ let getSignature (t: System.Type) (predefinedTypes: PredefinedTypes.PreDefinedTy
     else
       None
 
-  let name =
-    predefined
-    |> Option.bind (fun x -> x.Name)
-    |> Option.defaultValue (getName t)
+  let getDefaultName =
+    let name = t.Name.Split("`").[0]
+    // let name =
+    //   if t.FullName <> null
+    //      && not t.IsGenericType
+    //      && not t.IsGenericParameter
+    //      && t.FullName.Contains "+"
+    //      && isTypeDeclaredInModule t then
+    //     // include declaring type in name
+    //     let name = t.DeclaringType.Name + "_" + t.Name
+    //     name
+    //   // static nested class
+    //   // let name = t.Name
+    //   // let fullname = t.FullName
+    //   // let declaringType = t.DeclaringType
+    //   // let parts = t.FullName.Split("+")
+    //   // (parts.Take(parts.Length - 1) |> String.concat ".")
+    //   else
+    //     t.Name //.Split("`").[0]
+
+    let name = name.Split("`").[0]
+
+    if t.IsArray then
+      name.Replace("[]", "") + "Array"
+    elif isAnonymousRecord t then
+      name.Replace("<>f__", "f__")
+    else
+      name
+
+  predefined
+      |> Option.bind (fun x -> x.Name)
+      |> Option.defaultValue getDefaultName
+
+let getSignature (t: System.Type) (predefinedTypes: PredefinedTypes.PreDefinedTypes) =
+  let modulName = getModuleName t
+
+  let name = getName t predefinedTypes
   // TODO: add generic arguments
   modulName, name
 
@@ -123,7 +125,7 @@ let rec getGenericParameters (callingModule: string) (t: System.Type) =
     + (t.GetGenericArguments()
        |> Seq.map (fun v ->
          let modulName = getModuleName v
-         let name = getName v
+         let name = getName v defaultTypes
 
          let name =
            if modulName = callingModule || v.IsGenericParameter then
@@ -144,7 +146,7 @@ let rec getGenericParameterValues (callingModule: string) (t: System.Type) =
     + (t.GenericTypeArguments
        |> Seq.map (fun v ->
          let modulName = getModuleName v
-         let name = "default" + (getName v)
+         let name = "default" + (getName v defaultTypes)
 
          let name =
            if modulName = callingModule then
@@ -223,7 +225,7 @@ let rec getDuPropertySignature (callingModule: string) (t: System.Type) (default
         name + (getGenericParameters callingModule t)
     else
       let modulName = getModuleName t
-      let name = getName t
+      let name = getName t defaultTypes
 
       if modulName = callingModule then
         name
@@ -254,7 +256,7 @@ let rec getPropertySignature (callingModule: string) (t: System.Type) (defaultTy
       else
         // weird
         let modulName = getModuleName t
-        let name = getName t
+        let name = getName t defaultTypes
 
         if modulName = callingModule || t.IsGenericParameter then
           name
@@ -272,7 +274,7 @@ let getAnonymousFunctionSignatureForDefaultValue (t: System.Type) =
   genericArguments + parameters
 
 let getNamedFunctionSignatureForDefaultValue (t: System.Type) =
-  let name = getName t
+  let name = getName t defaultTypes
   let genericArguments = genericArgumentList t
   let signature = name + genericArguments
   signature

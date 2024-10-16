@@ -55,7 +55,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
       | TypeKind.Union -> renderDu t strategy defaultTypes
       | TypeKind.Array ->
         // Maybe not good
-        let name = getName t
+        let name = getName t defaultTypes
         let elementType = t.GetElementType()
         let elModuleName, elName = getSignature elementType defaultTypes
 
@@ -85,7 +85,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
 
         renderDefinitionAndOrValue definition //value strategy
       | TypeKind.Enum ->
-        let name = getName t
+        let name = getName t defaultTypes
 
         let values =
           t.GetEnumNames()
