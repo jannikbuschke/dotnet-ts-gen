@@ -6,6 +6,7 @@ open System.Reflection
 open System.Text.Json.Serialization
 open TsGen
 open Microsoft.FSharp.Reflection
+open TsGen.PredefinedTypes
 open TypeCache
 open System.Linq
 
@@ -38,8 +39,8 @@ let getModuleName (t: System.Type) =
         let parts = t.FullName.Split("+")
         (parts.Take(parts.Length - 1) |> String.concat ".")
       else if t.FullName <> null
-         && t.FullName.Contains "+"
-         && isTypeDeclaredInModule t then
+              && t.FullName.Contains "+"
+              && isTypeDeclaredInModule t then
         // static nested class
         let name = t.Name
         let fullname = t.FullName
@@ -52,7 +53,10 @@ let getModuleName (t: System.Type) =
     //let name = name.Split("`").[0]
     let result = ns.Replace(".", "_")
     let result = result.Split("`").[0]
-    if result.Contains "`" then failwith $"Modulename for '{t.Name}' resulted in '{result}' containing a `, which is not supported. This is a bug"
+
+    if result.Contains "`" then
+      failwith $"Modulename for '{t.Name}' resulted in '{result}' containing a `, which is not supported. This is a bug"
+
     result
 
   else
@@ -89,9 +93,25 @@ let getName (t: System.Type) =
   else
     name
 
-let getSignature (t: System.Type) =
+let getSignature (t: System.Type) (predefinedTypes: PredefinedTypes.PreDefinedTypes) =
   let modulName = getModuleName t
-  let name = getName t
+
+  let tg =
+    if t.IsGenericType && not t.IsGenericTypeDefinition then
+      t.GetGenericTypeDefinition()
+    else
+      t
+
+  let predefined =
+    if predefinedTypes.ContainsKey tg then
+      Some(predefinedTypes.Item tg)
+    else
+      None
+
+  let name =
+    predefined
+    |> Option.bind (fun x -> x.Name)
+    |> Option.defaultValue (getName t)
   // TODO: add generic arguments
   modulName, name
 
@@ -181,16 +201,14 @@ let genericArgumentListAsParametersCall (t: System.Type) =
      |> String.concat ",")
   + ")"
 
-let rec getDuPropertySignature (callingModule: string) (t: System.Type) =
+let rec getDuPropertySignature (callingModule: string) (t: System.Type) (defaultTypes: PredefinedTypes.PreDefinedTypes) =
   let kind = getKind t
 
   match kind with
   | TypeKind.Array ->
-    getDuPropertySignature
-      callingModule
-      (typedefof<System.Collections.Generic.IEnumerable<_>>.MakeGenericType (t.GetElementType()))
+    getDuPropertySignature callingModule (typedefof<System.Collections.Generic.IEnumerable<_>>.MakeGenericType (t.GetElementType())) defaultTypes
   | _ ->
-    let moduleName, name = getSignature t
+    let moduleName, name = getSignature t defaultTypes
 
     let name =
       if moduleName = callingModule then
@@ -212,7 +230,7 @@ let rec getDuPropertySignature (callingModule: string) (t: System.Type) =
       else
         modulName + "." + name
 
-let rec getPropertySignature (callingModule: string) (t: System.Type) =
+let rec getPropertySignature (callingModule: string) (t: System.Type) (defaultTypes: PredefinedTypes.PreDefinedTypes) =
   let kind = getKind t
 
   // if t.IsGenericTypeParameter then
@@ -221,11 +239,9 @@ let rec getPropertySignature (callingModule: string) (t: System.Type) =
   let result =
     match kind with
     | TypeKind.Array ->
-      getPropertySignature
-        callingModule
-        (typedefof<System.Collections.Generic.IEnumerable<_>>.MakeGenericType (t.GetElementType()))
+      getPropertySignature callingModule (typedefof<System.Collections.Generic.IEnumerable<_>>.MakeGenericType (t.GetElementType())) defaultTypes
     | _ ->
-      let moduleName, name = getSignature t
+      let moduleName, name = getSignature t defaultTypes
 
       let name =
         if moduleName = callingModule || t.IsGenericParameter then

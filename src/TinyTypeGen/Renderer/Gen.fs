@@ -46,18 +46,18 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (jsonUnionEncoding: Jso
       | TypeKind.Record ->
         if t.IsGenericType && not t.IsGenericTypeDefinition then
           if isAnonymousRecord t then
-            renderRecord t strategy
+            renderRecord t strategy defaultTypes
           else
             ""
         else
-          let result = renderRecord t strategy
+          let result = renderRecord t strategy defaultTypes
           result
-      | TypeKind.Union -> renderDu t strategy
+      | TypeKind.Union -> renderDu t strategy defaultTypes
       | TypeKind.Array ->
         // Maybe not good
         let name = getName t
         let elementType = t.GetElementType()
-        let elModuleName, elName = getSignature elementType
+        let elModuleName, elName = getSignature elementType defaultTypes
 
         let elementTypeName =
           if elModuleName = getModuleName t then
@@ -103,7 +103,7 @@ export const default{name}: {name} = {values |> List.head}
           ""
         else
           // probably a class, try to use same strategy as record
-          renderRecord t strategy
+          renderRecord t strategy defaultTypes
    )
   {| renderType = renderType
      renderStubValue = renderStubValue |}

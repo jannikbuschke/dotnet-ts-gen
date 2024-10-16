@@ -6,27 +6,28 @@ open TsGen
 open Microsoft.FSharp.Reflection
 open TypeCache
 
-let renderPropertyNameAndDefinition (callingModule: string) (fieldInfo: PropertyInfo) =
-  let signature = getPropertySignature callingModule fieldInfo.PropertyType
+let renderPropertyNameAndDefinition (callingModule: string) (fieldInfo: PropertyInfo) (defaultTypes:PredefinedTypes.PreDefinedTypes)=
+  let signature = getPropertySignature callingModule fieldInfo.PropertyType defaultTypes
   let name = fieldInfo.Name
   let result = $"""  {Utils.camelize name}: {signature}"""
   result
 
-let renderSingleFieldUnionCaseDefinition (callingModule: string) (case: UnionCaseInfo) (fieldInfo: PropertyInfo) =
-  $"""{{ Case: "{case.Name}", Fields: {getPropertySignature callingModule fieldInfo.PropertyType} }}"""
+let renderSingleFieldUnionCaseDefinition (callingModule: string) (case: UnionCaseInfo) (fieldInfo: PropertyInfo)(defaultTypes:PredefinedTypes.PreDefinedTypes) =
+  $"""{{ Case: "{case.Name}", Fields: {getPropertySignature callingModule fieldInfo.PropertyType defaultTypes} }}"""
 
 let renderMultiFieldUnionCaseDefinition
     (callingModule: string)
     (outerDu: System.Type)
     (case: UnionCaseInfo)
     (fieldInfo: PropertyInfo list)
+    (defaultValues:PredefinedTypes.PreDefinedTypes)
     =
     let fields =
       fieldInfo
       |> List.map (fun v ->
         (Utils.camelize v.Name)
         + ": "
-        + getDuPropertySignature callingModule v.PropertyType)
+        + getDuPropertySignature callingModule v.PropertyType defaultValues)
       |> String.concat ", "
 
     $"""{{ Case: "{case.Name}", Fields: {{ {fields} }} }}"""
@@ -57,7 +58,7 @@ let getMultiFieldCaseSignature
     name
 
 
-let renderDu (outerDu: System.Type) (strategy: RenderStrategy) =
+let renderDu (outerDu: System.Type) (strategy: RenderStrategy)(defaultTypes:PredefinedTypes.PreDefinedTypes)=
 
     let callingModule = getModuleName outerDu
 
@@ -86,7 +87,7 @@ let renderDu (outerDu: System.Type) (strategy: RenderStrategy) =
           let singleFieldCaseSignature =
             getSingleFieldCaseSignature name singleField singleCase
 
-          let prop = getPropertySignature callingModule singleField.PropertyType
+          let prop = getPropertySignature callingModule singleField.PropertyType defaultTypes
           $"""export type {singleFieldCaseSignature} = {prop}"""
         | _ -> failwith "not yet implemented"
 
@@ -101,14 +102,14 @@ let renderDu (outerDu: System.Type) (strategy: RenderStrategy) =
             let singleFieldCaseSignature = getSingleFieldCaseSignature name singleField case
 
             let singleFieldUnionCaseDefinition =
-              renderSingleFieldUnionCaseDefinition callingModule case singleField
+              renderSingleFieldUnionCaseDefinition callingModule case singleField defaultTypes
 
             $"""export type {singleFieldCaseSignature} = {singleFieldUnionCaseDefinition}"""
           | fields ->
             let singleFieldCaseSignature = getMultiFieldCaseSignature outerDu name fields case
 
             let multiFieldUnionCaseDefinition =
-              renderMultiFieldUnionCaseDefinition callingModule outerDu case fields
+              renderMultiFieldUnionCaseDefinition callingModule outerDu case fields defaultTypes
 
             $"""export type {singleFieldCaseSignature} = {multiFieldUnionCaseDefinition}"""
 
@@ -215,7 +216,6 @@ export type {name}_Case = {caseNameLiteral}"""
 
     renderDefinitionAndOrValue definition //value strategy
 
-
 let ignoreList = [ typedefof<FSharpFunc<_, _>> ]
 
 let isIgnored (x: System.Type) =
@@ -231,10 +231,11 @@ let isIgnored (x: System.Type) =
     shouldBeIgnored
 
 let getProperties (t: System.Type) =
+    // maybe ignore properties that have a NotMappedAttribute
     t.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
     |> Seq.filter (fun x -> not (isIgnored x.PropertyType))
 
-let renderRecord (t: System.Type) (strategy: RenderStrategy) =
+let renderRecord (t: System.Type) (strategy: RenderStrategy)(defaultTypes:PredefinedTypes.PreDefinedTypes) =
     let isAnonymous = isAnonymousRecord t
 
     if t.IsGenericType
@@ -248,7 +249,7 @@ let renderRecord (t: System.Type) (strategy: RenderStrategy) =
 
     let fields =
       properties
-      |> Seq.map (renderPropertyNameAndDefinition callingModule)
+      |> Seq.map (fun x->renderPropertyNameAndDefinition callingModule x defaultTypes)
       |> String.concat System.Environment.NewLine
 
     let genericArguments = genericArgumentList t
