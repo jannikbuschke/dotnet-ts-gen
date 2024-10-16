@@ -195,7 +195,7 @@ let init (defaultTypes: PredefinedTypes.PreDefinedTypes) (types: Type list) (end
 
       endpoints
       |> Seq.iter (fun endpoint ->
-        let getTypename t = (t |> getPropertySignature "")
+        let getTypename t = getPropertySignature "" t defaultTypes
 
         let inputTypeName = endpoint.Request |> getTypename
         let outputTypename = endpoint.Response |> getTypename
