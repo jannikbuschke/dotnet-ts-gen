@@ -122,11 +122,22 @@ let defaultTypes =
     (typedefof<System.ValueTuple<_, _>>,
      { emptyPredefinedValues with
          InlineDefaultValue = Some "[defaultT1,defaultT2]"
+         Signature = Some "T1, T2"
          Definition = Some "[T1,T2]" })
+    (typedefof<System.ValueTuple<_, _, _>>,
+     { emptyPredefinedValues with
+         // Signature = Some "T1, T2"
+         Name=Some "ValueTuple3"
+         Definition = Some "[T1,T2,T3]" })
     (typedefof<System.Tuple<_, _>>,
      { emptyPredefinedValues with
          InlineDefaultValue = Some "[defaultT1,defaultT2]"
+         Name=Some "Tuple"
          Definition = Some "[T1,T2]" })
+    (typedefof<System.Tuple<_, _,_>>,
+     { emptyPredefinedValues with
+         Name=Some "Tuple3"
+         Definition = Some "[T1,T2,T3]" })
     (typedefof<System.Collections.Generic.IEnumerable<_>>,
      { emptyPredefinedValues with
          InlineDefaultValue = Some "[]"

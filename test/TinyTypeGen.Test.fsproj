@@ -55,6 +55,7 @@
         <Compile Include="Scenario1\PersonStatus.fs" />
         <Compile Include="Scenario1\Library.fs" />
         <Compile Include="Scenario1\Config.fs" />
+        <Compile Include="ValueTuple.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

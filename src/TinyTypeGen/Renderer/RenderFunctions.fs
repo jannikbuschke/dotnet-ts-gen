@@ -280,7 +280,7 @@ let renderRecord (t: System.Type) (strategy: RenderStrategy) =
     renderDefinitionAndOrValue definition // value strategy
 
 let renderPredefinedType (t: System.Type) (predefined: PredefinedTypes.PredefinedValues) (strategy: RenderStrategy) =
-    let name = getName t
+    let name = predefined.Name |>Option.defaultValue( getName t)
 
     let definition, value =
       if t.IsGenericType then
