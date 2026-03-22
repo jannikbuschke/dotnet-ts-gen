@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -11,14 +12,30 @@ using Serilog;
 using static Nuke.Common.Tooling.ProcessTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.Git.GitTasks;
+
 // ReSharper disable VariableHidesOuterVariable
 // ReSharper disable AllUnderscoreLocalParameterName
 // ReSharper disable UnusedMember.Local
 
 class VersionInf
 {
-    // ReSharper disable once InconsistentNaming
-    public string version { get; set; }
+    public int major { get; set; }
+    public int minor { get; set; }
+    public int patch { get; set; }
+    public string suffix { get; set; }
+    public Nullable<int> suffixVersion { get; set; }
+
+    // "commit": "53cb9e5f535ec36b34364a2dd9ec52d1867f2214"
+    public string Version() => $"{major}.{minor}.{patch}";
+
+    public string VersionWithSuffix()
+    {
+        var prefix =
+            suffix == null ? ""
+            : suffixVersion == null ? $"-{suffix}"
+            : $"-{suffix}.{suffixVersion}";
+        return $"{Version()}{prefix}";
+    }
 }
 
 class Build : NukeBuild
@@ -37,33 +54,15 @@ class Build : NukeBuild
     {
         var versionJson = File.ReadAllText(RootDirectory / "version.json");
         var v = JsonSerializer.Deserialize<VersionInf>(versionJson);
-        var version = v.version.Split("-");
-        var versionPrefix = version[0];
-        var versionSuffix = version.Length > 1 ? "-" + version[1] : null;
-        // var ancestor = Git(
-        //         $"merge-base {GitCurrentBranch()} main",
-        //         workingDirectory: null,
-        //         logOutput: false
-        //     )
-        //     .Select(v => v.Text)
-        //     .Single();
-        var count = Git(
-                $"rev-list {GitCurrentBranch()} ^main --pretty=oneline --count",
-                workingDirectory: null,
-                logOutput: false
-            )
-            .Select(v => v.Text)
-            .Single();
-        var result = $"{versionPrefix}.0.{count}{versionSuffix}";
-        Log.Information("version = {Value}", result);
-        return result;
+        return v.VersionWithSuffix();
     }
 
     Target Clean =>
         _ =>
             _.Executes(() =>
             {
-                if (!Directory.Exists(OutputDirectory)) return;
+                if (!Directory.Exists(OutputDirectory))
+                    return;
                 foreach (var file in Directory.EnumerateFiles(OutputDirectory))
                 {
                     Log.Information("Delete file {Value}", file);
@@ -71,16 +70,18 @@ class Build : NukeBuild
                 }
             });
 
-    Target Restore =>
-        _ =>
-            _.Executes(() => DotNetRestore(_ => _.SetProjectFile(CoreProject)));
+    Target Restore => _ => _.Executes(() => DotNetRestore(_ => _.SetProjectFile(CoreProject)));
 
     Target Compile =>
         _ =>
             _.DependsOn(Restore, Clean)
-                .Executes(() => DotNetBuild(_ =>
-                    _.SetProjectFile(Solution).SetConfiguration("Release").SetVersion(GetVersion())
-                ));
+                .Executes(() =>
+                    DotNetBuild(_ =>
+                        _.SetProjectFile(Solution)
+                            .SetConfiguration("Release")
+                            .SetVersion(GetVersion())
+                    )
+                );
 
     AbsolutePath OutputDirectory = RootDirectory / "output";
 
@@ -128,8 +129,7 @@ class Build : NukeBuild
 
     Target Publish =>
         _ =>
-            _
-            .DependsOn(Pack, Tests)
+            _.DependsOn(Pack, Tests)
                 .Requires(() => NugetApiUrl)
                 .Executes(() =>
                 {
@@ -150,12 +150,14 @@ class Build : NukeBuild
                 StartProcess(
                         "pnpm",
                         arguments: "run format",
-                        workingDirectory: Solution.tests.IntegrationTests.Directory / "examples")
+                        workingDirectory: Solution.tests.IntegrationTests.Directory / "examples"
+                    )
                     .AssertZeroExitCode();
                 StartProcess(
                         "pnpm",
                         arguments: "run build",
-                        workingDirectory: Solution.tests.IntegrationTests.Directory / "examples")
+                        workingDirectory: Solution.tests.IntegrationTests.Directory / "examples"
+                    )
                     .AssertZeroExitCode();
             });
 
@@ -172,12 +174,8 @@ class Build : NukeBuild
             {
                 void Format(string dir)
                 {
-                    StartProcess(
-                        "fantomas",
-                        arguments: ".",
-                        workingDirectory: dir
-                    ).AssertZeroExitCode();
-                    
+                    StartProcess("fantomas", arguments: ".", workingDirectory: dir)
+                        .AssertZeroExitCode();
                 }
 
                 Format(Solution.src.TinyTypeGen.Directory);
@@ -185,12 +183,9 @@ class Build : NukeBuild
                 {
                     Format(project.Directory);
                 }
-
             });
 
-    private Target Tests =>
-        _ =>
-            _.DependsOn(UnitTests, IntegrationTests);
+    private Target Tests => _ => _.DependsOn(UnitTests, IntegrationTests);
 
     [GitRepository]
     // ReSharper disable once InconsistentNaming
@@ -239,5 +234,4 @@ class Build : NukeBuild
     //             var v = JsonSerializer.Deserialize<VersionInf>(versionJson);
     //             Log.Information("NerdbankVersioning = {@Value}", v);
     //         });
-
 }
