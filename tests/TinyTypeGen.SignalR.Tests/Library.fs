@@ -1,4 +1,4 @@
-﻿module TinyTypeGen.SignalR.Tests
+module TinyTypeGen.SignalR.Tests
 
 open System
 open System.Threading.Tasks
@@ -56,14 +56,14 @@ module Test =
       let returnTypeName = m.ReturnType.Name
 
       let parameters =
-        (m.GetParameters()
-         |> Seq.mapi (fun i p ->
-           {
-             Name = (p.Name |> Option.ofObj |> Option.defaultValue (sprintf "p%d" i))
-             Type = p.ParameterType
-             TypeName = p.ParameterType.Name
-           }
-         ))
+        m.GetParameters()
+        |> Seq.mapi (fun i p ->
+          {
+            Name = (p.Name |> Option.ofObj |> Option.defaultValue (sprintf "p%d" i))
+            Type = p.ParameterType
+            TypeName = p.ParameterType.Name
+          }
+        )
 
       {
         Name = m.Name
@@ -74,9 +74,9 @@ module Test =
     )
 
   let renderParameters (parameters: Parameter seq) =
-    (parameters
-     |> Seq.map (fun p -> sprintf "%s:%s" p.Name p.TypeName)
-     |> String.concat ",")
+    parameters
+    |> Seq.map (fun p -> sprintf "%s:%s" p.Name p.TypeName)
+    |> String.concat ","
 
   let renderClientCallback m =
     let handlerParameters = m.Parameters |> renderParameters
