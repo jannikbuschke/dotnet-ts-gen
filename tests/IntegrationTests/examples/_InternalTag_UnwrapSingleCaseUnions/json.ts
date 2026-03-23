@@ -6,7 +6,7 @@ import {
   GenericDu,
   MyRecord,
   GenericDu0,
-} from './IntegrationTests_Gen';
+} from './IntegrationTests';
 import {
   FSharpResult,
   FSharpOption,
@@ -30,11 +30,11 @@ const enumLike = [
 const singleCase = [25] as const satisfies SingleCaseUnion[];
 
 const multiCase = [
-  ['RecordField', {}],
-  ['RecordField', {}],
+  ['RecordField', { foo: -21 }],
   ['TwoFields', '\u0004K\u0003\u0022\u0004\u001B\u0017/L', true],
-  ['Records', {}, {}, false],
-  ['TwoFields', '7|z^\u000F\u0002f\u0002PB\bI\u0016JTl;\bE', true],
+  ['Records', { foo: -2 }, { foo: 14 }, true],
+  ['OneField', -1],
+  ['NoField'],
 ] as const satisfies MultiCaseMultiFields[];
 
 const generic = [

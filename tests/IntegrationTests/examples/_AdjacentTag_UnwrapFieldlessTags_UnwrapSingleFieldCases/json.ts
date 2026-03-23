@@ -6,7 +6,7 @@ import {
   GenericDu,
   MyRecord,
   GenericDu0,
-} from './IntegrationTests_Gen';
+} from './IntegrationTests';
 import {
   FSharpResult,
   FSharpOption,
@@ -28,17 +28,14 @@ const singleCase = [
 ] as const satisfies SingleCaseUnion[];
 
 const multiCase = [
-  { Case: 'RecordField', Fields: {} },
-  { Case: 'RecordField', Fields: {} },
+  { Case: 'RecordField', Fields: { foo: -21 } },
   {
     Case: 'TwoFields',
     Fields: ['\u0004K\u0003\u0022\u0004\u001B\u0017/L', true],
   },
-  { Case: 'Records', Fields: [{}, {}, false] },
-  {
-    Case: 'TwoFields',
-    Fields: ['7|z^\u000F\u0002f\u0002PB\bI\u0016JTl;\bE', true],
-  },
+  { Case: 'Records', Fields: [{ foo: -2 }, { foo: 14 }, true] },
+  { Case: 'OneField', Fields: -1 },
+  'NoField',
 ] as const satisfies MultiCaseMultiFields[];
 
 const generic = [

@@ -11,38 +11,7 @@ open System.Text.Json.Serialization
 open type JsonUnionEncoding
 open FsCheck.FSharp
 open System.Text.RegularExpressions
-
-type EnumLikeUnion =
-  | A
-  | B
-  | C
-
-type SingleCaseMultiField = | Value of int * bool * {| Age: int |}
-
-type SingleCaseUnion = | Value of int
-
-type MyRecord = { Val: int }
-
-type MultiCaseMultiFields =
-  | NoField
-  | OneAnonField of
-    {|
-      Name: string
-      Age: int
-    |}
-  | OneField of int
-  | TwoFields of string * bool
-  | RecordField of Record
-  | Records of Record * Record * bool
-
-type GenericDu0<'a> = | OneField of 'a
-
-type GenericDu<'a, 'b> =
-  | NoField
-  | OneField of 'a
-  | OneAnonFieldBool of {| Value: bool |}
-  | OneAnonFieldAOption of {| Value: 'a option |}
-  | TwoFields of 'b * int
+open IntegrationTests
 
 let stripPropertyNameQuotes (input: string) : string =
   Regex.Replace(input, @"""(\w+)""\s*:", "$1:")
@@ -164,7 +133,7 @@ let gen () =
         {
           Endpoints = csharpEndpoints
           TargetFile = $"{path}/api-cs.ts"
-          ApiTemplate = Template.EmbeddedTemplate(EmbeddedTemplate.ApiTemplateWithTanstackQuery)
+          ApiTemplate = Template.EmbeddedTemplate EmbeddedTemplate.ApiTemplateWithTanstackQuery
           EndpointTemplate = Template.Default
         }
       )
@@ -178,7 +147,8 @@ let gen () =
         }
       )
       .Build()
-      .RenderAll(path)
+      .RenderAll
+      path
 
     let serialize = fun x -> serializeWithEncoding encoding x |> stripPropertyNameQuotes
     let result = multiCaseMultiFields |> serialize
@@ -214,7 +184,7 @@ import {{
   MyRecord,
   GenericDu0,
   {importRecordVariant}
-  }} from "./IntegrationTests_Gen";
+  }} from "./IntegrationTests";
 import {{
   FSharpResult,
   FSharpOption,

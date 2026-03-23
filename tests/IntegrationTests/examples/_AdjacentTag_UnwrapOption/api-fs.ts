@@ -15,9 +15,8 @@ import * as NamespaceD from './NamespaceD';
 import * as CSharpWebapp_Controllers__CSharpWebapp_Controllers from './CSharpWebapp_Controllers__CSharpWebapp_Controllers';
 import * as CSharpWebapp_Controllers from './CSharpWebapp_Controllers';
 import * as FsApi from './FsApi';
-import * as IntegrationTests_Gen from './IntegrationTests_Gen';
+import * as IntegrationTests from './IntegrationTests';
 import * as ___ from './___';
-import * as Xunit from './Xunit';
 
 export type Api = {
   '/api/controller/get-string': {
