@@ -27,7 +27,7 @@ let verb =
   | _ -> HttpVerb.GET
 
 let getPredefinedTypes () =
-  (typedefof<ActionResult>, PredefinedType.New("any"))
+  typedefof<ActionResult>, PredefinedType.New "any"
 
 // get endpoints based controllers
 let getEndpoints (services: IServiceProvider) =
@@ -41,9 +41,9 @@ let getEndpoints (services: IServiceProvider) =
 
   let rec toResultType (input: Type) =
     if
-      (input.IsGenericType
-       && not input.IsGenericTypeDefinition
-       && wrapperTypes.Contains(input.GetGenericTypeDefinition()))
+      input.IsGenericType
+      && not input.IsGenericTypeDefinition
+      && wrapperTypes.Contains(input.GetGenericTypeDefinition())
     then
       let args = input.GenericTypeArguments
       toResultType (args[0])
@@ -69,8 +69,8 @@ let getEndpoints (services: IServiceProvider) =
       // or if enum
       if
         t.IsPrimitive
-        || (t.IsEnum && verb = HttpVerb.GET)
-        || (isCollection t && verb = HttpVerb.GET)
+        || t.IsEnum && verb = HttpVerb.GET
+        || isCollection t && verb = HttpVerb.GET
       then
 
         let builder = sprintf "%s_%s" nameSpace name |> DynamicType.createBuilder
@@ -123,7 +123,7 @@ let getEndpoints (services: IServiceProvider) =
       ApiEndpoint.ResponseNullable = returnTypeNullable
       ApiEndpoint.Method = verb
       ApiEndpoint.Route = "/" + x.AttributeRouteInfo.Template })
-  |> Seq.distinctBy (fun x -> (x.Route, x.Method))
+  |> Seq.distinctBy (fun x -> x.Route, x.Method)
   |> Seq.toList
 
 let getEndpointsBasedOnEndpointDataSource (services: IServiceProvider) =
