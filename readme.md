@@ -35,12 +35,12 @@ That's it. By default, properties are camelCase and F# DUs use `AdjacentTag` enc
 
 ## Packages
 
-| Package | Description |
-|---|---|
-| `TinyTypeGen` | Core type generator |
+| Package                  | Description                           |
+| ------------------------ | ------------------------------------- |
+| `TinyTypeGen`            | Core type generator                   |
 | `TinyTypeGen.AspNetCore` | ASP.NET Core API Explorer integration |
-| `TinyTypeGen.Giraffe` | Giraffe endpoint helpers |
-| `TinyTypeGen.SignalR` | SignalR hub type generation |
+| `TinyTypeGen.Giraffe`    | Giraffe endpoint helpers              |
+| `TinyTypeGen.SignalR`    | SignalR hub type generation           |
 
 ---
 
@@ -94,7 +94,8 @@ GeneratorBuilder()
 
 ### Giraffe
 
-Giraffe has no built-in metadata, so you declare request/response types explicitly via typed helpers:
+> [!Note]
+> TODO: Not yet properly documented
 
 ```fsharp
 open TinyTypeGen.Giraffe
@@ -108,14 +109,17 @@ let apiEndpoints    = [ getUser; postUser ] |> List.map fst
 
 Available helpers:
 
-| Helper | Verb | Input |
-|---|---|---|
-| `queryEndpoint` | GET | query string |
-| `queryEndpointWithoutInput` | GET | none |
-| `mutationEndpoint` | POST | JSON body |
-| `paginatedQueryEndpoint` | GET | query string + pagination headers |
+| Helper                      | Verb | Input                             |
+| --------------------------- | ---- | --------------------------------- |
+| `queryEndpoint`             | GET  | query string                      |
+| `queryEndpointWithoutInput` | GET  | none                              |
+| `mutationEndpoint`          | POST | JSON body                         |
+| `paginatedQueryEndpoint`    | GET  | query string + pagination headers |
 
 ### SignalR
+
+> [!Note]
+> TODO: not yet property documented
 
 ```fsharp
 open TinyTypeGen.SignalR
@@ -136,23 +140,26 @@ The DU encoding is set via `JsonUnionEncoding` from `FSharp.SystemTextJson` and 
 
 ### Layout
 
-| Tag | Example JSON |
-|---|---|
+| Tag                     | Example JSON                          |
+| ----------------------- | ------------------------------------- |
 | `AdjacentTag` (default) | `{ "Case": "MyCase", "Fields": ... }` |
-| `InternalTag` | `{ "MyCase": ... }` |
-| `ExternalTag` | `["MyCase", ...]` |
+| `InternalTag`           | `{ "MyCase": ... }`                   |
+| `ExternalTag`           | `["MyCase", ...]`                     |
 
 Preset combinations: `Default`, `FSharpLuLike`, `NewtonsoftLike`, `ThothLike`.
 
 ### Limitations
 
-- `[<JsonName>]` and other JSON attributes are not supported
-- Custom `Case` / `Fields` tag names are not supported
-- `Untagged`, `Inherit`, `UnwrapRecordCases` with generics are not supported
+- `[<JsonName>]` and other JSON attributes are not yet supported
+- Custom `Case` / `Fields` tag names are not yet supported
+- `Untagged`, `Inherit`, `UnwrapRecordCases` with generics are not supported (and will not be)
 
 ---
 
 ## Custom templates
+
+> [!Note]
+> TODO: Not yet properly documented
 
 ```fsharp
 open TinyTypeGen.Config
@@ -168,20 +175,3 @@ GeneratorBuilder()
 ```
 
 Template sources: `Template.Default` · `Template.EmbeddedTemplate` · `Template.OfString` · `Template.OfFile`
-
----
-
-## Recommended JSON setup
-
-TinyTypeGen works best when the app-wide JSON configuration is consistent. Typical ASP.NET Core setup:
-
-```csharp
-services
-  .AddControllers()
-  .AddJsonOptions(options =>
-  {
-    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-    options.JsonSerializerOptions.Converters.Add(jsonFsharpConverter);
-    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-  });
-```
