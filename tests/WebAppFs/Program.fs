@@ -1,52 +1,91 @@
 open System
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Http
-open Microsoft.AspNetCore.Http.Metadata
-open Microsoft.AspNetCore.Mvc.ApiExplorer
-open Microsoft.AspNetCore.Routing
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 open Giraffe
 open Giraffe.EndpointRouting
-open TinyTypeGen
 open TinyTypeGen.GiraffeEndpointRouting
 open FsToolkit.ErrorHandling
+open System.Threading.Tasks
+open System.Net
+open Microsoft.AspNetCore.Mvc
+open Microsoft.AspNetCore.Http.Metadata
+
 type Program() = class end // Dummy type for WebApplicationFactory<Program>
 
-let createUser =
-  mutation "/create" (fun ctx (request: {| UserName: string |}) -> taskResult { return "" })
+/// your error cases
+type ApiError =
+  | NotFound of string
+  | NotEditable
+  | BadRequest of string list
 
-[<CLIMutable>]
-type CreateUserInput =
-  {
-    Name: string
-    Email: string
-  }
+// copy this into your project and adjust and use it to make a unified api
+let handler path (handler: HttpContext -> 'request -> Task<Result<'response, ApiError>>) =
+  let errorToStatusCode =
+    function
+    | NotFound _ -> HttpStatusCode.NotFound
+    | NotEditable -> HttpStatusCode.Locked
+    | BadRequest _ -> HttpStatusCode.BadRequest
+  routeWithMetadata
+    path
+    [|
+      acceptJson typeof<'response>
+      producesResponseType200 typeof<'response>
+      // adjust error codes as needed
+      producesProblemDetails HttpStatusCode.BadRequest
+      producesProblemDetails HttpStatusCode.NotFound
+      producesProblemDetails HttpStatusCode.InternalServerError
+    |]
+    (fun next ctx ->
+      task {
+        try
+          let! request = ctx.BindJsonAsync<'request>()
+          let! response = handler ctx request
 
+          match response with
+          | Ok result -> return! json result next ctx
+          | Error error -> return! (setStatusCode (int (errorToStatusCode error)) >=> json error) next ctx
+        with e ->
+          // log exception, adjust problem details...
+          return!
+            (setStatusCode (int HttpStatusCode.InternalServerError)
+             >=> json (ProblemDetails(Title = "Internal error")))
+              next
+              ctx
+      }
+    )
+
+// Request/Response can be named types or anonmous records
 [<CLIMutable>]
-type CreateUserOutput =
+type CreateUserResponse =
   {
     Id: int
     Name: string
   }
 
-let createUserHandler: HttpHandler =
-  bindJson<CreateUserInput> (fun input ->
-    let output =
-      {
-        Id = 1
-        Name = input.Name
+// A fully typed Giraffe Endpoint with metadata for input and output inferred
+let createUser =
+  handler
+    "/create"
+    (fun httpContext (request: {| UserName: string |}) ->
+      taskResult {
+        do!
+          String.IsNullOrEmpty request.UserName
+          |> Result.requireTrue (BadRequest [ "UserName is required" ])
+        // ... save
+        return
+          {
+            Id = 1
+            Name = request.UserName
+          }
       }
-    json output
-  )
-
-let sayHelloWorld: HttpHandler = text "Hello World, from Giraffe"
+    )
 
 [<EntryPoint>]
 let main args =
-  let builder = WebApplication.CreateBuilder(args)
-  builder.Services.AddGiraffe().AddEndpointsApiExplorer().AddControllers()
-  |> ignore
+  let builder = WebApplication.CreateBuilder args
+  builder.Services.AddGiraffe().AddEndpointsApiExplorer() |> ignore
   let app = builder.Build()
   app.UseRouting() |> ignore
   let endpoints: Endpoint list =
@@ -54,46 +93,28 @@ let main args =
       POST [ subRoute "/api" [ subRoute "/user" [ createUser ] ] ]
       GET
         [
-        // route "/" (text "Hello World")
-        // routef "/users/%i" (fun id -> json {| UserId = id |})
-        // route "hello" sayHelloWorld
-        // (routeWithExtensions
-        //   (_.WithName("create user name")
-        //     .WithMetadata(AcceptsMetadata([| "application/json" |], typeof<{| X: string |}>, false))
-        //     .WithMetadata(AcceptsMetadata([| "application/json" |], typeof<{| X: string |}>, false)))
-        //   "/create-user"
-        //   createUserHandler)
+          subRoute
+            "/api"
+            [
+              subRoute
+                "/user"
+                [
+                  // adding metadata per endpoint using Giraffe 'routeWithExtensions'
+                  routeWithExtensions
+                    (fun config ->
+                      config
+                        .WithMetadata(AcceptsMetadata([| "application/json" |], typeof<string>, isOptional = false))
+                        .WithMetadata(ProducesResponseTypeMetadata(200, typeof<string>))
+                    )
+                    "/get-name"
+                    (text "xxx")
+                ]
+            ]
         ]
-    // POST [
-    //   route "/users" createUserHandler
-    // ]
     ]
 
-  app.UseEndpoints(fun app ->
-
-    // app.MapControllers() |> ignore
-    app.MapGiraffeEndpoints endpoints
-
-    app.MapGet("/hello", Func<string>(fun () -> "Hello World!")) |> ignore
-    app
-      .MapPost("/anon0", Func<{| X: string |}, {| X: string |}>(fun (x) -> {| X = "Hello World!" |}))
-      .Accepts<{| X: string |}>("application/json")
-      .Produces<int>()
-      .WithMetadata("test")
-      .Produces<bool>()
-    |> ignore
-    app
-      .MapGet("/anon", Func<{| X: string |}>(fun () -> {| X = "Hello World!" |}))
-      .Produces<int>()
-      .WithMetadata("test")
-      .Produces<bool>()
-    |> ignore
-
-    app.MapPost("/anon2", Func<{| Count: int |}, {| X: string |}>(fun (count) -> {| X = "Hello World!" |}))
-    |> ignore
-  )
-  |> ignore
+  app.UseEndpoints(fun app -> app.MapGiraffeEndpoints endpoints) |> ignore
 
   app.Run()
 
-  0 // Exit code
+  0

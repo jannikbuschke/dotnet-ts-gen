@@ -14,9 +14,9 @@ import * as NamespaceB from './NamespaceB';
 import * as NamespaceD from './NamespaceD';
 import * as CSharpWebapp_Controllers__CSharpWebapp_Controllers from './CSharpWebapp_Controllers__CSharpWebapp_Controllers';
 import * as CSharpWebapp_Controllers from './CSharpWebapp_Controllers';
-import * as FsApi from './FsApi';
-import * as IntegrationTests from './IntegrationTests';
 import * as ___ from './___';
+import * as IntegrationTests from './IntegrationTests';
+import * as FsApi from './FsApi';
 
 export type Api = {
   '/fsharp/get-result': {

@@ -14,30 +14,15 @@ import * as NamespaceB from './NamespaceB';
 import * as NamespaceD from './NamespaceD';
 import * as CSharpWebapp_Controllers__CSharpWebapp_Controllers from './CSharpWebapp_Controllers__CSharpWebapp_Controllers';
 import * as CSharpWebapp_Controllers from './CSharpWebapp_Controllers';
-import * as FsApi from './FsApi';
-import * as IntegrationTests from './IntegrationTests';
 import * as ___ from './___';
+import * as IntegrationTests from './IntegrationTests';
+import * as FsApi from './FsApi';
 
 export type Api = {
-  '/api/controller/get-string': {
-    GET: [Microsoft_FSharp_Core.Unit, System.String];
+  '/api/user/create': {
+    POST: [___.CreateUserResponse, Microsoft_AspNetCore_Mvc.ProblemDetails];
   };
-  '/api/controller/get-record': {
-    GET: [Microsoft_FSharp_Core.Unit, FsApi.Record];
-  };
-  '/api/controller/get-union': {
-    GET: [Microsoft_FSharp_Core.Unit, FsApi.Union];
-  };
-  '/api/controller/union-task': {
-    GET: [Microsoft_FSharp_Core.Unit, FsApi.Union];
-  };
-  '/api/controller/get-version': {
-    GET: [Microsoft_FSharp_Core.Unit, System.Version];
-  };
-  '/api/controller/get-uri': {
-    GET: [Microsoft_FSharp_Core.Unit, System.Uri];
-  };
-  '/api/controller/get-post-query': {
-    POST: [FsApi.Record, System.String];
+  '/api/user/get-name': {
+    POST: [System.String, System.String];
   };
 };

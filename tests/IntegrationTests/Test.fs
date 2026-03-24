@@ -64,7 +64,8 @@ let gen () =
   let csharpEndpoints = TinyTypeGen.AspNetCore.getEndpoints csWebapp.Services
 
   use fsWebapp = new WebApplicationFactory<Program>()
-  let fsharpEndpoints = TinyTypeGen.AspNetCore.getEndpoints fsWebapp.Services
+  let fsharpEndpoints =
+    TinyTypeGen.AspNetCore.getEndpointsBasedOnEndpointDataSource fsWebapp.Services
 
   let special =
     [
