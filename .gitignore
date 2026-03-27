@@ -6,3 +6,5 @@ obj/
 .nuke/temp
 output
 h
+.direnv
+.devenv
