@@ -4,7 +4,6 @@
 
 import * as ___ from './___';
 import * as System from './System';
-import * as FsApi from './FsApi';
 import * as Microsoft_FSharp_Core from './Microsoft_FSharp_Core';
 
 export type MultiCaseMultiFields_Case_NoField = 'NoField';
@@ -22,11 +21,11 @@ export type MultiCaseMultiFields_Case_TwoFields = {
 };
 export type MultiCaseMultiFields_Case_RecordField = {
   Case: 'RecordField';
-  Fields: FsApi.Record;
+  Fields: Record;
 };
 export type MultiCaseMultiFields_Case_Records = {
   Case: 'Records';
-  Fields: { item1: FsApi.Record; item2: FsApi.Record; item3: System.Boolean };
+  Fields: { item1: Record; item2: Record; item3: System.Boolean };
 };
 export type MultiCaseMultiFields =
   | MultiCaseMultiFields_Case_NoField
@@ -56,6 +55,9 @@ export function isMultiCaseMultiFields_Case(
   return MultiCaseMultiFields_AllCases.includes(value);
 }
 
+export type Record = {
+  x: System.String;
+};
 export type SingleCaseUnion_Case_Value = {
   Case: 'Value';
   Fields: System.Int32;

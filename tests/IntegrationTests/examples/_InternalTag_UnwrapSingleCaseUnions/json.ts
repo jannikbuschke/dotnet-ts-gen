@@ -30,11 +30,11 @@ const enumLike = [
 const singleCase = [25] as const satisfies SingleCaseUnion[];
 
 const multiCase = [
-  ['RecordField', { foo: -21 }],
-  ['TwoFields', '\u0004K\u0003\u0022\u0004\u001B\u0017/L', true],
-  ['Records', { foo: -2 }, { foo: 14 }, true],
-  ['OneField', -1],
-  ['NoField'],
+  ['RecordField', { x: '\u000E9Ck' }],
+  ['OneField', -25],
+  ['RecordField', { x: '\u0004\u001B\u0017/L' }],
+  ['OneAnonField', { age: -18, name: '' }],
+  ['TwoFields', '7|z^\u000F\u0002f\u0002PB\bI\u0016JTl;\bE', true],
 ] as const satisfies MultiCaseMultiFields[];
 
 const generic = [

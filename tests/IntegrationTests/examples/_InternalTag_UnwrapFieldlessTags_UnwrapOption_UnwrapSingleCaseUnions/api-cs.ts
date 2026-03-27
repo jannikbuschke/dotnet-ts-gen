@@ -16,7 +16,6 @@ import * as CSharpWebapp_Controllers__CSharpWebapp_Controllers from './CSharpWeb
 import * as CSharpWebapp_Controllers from './CSharpWebapp_Controllers';
 import * as ___ from './___';
 import * as IntegrationTests from './IntegrationTests';
-import * as FsApi from './FsApi';
 
 export type Api = {
   '/fsharp/get-result': {

@@ -29,16 +29,16 @@ const enumLike = ['B', 'B', 'A', 'A', 'B'] as const satisfies EnumLikeUnion[];
 const singleCase = [25] as const satisfies SingleCaseUnion[];
 
 const multiCase = [
-  { RecordField: { foo: -21 } },
+  { RecordField: { x: '\u000E9Ck' } },
+  { OneField: -25 },
+  { RecordField: { x: '\u0004\u001B\u0017/L' } },
+  { OneAnonField: { age: -18, name: '' } },
   {
     TwoFields: {
-      item1: '\u0004K\u0003\u0022\u0004\u001B\u0017/L',
+      item1: '7|z^\u000F\u0002f\u0002PB\bI\u0016JTl;\bE',
       item2: true,
     },
   },
-  { Records: { item1: { foo: -2 }, item2: { foo: 14 }, item3: true } },
-  { OneField: -1 },
-  'NoField',
 ] as const satisfies MultiCaseMultiFields[];
 
 const generic = [

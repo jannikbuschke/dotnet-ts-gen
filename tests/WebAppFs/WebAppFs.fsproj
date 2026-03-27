@@ -5,12 +5,11 @@
     <Nullable>enable</Nullable>
     <RootNamespace>WebAppFs</RootNamespace>
     <OutputType>Exe</OutputType>
-      <UseTopLevelProgram>false</UseTopLevelProgram>
+    <UseTopLevelProgram>false</UseTopLevelProgram>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="FsToolkit.ErrorHandling" Version="5.1.0" />
-    <Compile Include="Controller.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

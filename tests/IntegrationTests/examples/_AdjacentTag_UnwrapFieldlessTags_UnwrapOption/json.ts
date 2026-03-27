@@ -28,14 +28,14 @@ const singleCase = [
 ] as const satisfies SingleCaseUnion[];
 
 const multiCase = [
-  { Case: 'RecordField', Fields: [{ foo: -21 }] },
+  { Case: 'RecordField', Fields: [{ x: '\u000E9Ck' }] },
+  { Case: 'OneField', Fields: [-25] },
+  { Case: 'RecordField', Fields: [{ x: '\u0004\u001B\u0017/L' }] },
+  { Case: 'OneAnonField', Fields: [{ age: -18, name: '' }] },
   {
     Case: 'TwoFields',
-    Fields: ['\u0004K\u0003\u0022\u0004\u001B\u0017/L', true],
+    Fields: ['7|z^\u000F\u0002f\u0002PB\bI\u0016JTl;\bE', true],
   },
-  { Case: 'Records', Fields: [{ foo: -2 }, { foo: 14 }, true] },
-  { Case: 'OneField', Fields: [-1] },
-  'NoField',
 ] as const satisfies MultiCaseMultiFields[];
 
 const generic = [

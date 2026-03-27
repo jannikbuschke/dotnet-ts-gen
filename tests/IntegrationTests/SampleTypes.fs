@@ -1,6 +1,6 @@
 namespace IntegrationTests
 
-open FsApi
+type Record = { X: string }
 
 type EnumLikeUnion =
   | A

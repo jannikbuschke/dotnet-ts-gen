@@ -39,15 +39,15 @@ const singleCase = [
 ] as const satisfies SingleCaseUnion[];
 
 const multiCase = [
-  { Case: 'RecordField', foo: -21 },
+  { Case: 'RecordField', x: '\u000E9Ck' },
+  { Case: 'OneField', item: -25 },
+  { Case: 'RecordField', x: '\u0004\u001B\u0017/L' },
+  { Case: 'OneAnonField', age: -18, name: '' },
   {
     Case: 'TwoFields',
-    item1: '\u0004K\u0003\u0022\u0004\u001B\u0017/L',
+    item1: '7|z^\u000F\u0002f\u0002PB\bI\u0016JTl;\bE',
     item2: true,
   },
-  { Case: 'Records', item1: { foo: -2 }, item2: { foo: 14 }, item3: true },
-  { Case: 'OneField', item: -1 },
-  { Case: 'NoField' },
 ] as const satisfies MultiCaseMultiFields[];
 
 const generic = [
