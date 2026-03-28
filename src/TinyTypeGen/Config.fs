@@ -11,6 +11,7 @@ let defaultJsonUnionEncoding =
   ||| JsonUnionEncoding.UnwrapSingleCaseUnions
   ||| JsonUnionEncoding.AllowUnorderedTag
 
+[<RequireQualifiedAccess>]
 type EmbeddedTemplate =
   | SimpleApiTemplate
   | ApiTemplateWithTanstackQuery
