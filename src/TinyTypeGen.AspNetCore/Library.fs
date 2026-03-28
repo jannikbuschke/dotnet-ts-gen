@@ -143,7 +143,17 @@ let getEndpoints (services: IServiceProvider) t =
 
   endpointDataSource.Endpoints
   |> Seq.choose (fun e ->
+
     let routeEndpoint = e :?> RouteEndpoint
+
+    let methods =
+      routeEndpoint.Metadata.OfType<Microsoft.AspNetCore.Routing.HttpMethodMetadata>()
+      |> Seq.collect _.HttpMethods
+
+
+    // TODO: do handle more gracefully
+    let method = methods.FirstOrDefault() |> nonNull
+    let verb = verb method
     let route = routeEndpoint.RoutePattern
     let routeText = route.RawText |> Option.ofObj
 
@@ -164,15 +174,17 @@ let getEndpoints (services: IServiceProvider) t =
 
     Option.map3
       (fun (routeText: string) accepts produces ->
-        t
-        |> Option.map (fun t -> t accepts produces routeText)
-        |> Option.defaultValue
-          { Request = accepts
-            Response = produces
-            ResponseNullable = false
-            Method = HttpVerb.POST
-            Route = routeText
-            Kind = EndpointKind.Mutation })
+        let kind =
+          t
+          |> Option.map (fun t -> t verb routeText (accepts, produces))
+          |> Option.defaultValue EndpointKind.Mutation
+
+        { Request = accepts
+          Response = produces
+          ResponseNullable = false
+          Method = verb
+          Route = routeText
+          Kind = kind })
       routeText
       accepts
       produces)

@@ -80,26 +80,30 @@ let renderApiToString (apiTemplate: Scriban.Template) endpoints (env: Env) (modu
     if endpoints |> List.isEmpty then
       ()
     else
-
-      "export type Api = {" |> appendTo api
-
       endpoints
-      |> List.groupBy _.Route
-      |> List.iter (fun (route, endpoints) ->
-        sprintf "    \"%s\": { " route |> appendTo api
+      |> List.groupBy _.Kind
+      |> List.iter (fun (kind, endpoints) ->
+        sprintf "export type %O = {" kind |> appendTo api
+
         endpoints
-        |> List.iter (fun e ->
-          sprintf
-            "              %s: [%s, %s],"
-            (e.Method.ToString())
-            (e.Request |> getTypename)
-            (e.Response |> getTypename)
-          |> appendTo api
+        |> List.groupBy _.Route
+        |> List.iter (fun (route, endpoints) ->
+          sprintf "    \"%s\": { " route |> appendTo api
+          endpoints
+          |> List.iter (fun e ->
+            sprintf
+              "              %s: [%s, %s],"
+              (e.Method.ToString())
+              (e.Request |> getTypename)
+              (e.Response |> getTypename)
+            |> appendTo api
+          )
+          "    }," |> appendTo api
         )
-        "    }," |> appendTo api
+
+        "}" |> appendTo api
       )
-      // sprintf "  }," |> appendTo api
-      "}" |> appendTo api
+  // sprintf "  }," |> appendTo api
 
   // "export type Api2 = {" |> appendTo api
   // tree
