@@ -8,12 +8,18 @@ open Microsoft.AspNetCore.Http
 open System.Linq
 
 let endpoint<'request, 'response> (url: string) (verb: HttpVerb) (handler: HttpHandler) =
+  let kind = 
+    match verb with
+    | HttpVerb.GET -> EndpointKind.Query
+    | _ -> EndpointKind.Mutation
+  
   {
     ApiEndpoint.Request = typeof<'request>
     ApiEndpoint.Response = typeof<'response>
     ApiEndpoint.Method = verb
     ApiEndpoint.Route = url
     ApiEndpoint.ResponseNullable = false
+    ApiEndpoint.Kind = kind
   },
   handler
 

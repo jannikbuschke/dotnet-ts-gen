@@ -30,7 +30,7 @@ let getPredefinedTypes () =
   typedefof<ActionResult>, PredefinedType.New "any"
 
 // get endpoints based controllers
-let getEndpoints (services: IServiceProvider) =
+let getLegacyEndpoints (services: IServiceProvider) =
   let adcp = services.GetRequiredService<IActionDescriptorCollectionProvider>()
   let descriptors = adcp.ActionDescriptors.Items.OfType<ControllerActionDescriptor>()
 
@@ -95,7 +95,7 @@ let getEndpoints (services: IServiceProvider) =
 
   descriptors
   |> Seq.filter (fun x -> x.AttributeRouteInfo <> null)
-  |> Seq.map (fun x ->
+  |> Seq.choose (fun x ->
     let methods =
       x.EndpointMetadata.OfType<Microsoft.AspNetCore.Routing.HttpMethodMetadata>()
       |> Seq.collect _.HttpMethods
@@ -106,7 +106,8 @@ let getEndpoints (services: IServiceProvider) =
       |> Option.map (sprintf "%s.")
       |> Option.defaultValue ""
 
-    let method = methods.FirstOrDefault()
+    // TODO: do handle more gracefully
+    let method = methods.FirstOrDefault() |> nonNull
     let verb = verb method
     let parameters = x.MethodInfo.GetParameters() |> Seq.toList
 
@@ -118,15 +119,26 @@ let getEndpoints (services: IServiceProvider) =
 
     let inputType = parameters |> getInputType nameSpaceForDynamics name verb
 
-    { ApiEndpoint.Request = inputType
-      ApiEndpoint.Response = toResultType x.MethodInfo.ReturnType
-      ApiEndpoint.ResponseNullable = returnTypeNullable
-      ApiEndpoint.Method = verb
-      ApiEndpoint.Route = "/" + x.AttributeRouteInfo.Template })
+    let kind =
+      if verb = HttpVerb.GET then
+        EndpointKind.Query
+      else
+        EndpointKind.Mutation
+
+    x.AttributeRouteInfo
+    |> Option.ofObj
+    |> Option.map _.Template
+    |> Option.map (fun template ->
+      { ApiEndpoint.Request = inputType
+        ApiEndpoint.Response = toResultType x.MethodInfo.ReturnType
+        ApiEndpoint.ResponseNullable = returnTypeNullable
+        ApiEndpoint.Method = verb
+        ApiEndpoint.Route = sprintf "/%s" template
+        ApiEndpoint.Kind = kind }))
   |> Seq.distinctBy (fun x -> x.Route, x.Method)
   |> Seq.toList
 
-let getEndpointsBasedOnEndpointDataSource (services: IServiceProvider) =
+let getEndpoints (services: IServiceProvider) t =
   let endpointDataSource = services.GetRequiredService<EndpointDataSource>()
 
   endpointDataSource.Endpoints
@@ -134,19 +146,36 @@ let getEndpointsBasedOnEndpointDataSource (services: IServiceProvider) =
     let routeEndpoint = e :?> RouteEndpoint
     let route = routeEndpoint.RoutePattern
     let routeText = route.RawText |> Option.ofObj
-    let accepts = e.Metadata.GetMetadata<IAcceptsMetadata>() |> Option.ofObj
+
+    let tags = e.Metadata.GetMetadata<TagsAttribute>() |> Option.ofObj
+    let itags = e.Metadata.GetMetadata<ITagsMetadata>() |> Option.ofObj
+    printfn "Tags %A" tags
+    printfn "Tagsi %A" itags
+
+    let accepts =
+      e.Metadata.GetMetadata<IAcceptsMetadata>()
+      |> Option.ofObj
+      |> Option.bind (fun x -> x.RequestType |> Option.ofObj)
 
     let produces =
-      e.Metadata.GetMetadata<ProducesResponseTypeMetadata>() |> Option.ofObj
+      e.Metadata.GetMetadata<ProducesResponseTypeMetadata>()
+      |> Option.ofObj
+      |> Option.bind (fun x -> x.Type |> Option.ofObj)
 
     Option.map3
-      (fun (routeText: string) (accepts: IAcceptsMetadata) (produces: ProducesResponseTypeMetadata) ->
-        { Request = accepts.RequestType
-          Response = produces.Type
-          ResponseNullable = false
-          Method = HttpVerb.POST
-          Route = routeText })
+      (fun (routeText: string) accepts produces ->
+        t
+        |> Option.map (fun t -> t accepts produces routeText)
+        |> Option.defaultValue
+          { Request = accepts
+            Response = produces
+            ResponseNullable = false
+            Method = HttpVerb.POST
+            Route = routeText
+            Kind = EndpointKind.Mutation })
       routeText
       accepts
       produces)
   |> Seq.toList
+
+let getEndpointsBasedOnEndpointDataSource (services: IServiceProvider) = getEndpoints services None

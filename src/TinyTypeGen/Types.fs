@@ -11,6 +11,11 @@ type HttpVerb =
   | DELETE
   | PUT
 
+[<RequireQualifiedAccess>]
+type EndpointKind =
+  | Query
+  | Mutation
+
 // react query
 type ClientGcDefault =
   | Infinity
@@ -24,6 +29,7 @@ type ApiEndpoint =
     ResponseNullable: bool
     Method: HttpVerb
     Route: string
+    Kind: EndpointKind
   }
 
 type TsModule =
