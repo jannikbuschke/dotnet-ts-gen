@@ -11,15 +11,10 @@ export type Mutation = {
       Microsoft_AspNetCore_Mvc.ProblemDetails,
     ];
   };
-};
-export type Query = {
   '/api/user/get': {
-    GET: [
+    POST: [
       ___.f__AnonymousType2325210262<System.String>,
       Microsoft_AspNetCore_Mvc.ProblemDetails,
     ];
-  };
-  '/user/get-name': {
-    GET: [System.String, System.String];
   };
 };
