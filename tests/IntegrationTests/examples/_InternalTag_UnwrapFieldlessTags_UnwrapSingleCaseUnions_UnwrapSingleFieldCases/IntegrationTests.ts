@@ -3,8 +3,8 @@
 //////////////////////////////////////
 
 import * as ___ from './___';
-import * as System from './System';
 import * as Microsoft_FSharp_Core from './Microsoft_FSharp_Core';
+import * as System from './System';
 
 export type MultiCaseMultiFields_Case_NoField = 'NoField';
 export type MultiCaseMultiFields_Case_OneAnonField = [

@@ -1,19 +1,19 @@
 // InternalTag_NamedFields_UnwrapFieldlessTags_UnwrapOption
 import {
-  MultiCaseMultiFields,
-  SingleCaseUnion,
   EnumLikeUnion,
   GenericDu,
-  MyRecord,
   GenericDu0,
+  MultiCaseMultiFields,
+  MyRecord,
+  SingleCaseUnion,
 } from './IntegrationTests';
 import {
-  FSharpResult,
   FSharpOption,
-  FSharpResult as FSharpResult_T,
-  FSharpResult as FSharpResult_TTError,
-  FSharpResult as FSharpResult_TError,
   FSharpOption as FSharpOption_T,
+  FSharpResult,
+  FSharpResult as FSharpResult_T,
+  FSharpResult as FSharpResult_TError,
+  FSharpResult as FSharpResult_TTError,
 } from './Microsoft_FSharp_Core';
 import * as System from './System';
 

@@ -1,19 +1,19 @@
 // AdjacentTag_UnwrapOption_UnwrapRecordCases
 import {
-  MultiCaseMultiFields,
-  SingleCaseUnion,
   EnumLikeUnion,
   GenericDu,
-  MyRecord,
   GenericDu0,
   GenericDu0_a,
+  MultiCaseMultiFields,
+  MyRecord,
+  SingleCaseUnion,
 } from './IntegrationTests';
 import {
-  FSharpResult,
   FSharpOption,
+  FSharpOption_T,
+  FSharpResult,
   FSharpResult_T,
   FSharpResult_TError,
-  FSharpOption_T,
   FSharpResult_TTError,
 } from './Microsoft_FSharp_Core';
 import * as System from './System';

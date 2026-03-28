@@ -2,11 +2,11 @@
 //   This file is auto generated   //
 //////////////////////////////////////
 
-import * as System from './System';
-import * as NamespaceC from './NamespaceC';
 import * as NamespaceB from './NamespaceB';
-import * as System_Collections_Generic from './System_Collections_Generic';
+import * as NamespaceC from './NamespaceC';
 import * as NamespaceD from './NamespaceD';
+import * as System from './System';
+import * as System_Collections_Generic from './System_Collections_Generic';
 
 export type ClassWithManyDeps = {
   myProperty: System.String;
