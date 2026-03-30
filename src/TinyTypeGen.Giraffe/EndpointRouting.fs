@@ -9,7 +9,7 @@ open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Http.Metadata
 
 let routeWithMetadata route (configurations: obj array) =
-  routeWithExtensions (fun x -> x.WithMetadata configurations) route
+  routeWithExtensions (fun builder -> configurations |> Array.fold (fun (acc: IEndpointConventionBuilder) metadata -> acc.WithMetadata(metadata)) builder) route
 
 let acceptJson inputType =
   AcceptsMetadata([| "application/json" |], inputType, isOptional = false) :> obj
