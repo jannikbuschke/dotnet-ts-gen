@@ -1,3 +1,11 @@
+## 1.0.0-alpha.190 (785647e239acc6627d9b3118236bfd30d34830eb)
+
+### Features
+- separate query and mutation endpoints in default template
+
+### Bug Fixes
+- **routeWithMetadata**: fix not all metadata is applied
+
 ## 1.0.0-alpha.189 (53cb9e5f535ec36b34364a2dd9ec52d1867f2214)
 
 ### Features
