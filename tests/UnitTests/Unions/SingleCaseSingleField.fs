@@ -6,6 +6,7 @@ open System.Text.Json.Serialization
 open Test
 open type JsonUnionEncoding
 
+[<RequireQualifiedAccess>]
 type Du = | Case1 of Guid
 
 let value = Du.Case1 Guid.Empty
@@ -79,9 +80,9 @@ let tests =
       // --- Skipped (old/broken) ---
       yield!
         [
-          JsonUnionEncoding.Default
-          JsonUnionEncoding.UnwrapSingleCaseUnions
-          JsonUnionEncoding.NamedFields ||| JsonUnionEncoding.UnwrapSingleCaseUnions
+          Default
+          UnwrapSingleCaseUnions
+          NamedFields ||| UnwrapSingleCaseUnions
         ]
         |> List.map (fun encoding ->
           ptestCase
@@ -94,9 +95,9 @@ let tests =
         )
       yield!
         [
-          JsonUnionEncoding.Default
-          JsonUnionEncoding.UnwrapSingleCaseUnions
-          JsonUnionEncoding.NamedFields ||| JsonUnionEncoding.UnwrapSingleCaseUnions
+          Default
+          UnwrapSingleCaseUnions
+          NamedFields ||| UnwrapSingleCaseUnions
         ]
         |> List.map (fun encoding ->
           ptestCase
@@ -112,13 +113,13 @@ export type Du_Case_Case1 = System.Guid
         )
       yield!
         [
-          JsonUnionEncoding.AdjacentTag
-          JsonUnionEncoding.Inherit
-          JsonUnionEncoding.NewtonsoftLike
-          JsonUnionEncoding.UnwrapOption
-          JsonUnionEncoding.AllowUnorderedTag
-          JsonUnionEncoding.UnwrapFieldlessTags
-          JsonUnionEncoding.UnionFieldNamesFromTypes
+          AdjacentTag
+          Inherit
+          NewtonsoftLike
+          UnwrapOption
+          AllowUnorderedTag
+          UnwrapFieldlessTags
+          UnionFieldNamesFromTypes
         ]
         |> List.map (fun encoding ->
           ptestCase
@@ -131,13 +132,13 @@ export type Du_Case_Case1 = System.Guid
         )
       yield!
         [
-          JsonUnionEncoding.AdjacentTag
-          JsonUnionEncoding.Inherit
-          JsonUnionEncoding.NewtonsoftLike
-          JsonUnionEncoding.UnwrapOption
-          JsonUnionEncoding.AllowUnorderedTag
-          JsonUnionEncoding.UnwrapFieldlessTags
-          JsonUnionEncoding.UnionFieldNamesFromTypes
+          AdjacentTag
+          Inherit
+          NewtonsoftLike
+          UnwrapOption
+          AllowUnorderedTag
+          UnwrapFieldlessTags
+          UnionFieldNamesFromTypes
         ]
         |> List.map (fun encoding ->
           ptestCase
@@ -152,7 +153,7 @@ export type Du_Case_Case1 = { Case: "Case1"; Fields: [System.Guid] }
             )
         )
       yield!
-        [ JsonUnionEncoding.ExternalTag ]
+        [ ExternalTag ]
         |> List.map (fun encoding ->
           ptestCase
             (sprintf "serialize: external tag, fields as array (%A)" encoding)
@@ -163,7 +164,7 @@ export type Du_Case_Case1 = { Case: "Case1"; Fields: [System.Guid] }
             )
         )
       yield!
-        [ JsonUnionEncoding.ExternalTag ]
+        [ ExternalTag ]
         |> List.map (fun encoding ->
           ptestCase
             (sprintf "definition: external tag, fields as array (%A)" encoding)
@@ -177,7 +178,7 @@ export type Du_Case_Case1 = { "Case1": [System.Guid] }
             )
         )
       yield!
-        [ JsonUnionEncoding.ExternalTag ||| JsonUnionEncoding.UnwrapSingleFieldCases ]
+        [ ExternalTag ||| UnwrapSingleFieldCases ]
         |> List.map (fun encoding ->
           ptestCase
             (sprintf "serialize: external tag, unwrapped (%A)" encoding)
@@ -188,7 +189,7 @@ export type Du_Case_Case1 = { "Case1": [System.Guid] }
             )
         )
       yield!
-        [ JsonUnionEncoding.ExternalTag ||| JsonUnionEncoding.UnwrapSingleFieldCases ]
+        [ ExternalTag ||| UnwrapSingleFieldCases ]
         |> List.map (fun encoding ->
           ptestCase
             (sprintf "definition: external tag, unwrapped (%A)" encoding)
@@ -202,7 +203,7 @@ export type Du_Case_Case1 = { "Case1": System.Guid }
             )
         )
       yield!
-        [ JsonUnionEncoding.InternalTag; JsonUnionEncoding.ThothLike ]
+        [ InternalTag; ThothLike ]
         |> List.map (fun encoding ->
           ptestCase
             (sprintf "serialize: array of tuples (%A)" encoding)
@@ -213,7 +214,7 @@ export type Du_Case_Case1 = { "Case1": System.Guid }
             )
         )
       yield!
-        [ JsonUnionEncoding.InternalTag; JsonUnionEncoding.ThothLike ]
+        [ InternalTag; ThothLike ]
         |> List.map (fun encoding ->
           ptestCase
             (sprintf "definition: array of tuples (%A)" encoding)
@@ -227,7 +228,7 @@ export type Du_Case_Case1 = ["Case1", System.Guid]
             )
         )
       yield!
-        [ JsonUnionEncoding.NamedFields ]
+        [ NamedFields ]
         |> List.map (fun encoding ->
           ptestCase
             (sprintf "serialize: fields as record (%A)" encoding)
@@ -238,7 +239,7 @@ export type Du_Case_Case1 = ["Case1", System.Guid]
             )
         )
       yield!
-        [ JsonUnionEncoding.NamedFields ]
+        [ NamedFields ]
         |> List.map (fun encoding ->
           ptestCase
             (sprintf "definition: fields as record (%A)" encoding)
@@ -252,7 +253,7 @@ export type Du_Case_Case1 = {"Case":"Case1",Fields:{"item": System.Guid } }
             )
         )
       yield!
-        [ JsonUnionEncoding.Untagged ]
+        [ Untagged ]
         |> List.map (fun encoding ->
           ptestCase
             (sprintf "serialize: untagged (%A)" encoding)
@@ -263,7 +264,7 @@ export type Du_Case_Case1 = {"Case":"Case1",Fields:{"item": System.Guid } }
             )
         )
       yield!
-        [ JsonUnionEncoding.Untagged ]
+        [ Untagged ]
         |> List.map (fun encoding ->
           ptestCase
             (sprintf "definition: untagged (%A)" encoding)

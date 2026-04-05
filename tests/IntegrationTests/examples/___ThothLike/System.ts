@@ -4,11 +4,10 @@
 
 export type Object = any;
 export type Byte = number;
-export type String = string;
 export type Int32 = number;
-export type Boolean = boolean;
-export type Nullable<T> = T | null;
+export type String = string;
 export type Guid = `${string}-${string}-${string}-${string}-${string}`;
+export type Boolean = boolean;
 export type Int16 = number;
 export type Int64 = number;
 export type Int128 = number;

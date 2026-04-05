@@ -4,8 +4,9 @@
 
 import * as System from './System';
 
-export type f__AnonymousType2325210262<UserName> = {
-  userName: UserName;
+export type CreateUserResponse = {
+  id: System.Int32;
+  name: System.String;
 };
 export type f__AnonymousType113051835<Age, Name> = {
   age: Age;

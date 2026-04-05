@@ -52,12 +52,12 @@ let renderApiToString (apiTemplate: Scriban.Template) endpoints (env: Env) (modu
 
   let stopWatch = Diagnostics.Stopwatch.StartNew()
 
-  let appendTo (builder: StringBuilder) (value: string) = builder.AppendLine(value) |> ignore
+  let appendTo (builder: StringBuilder) (value: string) = builder.AppendLine value |> ignore
 
   let imports = StringBuilder()
 
   modules
-  |> List.iter (fun m -> (sprintf "import * as %s from \"./%s\"" m.Name m.Name) |> appendTo imports)
+  |> List.iter (fun m -> sprintf "import * as %s from \"./%s\"" m.Name m.Name |> appendTo imports)
 
   let api = StringBuilder()
 
@@ -91,12 +91,23 @@ let renderApiToString (apiTemplate: Scriban.Template) endpoints (env: Env) (modu
           sprintf "    \"%s\": { " route |> appendTo api
           endpoints
           |> List.iter (fun e ->
-            sprintf
-              "              %s: [%s, %s],"
-              (e.Method.ToString())
-              (e.Request |> getTypename)
-              (e.Response |> getTypename)
-            |> appendTo api
+            match e.Error with
+            | [] ->
+              sprintf
+                "              %s: [%s, %s],"
+                (e.Method.ToString())
+                (e.Request |> getTypename)
+                (e.Response |> getTypename)
+              |> appendTo api
+            | errors ->
+              let errors = errors |> List.map (fst >> getTypename) |> String.concat " | "
+              sprintf
+                "              %s: [%s, %s, %s],"
+                (e.Method.ToString())
+                (e.Request |> getTypename)
+                (e.Response |> getTypename)
+                errors
+              |> appendTo api
           )
           "    }," |> appendTo api
         )
@@ -206,12 +217,11 @@ let renderApiToString (apiTemplate: Scriban.Template) endpoints (env: Env) (modu
   renderEndpoints "api" endpoints
 
   let result =
-    apiTemplate.Render(
+    apiTemplate.Render
       {|
         imports = imports.ToString()
         api = api.ToString()
       |}
-    )
 
   stopWatch.Stop()
 
@@ -228,8 +238,8 @@ let renderApiToString2 (env: Env) (modules: TsModuleWithDeps list) (api: Api) =
     | Template.Default -> ReadEmbeddedText defaultResourceTemplate
     | Template.EmbeddedTemplate embeddedTemplate ->
       match embeddedTemplate with
-      | SimpleApiTemplate -> ReadEmbeddedText defaultTemplates.api
-      | ApiTemplateWithTanstackQuery -> ReadEmbeddedText defaultTemplates.api_tanstack_query
+      | EmbeddedTemplate.SimpleApiTemplate -> ReadEmbeddedText defaultTemplates.api
+      | EmbeddedTemplate.ApiTemplateWithTanstackQuery -> ReadEmbeddedText defaultTemplates.api_tanstack_query
     | Template.OfString s -> s
     | Template.OfFile s -> s |> IO.Path.GetFullPath |> System.IO.File.ReadAllText
 

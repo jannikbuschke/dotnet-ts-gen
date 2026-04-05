@@ -1,4 +1,4 @@
-﻿module TinyTypeGen.ResourceHelper
+module TinyTypeGen.ResourceHelper
 
 open System
 open System.IO
@@ -17,7 +17,7 @@ let defaultTemplates =
 let ReadEmbeddedText (resourceFileName: string) =
   let assembly = Assembly.GetExecutingAssembly()
   let resourcePath =
-    assembly.GetManifestResourceNames().Single(_.EndsWith(resourceFileName, StringComparison.Ordinal))
-  use stream = assembly.GetManifestResourceStream(resourcePath)
+    assembly.GetManifestResourceNames().Single _.EndsWith(resourceFileName, StringComparison.Ordinal)
+  use stream = assembly.GetManifestResourceStream resourcePath
   use reader = new StreamReader(stream)
   reader.ReadToEnd()

@@ -61,7 +61,7 @@ let gen () =
   let singleCaseUnion = defaultSample<SingleCaseUnion> 1
 
   use csWebapp = new WebApplicationFactory<CSharpWebapp.Program>()
-  let csharpEndpoints = TinyTypeGen.AspNetCore.getEndpoints csWebapp.Services
+  let csharpEndpoints = TinyTypeGen.AspNetCore.getEndpoints csWebapp.Services None
 
   use fsWebapp = new WebApplicationFactory<Program>()
   let fsharpEndpoints =
@@ -73,7 +73,7 @@ let gen () =
       ThothLike, "__ThothLike"
       FSharpLuLike, "__FSharpLuLike"
       NewtonsoftLike, "__NewtonsoftLike"
-      TinyTypeGen.Config.defaultJsonUnionEncoding,
+      defaultJsonUnionEncoding,
       "__custom_AdjacentTag_UnwrapSingleFieldCases_UnwrapRecordCases_UnwrapOption_UnwrapSingleCaseUnions_AllowUnorderedTag"
     ]
 

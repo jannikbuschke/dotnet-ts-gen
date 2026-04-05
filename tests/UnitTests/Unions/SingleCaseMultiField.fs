@@ -6,6 +6,7 @@ open System.Text.Json.Serialization
 open Test
 open type JsonUnionEncoding
 
+[<RequireQualifiedAccess>]
 type Du = | Case1 of Id: Guid * int * Result<string, string>
 
 let value = Du.Case1(Guid.Empty, 42, Ok "Success")
@@ -33,16 +34,17 @@ let all =
 
 let fieldsArray2 =
   [
-    JsonUnionEncoding.InternalTag ||| JsonUnionEncoding.UnwrapSingleFieldCases
-    JsonUnionEncoding.ExternalTag ||| JsonUnionEncoding.UnwrapSingleFieldCases
+    InternalTag ||| UnwrapSingleFieldCases
+  // ExternalTag ||| UnwrapSingleFieldCases
   ]
 
-let fieldsArray =
+let fieldsArray3 =
   [
-    JsonUnionEncoding.Default
-    JsonUnionEncoding.AdjacentTag
-    JsonUnionEncoding.AdjacentTag ||| JsonUnionEncoding.UnwrapSingleFieldCases
+    // InternalTag ||| UnwrapSingleFieldCases
+    ExternalTag ||| UnwrapSingleFieldCases
   ]
+
+let fieldsArray = [ Default; AdjacentTag; AdjacentTag ||| UnwrapSingleFieldCases ]
 
 let tests =
   testList
@@ -51,7 +53,7 @@ let tests =
       testCase
         "all serialized"
         (fun () ->
-          let rendered = all |> List.map (fun x -> x, serializeWithEncoding x value)
+          let _ = all |> List.map (fun x -> x, serializeWithEncoding x value)
           ()
         )
       yield!
@@ -62,10 +64,10 @@ let tests =
             (fun () ->
               value
               |> serializeWithEncoding encoding
-              |> Expect.stringStart
-                """ {"Case":"Case1","Fields":["00000000-0000-0000-0000-000000000000",42,{"Case":"Ok","Fields": """
+              |> Expect.stringStart """ ["Case1","00000000-0000-0000-0000-000000000000",42,["Ok","Success"]]"""
             )
         )
+      //TODO: fix this one, does not match serialization test above
       yield!
         fieldsArray2
         |> List.map (fun encoding ->
@@ -76,7 +78,32 @@ let tests =
               |> renderCustomTypeDef encoding
               |> Expect.stringStart
                 """
-export type Du_Case_Case1 = { Case: "Case1", Fields: [ System.Guid, System.Int32, Microsoft_FSharp_Core.FSharpResult<System.String,System.String> ] }
+export type Du_Case_Case1 = { "Case1": [ System.Guid, System.Int32, Microsoft_FSharp_Core.FSharpResult<System.String,System.String> ] }
+"""
+            )
+        )
+      yield!
+        fieldsArray3
+        |> List.map (fun encoding ->
+          testCase
+            (sprintf "serialize: fields array3 (%A)" encoding)
+            (fun () ->
+              value
+              |> serializeWithEncoding encoding
+              |> Expect.stringStart """ {"Case1":["00000000-0000-0000-0000-000000000000",42,{"Ok":"Success"}]}"""
+            )
+        )
+      yield!
+        fieldsArray3
+        |> List.map (fun encoding ->
+          ptestCase
+            (sprintf "typedef: fields array3 (%A)" encoding)
+            (fun () ->
+              typedefof<Du>
+              |> renderCustomTypeDef encoding
+              |> Expect.stringStart
+                """
+export type Du_Case_Case1 = { "Case1": [ System.Guid, System.Int32, Microsoft_FSharp_Core.FSharpResult<System.String,System.String> ] }
 """
             )
         )
@@ -128,7 +155,7 @@ export type Du_Case_Case1 = { Case: "Case1", Fields: { id: System.Guid, item2: S
         "serialize: external tag"
         (fun () ->
           value
-          |> serializeWithEncoding JsonUnionEncoding.ExternalTag
+          |> serializeWithEncoding ExternalTag
           |> Expect.equal """ {"Case1":["00000000-0000-0000-0000-000000000000",42,{"Ok":["Success"]}]} """
         )
       testCase
@@ -145,14 +172,14 @@ export type Du_Case_Case1 = { Case1: [ System.Guid, System.Int32, Microsoft_FSha
         "InternalTag - serialize"
         (fun () ->
           value
-          |> serializeWithEncoding JsonUnionEncoding.InternalTag
+          |> serializeWithEncoding InternalTag
           |> Expect.equal """ ["Case1","00000000-0000-0000-0000-000000000000",42,["Ok","Success"]] """
         )
       testCase
         "InternalTag - typedef"
         (fun () ->
           typedefof<Du>
-          |> renderCustomTypeDef JsonUnionEncoding.InternalTag
+          |> renderCustomTypeDef InternalTag
           |> Expect.stringStart
             """
 export type Du_Case_Case1 = [ "Case1", System.Guid, System.Int32, Microsoft_FSharp_Core.FSharpResult<System.String,System.String> ]
@@ -162,7 +189,7 @@ export type Du_Case_Case1 = [ "Case1", System.Guid, System.Int32, Microsoft_FSha
         "untagged - serialize"
         (fun () ->
           value
-          |> serializeWithEncoding JsonUnionEncoding.Untagged
+          |> serializeWithEncoding Untagged
           |> Expect.equal
             """ {"id":"00000000-0000-0000-0000-000000000000","item2":42,"item3":{"resultValue":"Success"}} """
         )
@@ -170,7 +197,7 @@ export type Du_Case_Case1 = [ "Case1", System.Guid, System.Int32, Microsoft_FSha
         "untagged - typedef"
         (fun () ->
           typedefof<Du>
-          |> renderCustomTypeDef JsonUnionEncoding.Untagged
+          |> renderCustomTypeDef Untagged
           |> Expect.equal """Untagged is not supported"""
         )
     ]

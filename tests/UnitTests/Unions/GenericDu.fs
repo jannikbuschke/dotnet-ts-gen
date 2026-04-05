@@ -102,8 +102,7 @@ export const Du_AllCases = [
  "X",
  "Y",
  "Z",
- "U"
-] satisfies Du_Case[]
+ "U"] satisfies Du_Case[]
 export function isDu_Case(value: any): value is Du_Case {
  return Du_AllCases.includes(value)
 }"""

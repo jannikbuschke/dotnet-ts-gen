@@ -11,6 +11,7 @@ open Microsoft.AspNetCore.Routing
 open Microsoft.Extensions.DependencyInjection
 open System.Linq
 open System.Collections.Generic
+open System.Net
 
 let verb =
   function
@@ -129,12 +130,7 @@ let getLegacyEndpoints (services: IServiceProvider) =
     |> Option.ofObj
     |> Option.map _.Template
     |> Option.map (fun template ->
-      { ApiEndpoint.Request = inputType
-        ApiEndpoint.Response = toResultType x.MethodInfo.ReturnType
-        ApiEndpoint.ResponseNullable = returnTypeNullable
-        ApiEndpoint.Method = verb
-        ApiEndpoint.Route = sprintf "/%s" template
-        ApiEndpoint.Kind = kind }))
+      ApiEndpoint.New(verb, sprintf "/%s" template, inputType, toResultType x.MethodInfo.ReturnType, kind)))
   |> Seq.distinctBy (fun x -> x.Route, x.Method)
   |> Seq.toList
 
@@ -143,7 +139,6 @@ let getEndpoints (services: IServiceProvider) t =
 
   endpointDataSource.Endpoints
   |> Seq.choose (fun e ->
-
     let routeEndpoint = e :?> RouteEndpoint
 
     let methods =
@@ -152,42 +147,84 @@ let getEndpoints (services: IServiceProvider) t =
 
 
     // TODO: do handle more gracefully
-    let method = methods.FirstOrDefault() |> nonNull
-    let verb = verb method
+    let method = methods.FirstOrDefault() |> Option.ofObj
+    let verb = method |> Option.map verb // verb method
     let route = routeEndpoint.RoutePattern
     let routeText = route.RawText |> Option.ofObj
-
-    let tags = e.Metadata.GetMetadata<TagsAttribute>() |> Option.ofObj
-    let itags = e.Metadata.GetMetadata<ITagsMetadata>() |> Option.ofObj
-    printfn "Tags %A" tags
-    printfn "Tagsi %A" itags
 
     let accepts =
       e.Metadata.GetMetadata<IAcceptsMetadata>()
       |> Option.ofObj
       |> Option.bind (fun x -> x.RequestType |> Option.ofObj)
 
+    let isSuccessStatusCode code = code >= 200 && code < 300
+    // for now only one success type is supported
     let produces =
-      e.Metadata.GetMetadata<ProducesResponseTypeMetadata>()
-      |> Option.ofObj
-      |> Option.bind (fun x -> x.Type |> Option.ofObj)
+      e.Metadata.OfType<ProducesResponseTypeMetadata>()
+      |> Seq.choose (fun x ->
+        if isSuccessStatusCode x.StatusCode then
+          x.Type |> Option.ofObj
+        else
+          None)
+      |> Seq.tryHead
 
-    Option.map3
-      (fun (routeText: string) accepts produces ->
-        let kind =
-          t
-          |> Option.map (fun t -> t verb routeText (accepts, produces))
-          |> Option.defaultValue EndpointKind.Mutation
+    printfn " "
+    printfn "===="
+    printfn "%A => %A" accepts produces
 
-        { Request = accepts
-          Response = produces
-          ResponseNullable = false
-          Method = verb
-          Route = routeText
-          Kind = kind })
-      routeText
-      accepts
-      produces)
+
+    let producesErrors =
+      e.Metadata.OfType<ProducesResponseTypeMetadata>()
+      |> Seq.choose (fun x ->
+        if not (isSuccessStatusCode x.StatusCode) then
+          x.Type
+          |> Option.ofObj
+          |> Option.map (fun x' -> x', enum<HttpStatusCode> x.StatusCode)
+        else
+          None)
+      |> Seq.toList
+
+    match verb, routeText, accepts, produces with
+    | Some verb, Some routeText, Some accepts, Some produces ->
+      Some(e, verb, routeText, accepts, produces, producesErrors)
+    | _, _, _, _ -> None)
+  |> Seq.map (fun (routeEndpoint, verb, routeText, accepts, produces, errors) ->
+    printfn "[%A=>%A]\n" accepts.Name produces.Name
+
+    // let routeEndpoint = e :?> RouteEndpoint
+
+    // let methods =
+    //   routeEndpoint.Metadata.OfType<Microsoft.AspNetCore.Routing.HttpMethodMetadata>()
+    //   |> Seq.collect _.HttpMethods
+    //
+    //
+    // // TODO: do handle more gracefully
+    // let method = methods.FirstOrDefault() |> nonNull
+    // let verb = verb method
+    // let route = routeEndpoint.RoutePattern
+    // let routeText = route.RawText |> Option.ofObj
+    // let accepts =
+    //   e.Metadata.GetMetadata<IAcceptsMetadata>()
+    //   |> Option.ofObj
+    //   |> Option.bind (fun x -> x.RequestType |> Option.ofObj)
+    // let produces =
+    //   e.Metadata.GetMetadata<ProducesResponseTypeMetadata>()
+    //   |> Option.ofObj
+    //   |> Option.bind (fun x -> x.Type |> Option.ofObj)
+
+    // let tags = e.Metadata.GetMetadata<TagsAttribute>() |> Option.ofObj
+    // let itags = e.Metadata.GetMetadata<ITagsMetadata>() |> Option.ofObj
+    // printfn "Tags %A" tags
+    // printfn "Tagsi %A" itags
+
+    let kind =
+      t
+      |> Option.map (fun t -> t verb routeText (accepts, produces))
+      |> Option.defaultValue EndpointKind.Mutation
+
+    ApiEndpoint.New(verb, routeText, accepts, produces, kind, errors)
+
+  )
   |> Seq.toList
 
 let getEndpointsBasedOnEndpointDataSource (services: IServiceProvider) = getEndpoints services None

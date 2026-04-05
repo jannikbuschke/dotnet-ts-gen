@@ -1,4 +1,4 @@
-﻿module TinyTypeGen.Giraffe
+module TinyTypeGen.Giraffe
 
 open System.Collections.Generic
 open System.Net
@@ -8,14 +8,15 @@ open Microsoft.AspNetCore.Http
 open System.Linq
 
 let endpoint<'request, 'response> (url: string) (verb: HttpVerb) (handler: HttpHandler) =
-  let kind = 
+  let kind =
     match verb with
     | HttpVerb.GET -> EndpointKind.Query
     | _ -> EndpointKind.Mutation
-  
+
   {
     ApiEndpoint.Request = typeof<'request>
     ApiEndpoint.Response = typeof<'response>
+    ApiEndpoint.Error = []
     ApiEndpoint.Method = verb
     ApiEndpoint.Route = url
     ApiEndpoint.ResponseNullable = false
@@ -177,7 +178,7 @@ let toGiraffeEndpoint (e: ApiEndpoint * HttpHandler) =
     match endpoint.Method with
     | HttpVerb.GET -> GET
     | HttpVerb.POST -> POST
-    | HttpVerb.PATCH -> GET
+    // | HttpVerb.PATCH -> GET
     | _ -> failwith "NOT SUPPORTED"
 
   method >=> route endpoint.Route >=> f

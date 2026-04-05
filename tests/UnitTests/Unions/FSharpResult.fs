@@ -20,8 +20,7 @@ export type FSharpResult<T,TError> = FSharpResult_Case_Ok<T,TError> | FSharpResu
 export type FSharpResult_Case = "Ok" | "Error"
 export const FSharpResult_AllCases = [
  "Ok",
- "Error"
-] satisfies FSharpResult_Case[]
+ "Error"] satisfies FSharpResult_Case[]
 export function isFSharpResult_Case(value: any): value is FSharpResult_Case {
  return FSharpResult_AllCases.includes(value)
 }
@@ -32,8 +31,7 @@ export type FSharpResult_T<T,TError> = FSharpResult_Case_Ok_T<T,TError> | FSharp
 export type FSharpResult_T_Case = "Ok" | "Error"
 export const FSharpResult_T_AllCases = [
  "Ok",
- "Error"
-] satisfies FSharpResult_T_Case[]
+ "Error"] satisfies FSharpResult_T_Case[]
 export function isFSharpResult_T_Case(value: any): value is FSharpResult_T_Case {
  return FSharpResult_T_AllCases.includes(value)
 }
@@ -44,8 +42,7 @@ export type FSharpResult_TError<T,TError> = FSharpResult_Case_Ok_TError<T,TError
 export type FSharpResult_TError_Case = "Ok" | "Error"
 export const FSharpResult_TError_AllCases = [
  "Ok",
- "Error"
-] satisfies FSharpResult_TError_Case[]
+ "Error"] satisfies FSharpResult_TError_Case[]
 export function isFSharpResult_TError_Case(value: any): value is FSharpResult_TError_Case {
  return FSharpResult_TError_AllCases.includes(value)
 }
@@ -56,8 +53,7 @@ export type FSharpResult_TTError<T,TError> = FSharpResult_Case_Ok_TTError<T,TErr
 export type FSharpResult_TTError_Case = "Ok" | "Error"
 export const FSharpResult_TTError_AllCases = [
  "Ok",
- "Error"
-] satisfies FSharpResult_TTError_Case[]
+ "Error"] satisfies FSharpResult_TTError_Case[]
 export function isFSharpResult_TTError_Case(value: any): value is FSharpResult_TTError_Case {
  return FSharpResult_TTError_AllCases.includes(value)
 }

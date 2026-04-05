@@ -2,6 +2,7 @@ namespace TinyTypeGen
 
 open System
 open System.Text.Json.Serialization
+open System.Net
 
 [<RequireQualifiedAccess>]
 type HttpVerb =
@@ -26,11 +27,34 @@ type ApiEndpoint =
   {
     Request: Type
     Response: Type
+    Error: (Type * HttpStatusCode) list
     ResponseNullable: bool
     Method: HttpVerb
     Route: string
     Kind: EndpointKind
   }
+
+  static member New(method, route, request, response, kind) =
+    {
+      Request = request
+      Response = response
+      Error = []
+      ResponseNullable = false
+      Method = method
+      Route = route
+      Kind = kind
+    }
+
+  static member New(method, route, request, response, kind, error) =
+    {
+      Request = request
+      Response = response
+      Error = error
+      ResponseNullable = false
+      Method = method
+      Route = route
+      Kind = kind
+    }
 
 type TsModule =
   {

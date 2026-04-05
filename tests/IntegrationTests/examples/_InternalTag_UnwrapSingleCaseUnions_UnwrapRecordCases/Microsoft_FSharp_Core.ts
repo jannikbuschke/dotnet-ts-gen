@@ -2,7 +2,6 @@
 //   This file is auto generated   //
 //////////////////////////////////////
 
-export type Unit = null;
 export type FSharpResult_Case_Ok<T, TError> = { Case: 'Ok'; resultValue: T };
 export type FSharpResult_Case_Error<T, TError> = {
   Case: 'Error';

@@ -13,8 +13,10 @@ open Test
 open System.Text.Json.Serialization
 open type JsonUnionEncoding
 
+[<RequireQualifiedAccess>]
 type GenericDu<'T> = | CaseA of 'T
 
+[<RequireQualifiedAccess>]
 type GenericDu3<'a, 'b, 'c> =
   | CaseA of 'a
   | CaseB of 'b
@@ -30,6 +32,7 @@ let g3 =
     GenericDu3.CaseAb({ Val = 3 }, { Val = 0 })
   ]
 
+[<RequireQualifiedAccess>]
 type GenericDuWithRecord<'t> =
   | Record of Record
   | Case2 of 't
@@ -38,10 +41,10 @@ let duWithRecord: obj list = [ GenericDu.CaseA { Val = 0 } ]
 let duWithPrimitive: obj list = [ GenericDu.CaseA 5 ]
 let duWithDu: obj list = [ GenericDu.CaseA(Ok "") ]
 let duWithRecord2: obj list =
-  [ GenericDuWithRecord.Record({ Val = 0 }); GenericDuWithRecord.Case2 5 ]
+  [ GenericDuWithRecord.Record { Val = 0 }; GenericDuWithRecord.Case2 5 ]
 let duWithRecord3: obj list =
   [
-    GenericDuWithRecord.Record({ Val = 0 })
+    GenericDuWithRecord.Record { Val = 0 }
     GenericDuWithRecord.Case2 { Val = 1 }
   ]
 
@@ -71,7 +74,7 @@ let referencingDu3Value =
   }
 
 let referencingWithRecord: ReferencingTypeWithRecord list =
-  [ { Val = (GenericDu.CaseA { Val = 0 }) } ]
+  [ { Val = GenericDu.CaseA { Val = 0 } } ]
 let referencingWithPrimitive: ReferencingTypeWithPrimitive list =
   [ { Val = GenericDu.CaseA 5 } ]
 let referencingWithUnion: ReferencingTypeWithUnion list =
@@ -132,8 +135,7 @@ export const GenericDu3_AllCases = [
  "CaseA",
  "CaseB",
  "CaseC",
- "CaseAb"
-] satisfies GenericDu3_Case[]
+ "CaseAb"] satisfies GenericDu3_Case[]
 export function isGenericDu3_Case(value: any): value is GenericDu3_Case {
  return GenericDu3_AllCases.includes(value)
 }
@@ -148,8 +150,7 @@ export const GenericDu3_a_AllCases = [
  "CaseA",
  "CaseB",
  "CaseC",
- "CaseAb"
-] satisfies GenericDu3_a_Case[]
+ "CaseAb"] satisfies GenericDu3_a_Case[]
 export function isGenericDu3_a_Case(value: any): value is GenericDu3_a_Case {
  return GenericDu3_a_AllCases.includes(value)
 }
@@ -164,8 +165,7 @@ export const GenericDu3_b_AllCases = [
  "CaseA",
  "CaseB",
  "CaseC",
- "CaseAb"
-] satisfies GenericDu3_b_Case[]
+ "CaseAb"] satisfies GenericDu3_b_Case[]
 export function isGenericDu3_b_Case(value: any): value is GenericDu3_b_Case {
  return GenericDu3_b_AllCases.includes(value)
 }
@@ -180,8 +180,7 @@ export const GenericDu3_ab_AllCases = [
  "CaseA",
  "CaseB",
  "CaseC",
- "CaseAb"
-] satisfies GenericDu3_ab_Case[]
+ "CaseAb"] satisfies GenericDu3_ab_Case[]
 export function isGenericDu3_ab_Case(value: any): value is GenericDu3_ab_Case {
  return GenericDu3_ab_AllCases.includes(value)
 }
@@ -196,8 +195,7 @@ export const GenericDu3_c_AllCases = [
  "CaseA",
  "CaseB",
  "CaseC",
- "CaseAb"
-] satisfies GenericDu3_c_Case[]
+ "CaseAb"] satisfies GenericDu3_c_Case[]
 export function isGenericDu3_c_Case(value: any): value is GenericDu3_c_Case {
  return GenericDu3_c_AllCases.includes(value)
 }
@@ -212,8 +210,7 @@ export const GenericDu3_ac_AllCases = [
  "CaseA",
  "CaseB",
  "CaseC",
- "CaseAb"
-] satisfies GenericDu3_ac_Case[]
+ "CaseAb"] satisfies GenericDu3_ac_Case[]
 export function isGenericDu3_ac_Case(value: any): value is GenericDu3_ac_Case {
  return GenericDu3_ac_AllCases.includes(value)
 }
@@ -228,8 +225,7 @@ export const GenericDu3_bc_AllCases = [
  "CaseA",
  "CaseB",
  "CaseC",
- "CaseAb"
-] satisfies GenericDu3_bc_Case[]
+ "CaseAb"] satisfies GenericDu3_bc_Case[]
 export function isGenericDu3_bc_Case(value: any): value is GenericDu3_bc_Case {
  return GenericDu3_bc_AllCases.includes(value)
 }
@@ -247,8 +243,7 @@ export function isGenericDu3_bc_Case(value: any): value is GenericDu3_bc_Case {
 export type GenericDu<T> = GenericDu_Case_CaseA<T>
 export type GenericDu_Case = "CaseA"
 export const GenericDu_AllCases = [
- "CaseA"
-] satisfies GenericDu_Case[]
+ "CaseA"] satisfies GenericDu_Case[]
 export function isGenericDu_Case(value: any): value is GenericDu_Case {
  return GenericDu_AllCases.includes(value)
 }
@@ -257,8 +252,7 @@ export type GenericDu_Case_CaseA_T<T> = { Case: "CaseA" } & T
 export type GenericDu_T<T> = GenericDu_Case_CaseA_T<T>
 export type GenericDu_T_Case = "CaseA"
 export const GenericDu_T_AllCases = [
- "CaseA"
-] satisfies GenericDu_T_Case[]
+ "CaseA"] satisfies GenericDu_T_Case[]
 export function isGenericDu_T_Case(value: any): value is GenericDu_T_Case {
  return GenericDu_T_AllCases.includes(value)
 }
@@ -275,8 +269,7 @@ export function isGenericDu_T_Case(value: any): value is GenericDu_T_Case {
 export type GenericDu<T> = GenericDu_Case_CaseA<T>
 export type GenericDu_Case = "CaseA"
 export const GenericDu_AllCases = [
- "CaseA"
-] satisfies GenericDu_Case[]
+ "CaseA"] satisfies GenericDu_Case[]
 export function isGenericDu_Case(value: any): value is GenericDu_Case {
  return GenericDu_AllCases.includes(value)
 }
@@ -285,8 +278,7 @@ export type GenericDu_Case_CaseA_T<T> = { CaseA: T }
 export type GenericDu_T<T> = GenericDu_Case_CaseA_T<T>
 export type GenericDu_T_Case = "CaseA"
 export const GenericDu_T_AllCases = [
- "CaseA"
-] satisfies GenericDu_T_Case[]
+ "CaseA"] satisfies GenericDu_T_Case[]
 export function isGenericDu_T_Case(value: any): value is GenericDu_T_Case {
  return GenericDu_T_AllCases.includes(value)
 }
