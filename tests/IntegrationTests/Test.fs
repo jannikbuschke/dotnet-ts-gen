@@ -12,6 +12,7 @@ open type JsonUnionEncoding
 open FsCheck.FSharp
 open System.Text.RegularExpressions
 open IntegrationTests
+open Microsoft.AspNetCore.Mvc
 
 let stripPropertyNameQuotes (input: string) : string =
   Regex.Replace(input, @"""(\w+)""\s*:", "$1:")
@@ -126,6 +127,7 @@ let gen () =
           typedefof<GenericDu<_, _>>
           typedefof<GenericDu0<_>>
           typedefof<MyRecord>
+          typedefof<ProblemDetails>
           dynamicType
         |]
       )
@@ -134,7 +136,7 @@ let gen () =
         {
           Endpoints = csharpEndpoints
           TargetFile = $"{path}/api-cs.ts"
-          ApiTemplate = Template.EmbeddedTemplate EmbeddedTemplate.ApiTemplateWithTanstackQuery
+          ApiTemplate = Template.Default
           EndpointTemplate = Template.Default
         }
       )
