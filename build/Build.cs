@@ -162,11 +162,7 @@ class Build : NukeBuild
             });
 
     Target UnitTests =>
-        _ =>
-            _.Executes(() =>
-            {
-                DotNetTest(_ => _.SetProjectFile(Solution.tests.TinyTypeGen_Test));
-            });
+        _ => _.Executes(() => DotNetTest(_ => _.SetProjectFile(Solution.tests.TinyTypeGen_Test)));
 
     private Target Format =>
         _ =>
@@ -225,13 +221,4 @@ class Build : NukeBuild
                 Log.Information("Https URL = {Value}", Repository.HttpsUrl);
                 Log.Information("SSH URL = {Value}", Repository.SshUrl);
             });
-
-    // Target Print =>
-    //     _ =>
-    //         _.Executes(() =>
-    //         {
-    //             var versionJson = File.ReadAllText(RootDirectory / "version.json");
-    //             var v = JsonSerializer.Deserialize<VersionInf>(versionJson);
-    //             Log.Information("NerdbankVersioning = {@Value}", v);
-    //         });
 }
