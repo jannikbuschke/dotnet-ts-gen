@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 import * as ___ from './___';
+import * as Microsoft_AspNetCore_Mvc from './Microsoft_AspNetCore_Mvc';
 import * as System from './System';
 
 export type Mutation = {

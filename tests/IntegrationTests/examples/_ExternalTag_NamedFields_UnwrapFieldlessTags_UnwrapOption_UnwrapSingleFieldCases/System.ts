@@ -23,3 +23,4 @@ export type DateTimeOffset =
 export type TimeSpan = `${string}:${string}:${string}`;
 export type DateOnly = `${number}-${number}-${number}`;
 export type TimeOnly = `${number}:${number}:${number}`;
+export type Nullable<T> = T | null;
