@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/home/jannik/repos/glow/dotnet-ts/**)",
+      "Bash(dotnet test tests/UnitTests/TinyTypeGen.Test.fsproj)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet test:*)",
+      "Bash(dotnet run:*)"
+    ]
+  }
+}
