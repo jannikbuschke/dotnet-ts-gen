@@ -49,9 +49,9 @@
     </ItemGroup>
 
     <ItemGroup>
-<!--        <PackageReference Update="FSharp.Core" Version="8.0.200" />-->
-        <PackageReference Include="FSharp.SystemTextJson" Version="1.4.36" />
-        <PackageReference Include="Scriban" Version="*" />
+        <PackageReference Include="FSharp.Core" />
+        <PackageReference Include="FSharp.SystemTextJson" />
+        <PackageReference Include="Scriban" />
     </ItemGroup>
 
 </Project>

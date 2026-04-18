@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="FSharp.Core" Version="9.0.303" /> 
+      <PackageReference Include="FSharp.Core" />
       <Folder Include="wwwroot\" />
     </ItemGroup>
 

@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FsToolkit.ErrorHandling" Version="5.1.0" />
+    <PackageReference Include="FsToolkit.ErrorHandling" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

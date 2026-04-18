@@ -8,8 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="FsCheck" Version="3.3.2" />
-        <PackageReference Include="Expecto" Version="9.0.4" />
+        <PackageReference Include="FsCheck" />
+        <PackageReference Include="Expecto" />
     </ItemGroup>
 
     <ItemGroup>

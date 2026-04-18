@@ -1,0 +1,33 @@
+<Project>
+
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <!-- Core -->
+  <ItemGroup>
+    <PackageVersion Include="FSharp.Core" Version="10.1.202" />
+    <PackageVersion Include="FSharp.SystemTextJson" Version="1.4.36" />
+    <PackageVersion Include="Scriban" Version="7.1.0" />
+    <PackageVersion Include="Giraffe" Version="8.2.0" />
+    <PackageVersion Include="FsToolkit.ErrorHandling" Version="5.1.0" />
+  </ItemGroup>
+
+  <!-- Test -->
+  <ItemGroup>
+    <PackageVersion Include="Expecto" Version="9.0.4" />
+    <PackageVersion Include="FsCheck" Version="3.3.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.6" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageVersion Include="coverlet.collector" Version="6.0.0" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
+  </ItemGroup>
+
+  <!-- Build -->
+  <ItemGroup>
+    <PackageVersion Include="Nerdbank.GitVersioning" Version="3.6.139" />
+    <PackageVersion Include="Nuke.Common" Version="9.0.0" />
+  </ItemGroup>
+
+</Project>

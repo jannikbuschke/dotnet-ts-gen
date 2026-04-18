@@ -12,8 +12,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.139" />
-    <PackageReference Include="Nuke.Common" Version="9.0.0" />
+    <PackageReference Include="Nerdbank.GitVersioning" />
+    <PackageReference Include="Nuke.Common" />
   </ItemGroup>
 
   <ItemGroup>
