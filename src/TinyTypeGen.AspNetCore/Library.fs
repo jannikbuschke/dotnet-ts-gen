@@ -168,10 +168,9 @@ let getEndpoints (services: IServiceProvider) t =
           None)
       |> Seq.tryHead
 
-    printfn " "
-    printfn "===="
-    printfn "%A => %A" accepts produces
-
+    // printfn " "
+    // printfn "===="
+    // printfn "%A => %A" accepts produces
 
     let producesErrors =
       e.Metadata.OfType<ProducesResponseTypeMetadata>()
