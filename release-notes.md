@@ -1,3 +1,9 @@
+## 1.0.0-alpha.196 (e5505664674e1b854946002bdefccbcd64fb17ec)
+
+### Other
+- centralise package managment
+- remove accept/produce console logs
+
 ## 1.0.0-alpha.195 (e83a0d2a74d322d73506836181985abe91986c86)
 
 ### Other
