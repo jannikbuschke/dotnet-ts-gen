@@ -188,7 +188,7 @@ let getEndpoints (services: IServiceProvider) t =
       Some(e, verb, routeText, accepts, produces, producesErrors)
     | _, _, _, _ -> None)
   |> Seq.map (fun (routeEndpoint, verb, routeText, accepts, produces, errors) ->
-    printfn "[%A=>%A]\n" accepts.Name produces.Name
+    // printfn "[%A=>%A]\n" accepts.Name produces.Name
 
     // let routeEndpoint = e :?> RouteEndpoint
 
